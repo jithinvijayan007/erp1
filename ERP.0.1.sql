@@ -1,4 +1,4 @@
-alter table branch add column fk_hierarchy_data bigint REFERENCES hierarchy_data(pk_bint_id);
+alter table branch add column fk_hierarchy_data_id bigint REFERENCES hierarchy_data(pk_bint_id);
 create table hierarchy(
   pk_bint_id  BIGSERIAL PRIMARY KEY,
   int_level smallint,
