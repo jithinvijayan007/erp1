@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from datetime import datetime
 from rest_framework.permissions import IsAuthenticated
 from company_permissions.models import GroupPermissions,SubCategory,MainCategory,CategoryItems,MenuCategory
+from hierarchy.models import Hierarchy
 from groups.models import Groups
 from company.models import Company
 from userdetails.models import Userdetails
@@ -472,8 +473,31 @@ class SidebarAPI(APIView):
                                         'submenu': []
                                     }
                                 )
+                """add hierarchy data"""
+                ins_sub_category = SubCategory.objects.filter(vchr_sub_category_name='ADD LOCATIONS').values('fk_main_category_id','vchr_icon_name','int_sub_category_order','vchr_sub_category_name','vchr_sub_category_value','pk_bint_id','fk_main_category_id__vchr_main_category_name').first()
+                if ins_sub_category:
+                    # import pdb; pdb.set_trace()
 
-
+                    dct_sub_perms[ins_sub_category['fk_main_category_id__vchr_main_category_name'].title()][ins_sub_category['vchr_sub_category_name'].title()] = {}
+                    dct_sub_perms[ins_sub_category['fk_main_category_id__vchr_main_category_name'].title()][ins_sub_category['vchr_sub_category_name'].title()]['path'] = ''
+                    dct_sub_perms[ins_sub_category['fk_main_category_id__vchr_main_category_name'].title()][ins_sub_category['vchr_sub_category_name'].title()]['title'] = ins_sub_category['vchr_sub_category_name'].title()
+                    dct_sub_perms[ins_sub_category['fk_main_category_id__vchr_main_category_name'].title()][ins_sub_category['vchr_sub_category_name'].title()]['icon'] = ins_sub_category['vchr_icon_name']
+                    dct_sub_perms[ins_sub_category['fk_main_category_id__vchr_main_category_name'].title()][ins_sub_category['vchr_sub_category_name'].title()]['class'] = 'has-arrow'
+                    dct_sub_perms[ins_sub_category['fk_main_category_id__vchr_main_category_name'].title()][ins_sub_category['vchr_sub_category_name'].title()]['extralink'] = False
+                    dct_sub_perms[ins_sub_category['fk_main_category_id__vchr_main_category_name'].title()][ins_sub_category['vchr_sub_category_name'].title()]['submenu'] = []
+                    # if ins_per['bln_add'] and ins_per['fk_category_items__fk_menu_category__vchr_addurl']:
+                    ins_hierarachy = Hierarchy.objects.exclude(vchr_name='BRANCH').values('vchr_name').order_by('-int_level')
+                    for ins_data in ins_hierarachy:
+                        dct_sub_perms[ins_sub_category['fk_main_category_id__vchr_main_category_name'].title()][ins_sub_category['vchr_sub_category_name'].title()]['submenu'].append(
+                            {
+                                'path': 'hierarchy/add',
+                                'title': 'Add '+ins_data['vchr_name'].title(),
+                                'icon': 'mdi mdi-plus-outline',
+                                'class': '',
+                                'extralink': False,
+                                'submenu': []
+                            }
+                        )
             for ins_data in  dct_sub_perms:
                 dct_sub_perms[ins_data] = dct_sub_perms[ins_data].values()
             dct_data = {}
