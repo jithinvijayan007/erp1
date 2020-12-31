@@ -96,7 +96,7 @@ INSTALLED_APPS = [
     'stock_transfer',
     'goods_return',
     'paytm_api',
-    'hierarchy'
+    'hierarchy',
 
 ]
 REST_FRAMEWORK = {

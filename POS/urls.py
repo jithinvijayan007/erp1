@@ -54,9 +54,10 @@ urlpatterns = [
     url(r'^receipt/',include('receipt.urls',namespace="receipt")),
     url(r'^payment/',include('payment.urls',namespace="payment")),
     url(r'^reports/',include('reports.urls',namespace="reports")),
+    url(r'^department/',include('department.urls',namespace="department")),
+
     url(r'^tool_settings/',include('tool_settings.urls',namespace="tool_settings")),
     url(r'^quotation/',include('quotation.urls',namespace="quotation")),
-
     url(r'^accounts_map/',include('accounts_map.urls',namespace="accounts_map")),
     url(r'^exchange_sales/',include('exchange_sales.urls',namespace="exchange_sales")),
     url(r'^ledger/',include('ledger_report.urls',namespace = "ledger")),
