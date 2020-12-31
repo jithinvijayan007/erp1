@@ -70,7 +70,7 @@ urlpatterns = [
     url(r'^goods_return/',include('goods_return.urls',namespace = "goodsreturn")),
     url(r'^staff_tracking/',include('staff_tracking.urls',namespace = "staff_tracking")),
     url(r'^paytm_api/',include('paytm_api.urls',namespace = "paytm_api")),
-    # url(r'^payment/',include('payment.urls',namespace="payment")),
+    url(r'^hierarchy/',include('hierarchy.urls',namespace="hierarchy")),
 
     #--------------------------------------------
     url(r'^api-token-auth/', obtain_jwt_token),
