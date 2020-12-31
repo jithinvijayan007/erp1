@@ -2,6 +2,7 @@ from django.db import models
 from company.models import Company
 from category.models import OtherCategory
 from states.models import States,LocationMaster
+from hierarchy.models import HierarchyData
 
 class Branch(models.Model):
     pk_bint_id = models.BigAutoField(primary_key=True)
@@ -33,6 +34,7 @@ class Branch(models.Model):
     vchr_mygcare_no = models.CharField(max_length=50, blank=True, null=True)
     vchr_gstno = models.CharField(max_length=50, blank=True, null=True)
     int_pincode = models.IntegerField(blank=True, null=True)
+    fk_hierarchy_data = models.ForeignKey(HierarchyData, models.DO_NOTHING, blank=True, null=True)
 
 
     class Meta:
