@@ -60,7 +60,6 @@ class BranchApi(APIView):
         response:return success status
         """
         try:
-            # import pdb; pdb.set_trace()
             vchr_code = request.data.get('strCode')
             vchr_name = request.data.get('strName')
             vchr_address = request.data.get('strAddress')
@@ -82,7 +81,8 @@ class BranchApi(APIView):
             int_stk_qty=request.data.get('intStockRqstQty')
             int_stk_amt=request.data.get('intStockRqstAmt')
             int_pin_code=request.data.get('intPincode')
-
+            fk_hierarchy = request.data.get('intHierarchy')
+            # print(fk_hierarchy)
 
             if Branch.objects.filter(Q(vchr_code=vchr_code) | Q(vchr_name = vchr_name)).exists():
                 return Response({'status':'0','message':'Branch Aleady exists'})
@@ -108,7 +108,8 @@ class BranchApi(APIView):
                                   int_price_template = int_price_template,
                                   dbl_stock_request_amount=int_stk_amt,
                                   int_stock_request_qty=int_stk_qty,
-                                  int_pincode=int_pin_code
+                                  int_pincode=int_pin_code,
+                                  fk_hierarchy_data_id = fk_hierarchy
                                 )
             return Response({'status':'1'})
 
