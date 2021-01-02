@@ -18,7 +18,7 @@ class AddJobPosition(APIView):
         try:
             """Add Job Position"""
             # import pdb; pdb.set_trace()
-            int_company_id = Company.objects.filter(vchr_code = 'MYG').values().first()['pk_bint_id']
+            int_company_id = Company.objects.filter().values().first()['pk_bint_id']
             ins_dup_job = JobPosition.objects.filter(vchr_name = request.data.get("strDesignationName"),bln_active = True)
             if ins_dup_job:
                 return Response({'status':0,'reason':'Job Position Already Exists'})

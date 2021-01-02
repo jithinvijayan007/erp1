@@ -5,7 +5,8 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from hierarchy.models import Hierarchy,HierarchyData
-from django.db.models import Q
+from django.db.models import Q,Case, When,CharField
+from django.db.models.functions import Concat
 class HierarchyApi(APIView):
     permission_classes = [AllowAny]
 
@@ -19,7 +20,7 @@ class HierarchyApi(APIView):
             else:
                 dct_hierar = Hierarchy.objects.filter(vchr_name__iexact = str_hierar_name).values().first()
                 int_level = int(dct_hierar['int_level']) + 1
-                dct_hierar = HierarchyData.objects.filter(fk_hierarchy__int_level = int_level).values()
+                dct_hierar = HierarchyData.objects.filter(fk_hierarchy__int_level = int_level).annotate(str_name=Case(When(fk_hierarchy_data_id__vchr_name = None ,then =  'vchr_name'),default =Concat('vchr_name', Value('-'), 'fk_hierarchy_data_id__vchr_name'),output_field = CharField())).values('pk_bint_id','str_name','vchr_code','fk_hierarchy_id','fk_hierarchy_data_id')
                 return Response({'status':1,'data':dct_hierar})
 
         except Exception as e:
@@ -35,7 +36,7 @@ class HierarchyApi(APIView):
             int_fk_master =   request.data.get('master_id')  
             ins_hierarchydataCheck =  HierarchyData.objects.filter(Q(vchr_name = str_name) | (Q(vchr_code = str_code) & Q(fk_hierarchy_data_id = int_fk_master ))).values()
             if ins_hierarchydataCheck:
-                return Response ({'status':0,'reason':'hierarchy name or code already exist'})
+                return Response ({'status':0,'reason':'Hierarchy Name or Code Already Exist'})
             int_hierarchy = Hierarchy.objects.get(vchr_name__iexact = str_hierar_name)
 
             ins_hierarchydata = HierarchyData(
