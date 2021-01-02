@@ -10,7 +10,7 @@ from groups.models import Groups
 from company_permissions.models import GroupPermissions,MainCategory,MenuCategory,SubCategory,CategoryItems
 from company.models import Company
 from django.db import transaction
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 # Create your views here.
 from POS import ins_logger
 from django.db.models import Value, BooleanField

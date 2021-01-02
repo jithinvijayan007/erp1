@@ -1,6 +1,6 @@
 from django.db import models
 from customer.models import CustomerDetails
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from item_category.models import Item
 from invoice.models import SalesMaster,Bank
 from branch.models import Branch

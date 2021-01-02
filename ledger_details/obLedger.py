@@ -18,7 +18,7 @@ import xlrd
 from django.conf import settings
 from sap_api.models import ChartOfAccounts
 import pandas as pd
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from branch.models import Branch
 from POS.dftosql import Savedftosql
 cell_value = ''

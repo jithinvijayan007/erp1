@@ -22,7 +22,7 @@ from PIL import Image
 # Create your views here.
 from POS import ins_logger
 import sys, os
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from brands.models import Brands
 from category.models import Category
 from dateutil.relativedelta import relativedelta

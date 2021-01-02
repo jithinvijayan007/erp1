@@ -5,7 +5,7 @@ from products.models import Products
 from item_group.models import ItemGroup
 from products.models import Specifications
 from brands.models import Brands
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from datetime import datetime
 from django.utils import timezone
 # Create your models here.

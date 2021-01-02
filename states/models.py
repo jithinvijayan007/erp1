@@ -1,11 +1,19 @@
 from django.db import models
 
 # Create your models here.
+class Country(models.Model):
+    pk_bint_id = models.BigAutoField(primary_key=True)
+    vchr_code = models.CharField(max_length=15, blank=True, null=True)
+    vchr_name = models.CharField(max_length=50, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'country'
 class States(models.Model):
     pk_bint_id = models.BigAutoField(primary_key=True)
     vchr_name = models.CharField(max_length=20, blank=True, null=True)
     vchr_code = models.CharField(max_length=100, blank=True, null=True)
-
+    fk_country = models.ForeignKey(Country, models.DO_NOTHING, blank=True, null=True)
     def __str__(self):
         return self.vchr_name
 

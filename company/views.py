@@ -130,6 +130,15 @@ class CompanyRegistration(APIView):
 
 class CompanyTypeHead(APIView):
     permission_classes = [AllowAny]
+    def get(self, request):
+        try:
+            ins_company = Company.objects.filter().values()
+            return Response({'status':1,'data':ins_company})
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id),'details':'line no: ' + str(exc_tb.tb_lineno)})
+            return Response({'result':0,'reason':e})
+
     def post(self,request):
         try:
             # import pdb; pdb.set_trace()

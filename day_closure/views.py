@@ -12,7 +12,7 @@ from .models import DayClosureMaster,DayClosureDetails,DayClosureNotTally
 from invoice.models import SalesMaster,SalesDetails
 import json
 import datetime
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from django.contrib.auth.models import User as AuthUser
 
 import pdfkit
@@ -30,7 +30,7 @@ import binascii
 from django.db import transaction
 from branch.models import Branch
 from django.contrib.auth.models import User as AuthUser
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from payment.models import Payment
 from receipt.models import Receipt
 

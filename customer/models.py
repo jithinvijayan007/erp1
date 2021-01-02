@@ -1,6 +1,6 @@
 from django.db import models
 from states.models import States, Location
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 # from loyalty_card.models import LoyaltyCard
 
 # Create your models here.

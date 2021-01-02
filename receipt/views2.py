@@ -21,7 +21,7 @@ from django.db.models import Value, CharField, DateField
 from django.db.models.functions import Cast
 from purchase.models import Document
 
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from receipt.models import ReceiptInvoiceMatching
 
 from django.db.models import Q

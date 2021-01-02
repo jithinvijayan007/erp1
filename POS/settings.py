@@ -50,7 +50,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'aldjemy',
     'brands',
+    'salary_struct',
+    'job_position',
     'company',
+    'url_check',
     'branch',
     'category',
     'groups',
@@ -97,6 +100,17 @@ INSTALLED_APPS = [
     'goods_return',
     'paytm_api',
     'hierarchy',
+    'salary_components',
+    'shift_schedule',
+    'territory',
+    'zone',
+    'salary_process',
+    'salary_advance',
+    'attendance',
+    'leave_management',
+    'professional_tax',
+    'location',
+    
 
 ]
 REST_FRAMEWORK = {

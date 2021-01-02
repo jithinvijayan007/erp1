@@ -2,7 +2,7 @@ from branch_stock.models import BranchStockImeiDetails
 from purchase.models import GrnDetails
 from internal_stock.models import StockTransferImeiDetails
 from invoice.models import SalesDetails
-from userdetails.models import UserPermissions,Userdetails
+from userdetails.models import UserPermissions,UserDetails as Userdetails
 from django.db.models import Q
 from branch.models import Branch
 import json

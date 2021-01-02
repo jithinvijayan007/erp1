@@ -1,6 +1,6 @@
 import os
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "CRM.settings")
-from userdetails.models import Userdetails as UserAppUsermodel
+from userdetails.models import UserDetails as Userdetails as UserAppUsermodel
 from django.contrib.auth.models import User
 from pandas import ExcelWriter
 import pandas as pd

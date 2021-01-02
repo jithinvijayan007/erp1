@@ -7,7 +7,7 @@ from company_permissions.models import GroupPermissions,SubCategory,MainCategory
 from hierarchy.models import Hierarchy
 from groups.models import Groups
 from company.models import Company
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from django.db.models import Value, BooleanField
 from django.conf import settings
 from dateutil.tz import tzlocal

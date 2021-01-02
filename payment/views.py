@@ -10,7 +10,7 @@ from payment.models import Payment,ContraDetails
 from POS import ins_logger,settings
 import sys, os
 import requests
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from django.db.models import Q
 from purchase.models import Document
 from purchase.views import doc_num_generator

@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.contrib.auth.models import User as AuthUser
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails 
 from customer.models import CustomerDetails
 from company.models import FinancialYear
 from branch.models import Branch
