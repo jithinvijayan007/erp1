@@ -1,6 +1,7 @@
 from django.db import models
 from groups.models import Groups
 from company.models import Company
+from job_position.models import JobPosition
 # Create your models here.
 class MainCategory(models.Model):
     pk_bint_id = models.BigAutoField(primary_key=True)
@@ -71,9 +72,7 @@ class GroupPermissions(models.Model):
     bln_delete = models.BooleanField()
     bln_edit = models.BooleanField()
     bln_download = models.BooleanField()
-
-
-
+    fk_desig = models.ForeignKey(JobPosition, models.DO_NOTHING, blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'group_permissions'

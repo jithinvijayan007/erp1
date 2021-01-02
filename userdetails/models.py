@@ -16,6 +16,7 @@ from category.models import Category
 from states.models import District
 from salary_struct.models import SalaryStructure
 from job_position.models import JobPosition
+from hierarchy.models import HierarchyData
 class Financiers(models.Model):
     pk_bint_id = models.BigAutoField(primary_key=True)
     vchr_name = models.CharField(max_length=50)
@@ -68,11 +69,20 @@ class ReligionCaste(models.Model):
         return self.vchr_name
 
 class UserDetails(User,models.Model):
-    vchr_employee_code = models.CharField(max_length=50, blank=True, null=True)
+    # user_ptr = models.ForeignKey(User, models.DO_NOTHING, primary_key=True)
+    vchr_emp_remark = models.TextField(blank=True, null=True)
+    int_official_num = models.BigIntegerField(blank=True, null=True)
+    fk_dist = models.ForeignKey(District, models.DO_NOTHING, blank=True, null=True)
+    json_documents = JSONField(blank=True, null=True)
+    fk_wps = models.ForeignKey('WPS', models.DO_NOTHING, blank=True, null=True, related_name = 'user_details_fk_wps')
+    fk_brand = models.ForeignKey(Brand, models.DO_NOTHING, blank=True, null=True)
+    fk_desig = models.ForeignKey(JobPosition, models.DO_NOTHING, blank=True, null=True)
+    fk_religion = models.ForeignKey('ReligionCaste', models.DO_NOTHING, blank=True, null=True)
+    json_weekoff = JSONField(blank=True, null=True) # {"SUNDAY":{"0":"0"}, "SATURDAY":{"1":"0", "2":"09:00:00-18:00:00", "3":"0"}}
     fk_category = models.ForeignKey(Category, models.DO_NOTHING, blank=True, null=True)
     bint_phone = models.BigIntegerField(blank=True, null=True)
     vchr_email = models.CharField(max_length=50, blank=True, null=True)
-    vchr_middle_name = models.CharField(max_length=150, blank=True, null=True)
+    vchr_employee_code = models.CharField(max_length=50, blank=True, null=True)
     dat_dob = models.DateField(blank=True, null=True)
     dat_doj = models.DateTimeField(blank=True, null=True)
     vchr_gender = models.CharField(max_length=15, blank=True, null=True)
@@ -82,14 +92,26 @@ class UserDetails(User,models.Model):
     fk_branch = models.ForeignKey(Branch, models.DO_NOTHING, blank=True, null=True)
     fk_department = models.ForeignKey(Department, models.DO_NOTHING, blank=True, null=True)
     fk_company = models.ForeignKey(Company, models.DO_NOTHING, blank=True, null=True)
-    int_hierarchy_type = models.IntegerField(blank=True, null=True, default=0) # 0. All, 1. Department consider, 2. Direct reporting, 3. Department consider and Direct reporting
     fk_created = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True,related_name = 'user_fk_created')
     fk_updated = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True,related_name = 'user_fk_updated')
     dat_created = models.DateTimeField(blank=True, null=True)
     dat_updated = models.DateTimeField(blank=True, null=True)
     json_allowance = JSONField(blank=True, null=True)
+    vchr_weekoff_day = models.CharField(max_length=10, blank=True, null=True) #eg:MONDAY
+    bint_emergency_phno = models.BigIntegerField(blank=True, null=True)
+    vchr_father_name = models.CharField(max_length=150, blank=True, null=True)
+    vchr_salutation = models.CharField(max_length=10, blank=True, null=True)
+    vchr_marital_status = models.CharField(max_length=30, blank=True, null=True)
+    vchr_blood_group = models.CharField(max_length=10, blank=True, null=True)
+    vchr_emergency_person = models.CharField(max_length=100, blank=True, null=True)
+    vchr_emergency_relation = models.CharField(max_length=30, blank=True, null=True)
+    bln_pass_reset = models.NullBooleanField(default=False)
+    vchr_pf_no = models.CharField(max_length=100, blank=True, null=True)
+    int_hierarchy_type = models.IntegerField(blank=True, null=True, default=0) # 0. All, 1. Department consider, 2. Direct reporting, 3. Department consider and Direct reporting
+    vchr_password_reset_token = models.TextField(blank=True, null=True)
+    dat_password_reset_timer = models.DateTimeField(blank=True, null=True)
     dbl_gross = models.FloatField(blank=True, null=True)
-    fk_desig = models.ForeignKey(JobPosition, models.DO_NOTHING, blank=True, null=True)
+    vchr_middle_name = models.CharField(max_length=150, blank=True, null=True)
     int_payment = models.IntegerField(blank=True, null=True)
     vchr_pan_no = models.CharField(max_length=150, blank=True, null=True)
     vchr_aadhar_no = models.CharField(max_length=150, blank=True, null=True)
@@ -97,44 +119,23 @@ class UserDetails(User,models.Model):
     vchr_bank_name = models.CharField(max_length=300, blank=True, null=True)
     vchr_acc_no = models.CharField(max_length=150, blank=True, null=True)
     vchr_ifsc = models.CharField(max_length=150, blank=True, null=True)
-    fk_brand = models.ForeignKey(Brand, models.DO_NOTHING, blank=True, null=True)
-    # fk_product = models.ForeignKey(Product, models.DO_NOTHING, blank=True, null=True)
-    jsn_function =JSONField(blank=True, null=True)
     vchr_file_no = models.CharField(max_length=150, blank=True, null=True)
-    json_physical_loc = JSONField(blank=True, null=True)
     vchr_address = models.TextField(blank=True, null=True)
     int_weekoff_type = models.IntegerField(blank=True, null=True)#0.Fixed 1.Variable
-    vchr_weekoff_day = models.CharField(max_length=10, blank=True, null=True) #eg:MONDAY
-    json_weekoff = JSONField(blank=True, null=True) # {"SUNDAY":{"0":"0"}, "SATURDAY":{"1":"0", "2":"09:00:00-18:00:00", "3":"0"}}
+    json_physical_loc = JSONField(blank=True, null=True)
     dat_resignation = models.DateField(blank=True, null=True)
     txt_resignation_reason = models.TextField(blank=True, null=True)
     vchr_po = models.CharField(max_length=75, blank=True, null=True)
     vchr_land_mark = models.CharField(max_length=150, blank=True, null=True)
     vchr_place = models.CharField(max_length=100, blank=True, null=True)
-    fk_dist = models.ForeignKey(District, models.DO_NOTHING, blank=True, null=True)
     int_pincode = models.IntegerField(blank=True, null=True)
-    vchr_pf_no = models.CharField(max_length=100, blank=True, null=True)
     vchr_esi_no = models.CharField(max_length=100, blank=True, null=True)
     vchr_uan_no = models.CharField(max_length=100, blank=True, null=True)
     vchr_wwf_no = models.CharField(max_length=100, blank=True, null=True)
-    bint_emergency_phno = models.BigIntegerField(blank=True, null=True)
-    vchr_father_name = models.CharField(max_length=150, blank=True, null=True)
-    vchr_salutation = models.CharField(max_length=10, blank=True, null=True)
-    fk_religion = models.ForeignKey('ReligionCaste', models.DO_NOTHING, blank=True, null=True)
-    vchr_marital_status = models.CharField(max_length=30, blank=True, null=True)
-    vchr_blood_group = models.CharField(max_length=10, blank=True, null=True)
-    vchr_emergency_person = models.CharField(max_length=100, blank=True, null=True)
-    vchr_emergency_relation = models.CharField(max_length=30, blank=True, null=True)
-    bln_pass_reset = models.NullBooleanField(default=False)
-    vchr_password_reset_token = models.TextField(blank=True, null=True)
-    dat_password_reset_timer = models.DateTimeField(blank=True, null=True)
-    int_act_status = models.IntegerField(blank=True, null=True, default=1) # -2. Termination, -1. Inactive, 0. Hold, 1. Active
-    fk_wps = models.ForeignKey('WPS', models.DO_NOTHING, blank=True, null=True, related_name = 'user_details_fk_wps')
     vchr_disease = models.CharField(max_length=400, blank=True, null=True)
-    vchr_emp_remark = models.TextField(blank=True, null=True)
-    int_official_num = models.BigIntegerField(blank=True, null=True)
-    json_documents = JSONField(blank=True, null=True)
-
+    int_act_status = models.IntegerField(blank=True, null=True, default=1) # -2. Termination, -1. Inactive, 0. Hold, 1. Active
+    json_function = JSONField(blank=True, null=True)  # This field type is a guess.
+    fk_hierarchy_data = models.ForeignKey(HierarchyData, models.DO_NOTHING, blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'user_details'
@@ -244,3 +245,94 @@ class AdminSettings(models.Model):
     class Meta:
         managed = False
         db_table = 'admin_settings'
+
+class UserHistory(models.Model):
+    pk_bint_id = models.BigAutoField(primary_key=True)
+    fk_user = models.ForeignKey('UserDetails', models.DO_NOTHING, blank=True, null=True)
+    json_details = JSONField(blank=True, null=True)
+    int_type = models.IntegerField(blank=True, null=True) # -1. Reject, 1. Creating, 2. Updating
+    bln_changed = models.NullBooleanField(default=False)
+    fk_created = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True, related_name='user_history_fk_created')
+    dat_created = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    fk_approved = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True, related_name='user_history_fk_approved')
+    dat_approved = models.DateTimeField(blank=True, null=True)
+    int_status = models.IntegerField(blank=True, null=True, default=0) # -1. Rejected, 0. Updated, 1.Approved
+
+    class Meta:
+        managed = False
+        db_table = 'user_history'
+    def __str__(self):
+        return self.fk_user.vchr_employee_code
+
+class DocumentHrms(models.Model):
+    pk_bint_id = models.BigAutoField(primary_key=True)
+    vchr_module_name = models.CharField(max_length=50)
+    vchr_short_code = models.CharField(max_length=5)
+    int_number = models.IntegerField()
+    int_num_length = models.IntegerField(blank=True, null=True, default=1)
+    chr_num_separate = models.CharField(max_length=2, blank=True, null=True)
+    fk_company = models.ForeignKey('company.Company', models.DO_NOTHING, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'document_hrms'
+    def __str__(self):
+        return self.vchr_module_name
+
+class EmpReferences(models.Model):
+    pk_bint_id = models.BigAutoField(primary_key=True)
+    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True)
+    vchr_name = models.CharField(max_length=150, blank=True, null=True)
+    vchr_company_name = models.CharField(max_length=400, blank=True, null=True)
+    vchr_desig = models.CharField(max_length=200, blank=True, null=True)
+    vchr_phone = models.CharField(max_length=200, blank=True, null=True)
+    vchr_email = models.CharField(max_length=200, blank=True, null=True)
+    int_status = models.IntegerField(blank=True, null=True, default=1) # 0. Inactive, 1. Active
+
+    class Meta:
+        managed = False
+        db_table = 'emp_references'
+
+class EmpFamily(models.Model):
+    pk_bint_id = models.BigAutoField(primary_key=True)
+    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True)
+    vchr_name = models.CharField(max_length=150, blank=True, null=True)
+    vchr_realation = models.CharField(max_length=150, blank=True, null=True)
+    dat_dob = models.DateField(blank=True, null=True)
+    vchr_occupation = models.CharField(max_length=200, blank=True, null=True)
+    vchr_alive = models.CharField(max_length=50, blank=True, null=True)
+    int_status = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'emp_family'
+
+class EmpEduDetails(models.Model):
+    pk_bint_id = models.BigAutoField(primary_key=True)
+    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True)
+    bln_highest_qualif = models.NullBooleanField()
+    vchr_qualif = models.CharField(max_length=200, blank=True, null=True)
+    vchr_course = models.CharField(max_length=200, blank=True, null=True)
+    vchr_institution = models.CharField(max_length=300, blank=True, null=True)
+    vchr_university = models.CharField(max_length=300, blank=True, null=True)
+    int_pass_year = models.IntegerField(blank=True, null=True)
+    vchr_place = models.CharField(max_length=200, blank=True, null=True)
+    dbl_percentage = models.FloatField(blank=True, null=True)
+    vchr_specialzation = models.CharField(max_length=200, blank=True, null=True)
+    bln_active = models.NullBooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'emp_edu_details'
+
+class EmpExpDetails(models.Model):
+    pk_bint_id = models.BigAutoField(primary_key=True)
+    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True)
+    vchr_employer = models.CharField(max_length=300, blank=True, null=True)
+    vchr_designation = models.CharField(max_length=200, blank=True, null=True)
+    txt_exp_details = models.TextField(blank=True, null=True)
+    bln_active = models.NullBooleanField()
+
+    class Meta:
+        managed = False
+        db_table = 'emp_exp_details'
