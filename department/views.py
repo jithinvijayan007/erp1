@@ -7,6 +7,7 @@ from department.models import Department
 from django.db.models import Q
 from POS import ins_logger
 import traceback
+from hierarchy.models import Hierarchy
 import sys, os
 
 class AddDepartment(APIView):
@@ -63,15 +64,16 @@ class AddDepartment(APIView):
             return Response({'status':0,'reason':str(e)+ ' in Line No: '+str(exc_tb.tb_lineno)})
 
 class DepartmentList(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     def get(self,request):
         try:
+            # import pdb; pdb.set_trace()
             """List Department"""
             # import pdb; pdb.set_trace()
             # int_company_id = request.user.usermodel.fk_company_id
             lst_department = list(Department.objects.filter(int_status = 1).values('pk_bint_id','vchr_code','vchr_name','fk_company_id').order_by('vchr_name'))
-
-            return Response({'status':1,'lst_department':lst_department})
+            lst_filter = Hierarchy.objects.all().values('vchr_name','pk_bint_id','int_level')
+            return Response({'status':1,'lst_department':lst_department,'filter':lst_filter})
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             ins_logger.logger.error(e,extra={'details':'line no: ' + str(exc_tb.tb_lineno),'user': 'user_id:' + str(request.user.id)})
