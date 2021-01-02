@@ -1,6 +1,6 @@
 from receipt.models import Receipt
 from POS import settings
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from payment.models import Payment
 from customer.models import CustomerDetails
 

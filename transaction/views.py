@@ -2,7 +2,7 @@
 from transaction.models import Transaction
 from payment.models import Payment
 from branch.models import Branch
-from userdetails.models import Userdetails,Financiers
+from userdetails.models import UserDetails as Userdetails,Financiers
 from company.models import FinancialYear
 from receipt.models import Receipt,ReceiptInvoiceMatching
 from accounts_map.models import AccountsMap

@@ -3,7 +3,7 @@ from branch.models import Branch
 from tool_settings.models import Tools
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from userdetails.models import Userdetails,GuestUserDetails
+from userdetails.models import UserDetails as Userdetails,GuestUserDetails
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from POS import ins_logger
 import sys, os

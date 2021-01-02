@@ -5,7 +5,7 @@ from item_category.models import Item
 from purchase.models import GrnDetails
 from django.contrib.postgres.fields import JSONField
 from supplier.models import Supplier
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails 
 # Create your models here.
 
 class StockRequestDocumentManager(models.Manager):

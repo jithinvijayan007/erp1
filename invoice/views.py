@@ -6,7 +6,7 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from userdetails.models import Userdetails,GuestUserDetails,Financiers
+from userdetails.models import UserDetails as Userdetails,GuestUserDetails,Financiers
 from django.contrib.auth import authenticate, login
 from company.models import Company
 from brands.models import Brands

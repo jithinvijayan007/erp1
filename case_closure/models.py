@@ -1,5 +1,5 @@
 from django.db import models
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from branch.models import Branch
 
 

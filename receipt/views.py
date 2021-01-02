@@ -28,7 +28,7 @@ from invoice.models import Bank
 from branch.models import Branch
 from terms.models import Terms,Type
 
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from receipt.models import ReceiptInvoiceMatching
 from django.db.models import CharField, Case, Value, When,Sum,F,IntegerField,Count
 from tool_settings.models import Tools

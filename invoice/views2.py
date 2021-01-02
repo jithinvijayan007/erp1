@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from invoice.models import PartialInvoice
 from customer.models import CustomerDetails,SalesCustomerDetails
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from branch.models import Branch
 from invoice.models import PartialInvoice, SalesMaster, SalesDetails, CustServiceDelivery, LoyaltyCardInvoice, PaymentDetails,SalesMasterJio,Bank
 from item_category.models import Item,TaxMaster

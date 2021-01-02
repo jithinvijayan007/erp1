@@ -1,7 +1,7 @@
 from customer.models import CustomerDetails,SalesCustomerDetails
 from invoice.models import PartialInvoice,SalesMasterJio,SalesMaster
 from datetime import datetime
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from django.db import transaction
 
 def SalesCustomer():

@@ -1,6 +1,6 @@
 from django.db import models
 from company.models import FinancialYear
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 # Create your models here.
 class OpeningBalance(models.Model):
     pk_bint_id = models.BigAutoField(primary_key=True)

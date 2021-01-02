@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from userdetails.views import GenerateGuest,GroupsList,AddUsers,ViewUser,loginCheck,CompanyTypeahead,BrandTypeahead,UpdateUser,GroupTypeahead,UpdateUserPassword,ChangeUserStatus,BranchTypeahead,UserTypeahead
+from userdetails.views import GenerateGuest,GroupsList,AddUsers,ViewUser,loginCheck,CompanyTypeahead,BrandTypeahead,UpdateUser,GroupTypeahead,UpdateUserPassword,ChangeUserStatus,BranchTypeahead,UserTypeahead,ReligionCasteList
 from userdetails.views import AddUsers,ViewUser,loginCheck,CompanyTypeahead,BrandTypeahead,UpdateUser,GroupTypeahead,UpdateUserPassword,ChangeUserStatus,BranchTypeahead,UserTypeahead,AddUserBI,WebVersionGet,ChangePassword,AddEcomUser
 urlpatterns = [
 url(r'^adduser/',AddUsers.as_view(), name='adduser'),
@@ -20,5 +20,5 @@ url(r'^user_add_api/',AddUserBI.as_view(),name='user_add_api'),
 url(r'^url_web_version/',WebVersionGet.as_view(),name='WebVersionGet'),
 url(r'^change_passward/',ChangePassword.as_view(),name='ChangePassword'),
 url(r'^user_ecom_api/',AddEcomUser.as_view(),name='user_ecom_api'),
-
+url(r'^religion_list/', ReligionCasteList.as_view(), name='religion_list'),
 ]

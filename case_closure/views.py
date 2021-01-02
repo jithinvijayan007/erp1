@@ -15,7 +15,7 @@ from .models import CaseClosureMaster,CaseClosureDetails
 from day_closure.models import DayClosureDetails
 from invoice.models import SalesMaster,SalesDetails
 from branch.models import Branch
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from django.contrib.auth.models import User as AuthUser
 from payment.models import Payment
 from receipt.models import Receipt

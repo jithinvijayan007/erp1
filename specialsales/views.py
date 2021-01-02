@@ -24,7 +24,7 @@ from sap_api.models import SapApiTrack
 from tool_settings.models import Tools
 from invoice.views import tools_keys
 from customer.models import CustomerDetails,SalesCustomerDetails
-from userdetails.models import Userdetails,Financiers
+from userdetails.models import UserDetails as Userdetails,Financiers
 from receipt.models import Receipt,ReceiptInvoiceMatching
 from item_category.models import TaxMaster,Item
 from purchase.models import GrnDetails

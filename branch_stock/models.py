@@ -5,7 +5,7 @@ from branch.models import Branch
 from django.contrib.auth.models import User as AuthUser
 from django.contrib.postgres.fields import JSONField
 from purchase.models import GrnDetails
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 
 from products.models import Products
 

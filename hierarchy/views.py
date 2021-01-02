@@ -52,3 +52,11 @@ class HierarchyApi(APIView):
         except Exception as e:
             return Response ({'status':0,'reason':e})
 
+class Levels(APIView):
+    permission_classes = [AllowAny]
+    def get(self,request):
+        try:
+            dct_level = Hierarchy.objects.all().values()
+            return Response({'status':1,'data':dct_level})
+        except Exception as e:
+             return Response ({'status':0,'reason':e})

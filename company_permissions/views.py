@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from groups.models import Groups
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from company_permissions.models import CategoryItems,MainCategory,SubCategory,MenuCategory,GroupPermissions
 from rest_framework.views import APIView
 from rest_framework.response import Response

@@ -1,6 +1,6 @@
 from django.db import models
 from branch.models import Branch
-from userdetails.models import Userdetails
+from userdetails.models import UserDetails as Userdetails
 from invoice.models import Bank
 from django.contrib.postgres.fields import JSONField
 from accounts_map.models import AccountsMap
