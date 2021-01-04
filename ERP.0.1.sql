@@ -34,27 +34,27 @@ CREATE TABLE states(
 
 INSERT INTO states (vchr_name) VALUES ('JAMMU & KASHMIR'),('HIMACHAL PRADESH'),('PUNJAB'),('CHANDIGARH'),('UTTARANCHAL'),('HARYANA'),('DELHI'),('RAJASTHAN'),('UTTAR PRADESH'),('BIHAR'),('SIKKIM'),('ARUNACHAL PRADESH'),('NAGALAND'),('MANIPUR'),('MIZORAM'),('TRIPURA'),('MEGHALAYA'),('ASSAM'),('WEST BENGAL'),('JHARKHAND'),('ORISSA'),('CHHATTISGARH'),('MADHYA PRADESH'),('GUJARAT'),('DAMAN & DIU'),('DADRA & NAGAR HAVELI'),('MAHARASHTRA'),('ANDHRA PRADESH'),('KARNATAKA'),('GOA'),('LAKSHADWEEP'),('KERALA'),('TAMIL NADU'),('PONDICHERRY'),('ANDAMAN & NICOBAR ISLANDS')
 
-CREATE TABLE branch(
-  pk_bint_id BIGSERIAL PRIMARY KEY,
-  vchr_code VARCHAR(20),
-  vchr_name VARCHAR(50) NOT NULL,
-  vchr_address VARCHAR(100),
-  vchr_email VARCHAR(50),
-  vchr_phone VARCHAR(20),
-  dat_close TIMESTAMP,
-  bint_stock_limit BIGINT,
-  flt_static_ip FLOAT,
-  flt_latitude FLOAT,
-  flt_longitude FLOAT,
-  dat_inauguration DATE,
-  tim_inauguration TIME WITHOUT TIME ZONE,
-  vchr_inaugurated_by VARCHAR(50),
-  int_status INTEGER DEFAULT 1,
-  fk_category_id BIGINT REFERENCES other_category(pk_bint_id),
-  int_type INTEGER,
-  fk_states_id BIGINT REFERENCES states (pk_bint_id),
-  int_price_template INT
-);
+-- CREATE TABLE branch(
+--   pk_bint_id BIGSERIAL PRIMARY KEY,
+--   vchr_code VARCHAR(20),
+--   vchr_name VARCHAR(50) NOT NULL,
+--   vchr_address VARCHAR(100),
+--   vchr_email VARCHAR(50),
+--   vchr_phone VARCHAR(20),
+--   dat_close TIMESTAMP,
+--   bint_stock_limit BIGINT,
+--   flt_static_ip FLOAT,
+--   flt_latitude FLOAT,
+--   flt_longitude FLOAT,
+--   dat_inauguration DATE,
+--   tim_inauguration TIME WITHOUT TIME ZONE,
+--   vchr_inaugurated_by VARCHAR(50),
+--   int_status INTEGER DEFAULT 1,
+--   fk_category_id BIGINT REFERENCES other_category(pk_bint_id),
+--   int_type INTEGER,
+--   fk_states_id BIGINT REFERENCES states (pk_bint_id),
+--   int_price_template INT
+-- );
 CREATE TABLE category(
   pk_bint_id BIGSERIAL PRIMARY KEY,
   vchr_code VARCHAR(30),
@@ -174,3 +174,7 @@ CREATE TABLE emp_leave_data(
 alter table states add fk_country_id bigint REFERENCES country(pk_bint_id);
 update states set fk_country_id = 1;
 alter table district add vchr_code varchar(10);
+
+CREATE TABLE hierarchy_groups (pk_bint_id BIGSERIAL PRIMARY KEY,fk_hierarchy_id BIGINT REFERENCES hierarchy(pk_bint_id),vchr_name VARCHAR(50),int_status SMALLINT);
+alter table hierarchy_groups add column fk_department_id bigint REFERENCES department(pk_bint_id);
+alter table hierarchy add fk_department_id bigint REFERENCES department(pk_bint_id);
