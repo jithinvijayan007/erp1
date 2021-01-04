@@ -154,3 +154,21 @@ class HierarchyGroup(APIView):
             exc_type, exc_obj, exc_tb = sys.exc_info()
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id),'details':'line no: ' + str(exc_tb.tb_lineno)})
             return Response({'result':0,'reason':str(e)})
+
+class GetHierarchyGroup(APIView):
+    permission_classes = [AllowAny]
+    def post(self,request):
+        try:
+            dep_id = request.data.get('dept_id')
+            hierarchy_id = request.data.get('hierar_id')
+            dct_filter = {}
+            if dep_id:
+                dct_filter['fk_hierarchy__fk_department_id'] = dep_id
+            if hierarchy_id:
+                dct_filter['fk_hierarchy_id'] = hierarchy_id
+            dct_data = HierarchyGroups.objects.filter(**dct_filter).values()
+            return Response({"status":1,"data":dct_data})
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id),'details':'line no: ' + str(exc_tb.tb_lineno)})
+            return Response({'result':0,'reason':str(e)})
