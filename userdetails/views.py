@@ -3,7 +3,8 @@ from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from userdetails.models import UserDetails,GuestUserDetails, UserPermissions
+from userdetails.models import UserDetails,DocumentHrms,GuestUserDetails, UserPermissions,EmpReferences,ReligionCaste, WPS ,UserHistory ,EmpFamily,EmpEduDetails,EmpExpDetails
+from shift_schedule.models import ShiftSchedule, EmployeeShift
 from django.contrib.auth import authenticate, login
 from company.models import Company
 from brands.models import Brands
@@ -30,6 +31,7 @@ import pandas as pd
 from userdetails.models import ReligionCaste
 # from company_permission.models import SubCategory, MenuCategory
 from company_permissions.models import SubCategory,MenuCategory
+from os import path
 # Create your views here.
 
 
@@ -283,7 +285,6 @@ class AddUsers(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-
             with transaction.atomic():
                 username = str(request.data.get('strUserName'))
                 if UserDetails.objects.filter(username = username):
@@ -291,7 +292,7 @@ class AddUsers(APIView):
 
                 str_category_code = request.data.get('strCategoryCode')
                 int_company_id = request.data.get("intCompanyId") or request.user.userdetails.fk_company_id
-                ins_document = Document.objects.get(vchr_module_name = 'EMPLOYEE CODE',fk_company_id = int_company_id)
+                ins_document = DocumentHrms.objects.get(vchr_module_name = 'EMPLOYEE CODE',fk_company_id = int_company_id)
                 str_employee_code = ins_document.vchr_short_code+str_category_code.upper()+"-"+str(ins_document.int_number)
                 ins_document.int_number = ins_document.int_number+1
                 ins_document.save()
@@ -343,7 +344,7 @@ class AddUsers(APIView):
                                        vchr_ifsc = request.data.get("strIfscCode", None),
                                        fk_brand_id = int(request.data.get("intBrandId")) if request.data.get("intBrandId") else None,
                                     #    fk_product_id = int(request.data.get("intProductId")) if request.data.get("intProductId") else None,
-                                       jsn_function = "",
+                                       json_function = request.data.get("intProductId", None),
                                        vchr_file_no = request.data.get("strFileNo", None),
                                        json_physical_loc = lst_phy_loc,
                                        vchr_address = request.data.get("strAddress", None),
@@ -367,7 +368,8 @@ class AddUsers(APIView):
                                        fk_wps_id = request.data.get('intWpsId') if request.data.get('intWpsId') and request.data.get('intWpsId')!='null' else None,
                                        vchr_disease = request.data.get('strIllnessDetails', None),
                                        vchr_emp_remark = request.data.get('strEmpRemarks') if request.data.get('strEmpRemarks') else None,
-                                       int_official_num = int(request.data.get('intOfficialNumber')) if request.data.get('intOfficialNumber') else None)
+                                       int_official_num = int(request.data.get('intOfficialNumber')) if request.data.get('intOfficialNumber') else None,
+                                       fk_hierarchy_data_id = request.data.get('lstLoc', None))
                 ins_user.set_password(request.data.get('strPassword'))
                 ins_user.save()
                 # ============================================= Reference =================================================

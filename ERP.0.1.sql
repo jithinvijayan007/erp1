@@ -178,3 +178,124 @@ alter table district add vchr_code varchar(10);
 CREATE TABLE hierarchy_groups (pk_bint_id BIGSERIAL PRIMARY KEY,fk_hierarchy_id BIGINT REFERENCES hierarchy(pk_bint_id),vchr_name VARCHAR(50),int_status SMALLINT);
 alter table hierarchy_groups add column fk_department_id bigint REFERENCES department(pk_bint_id);
 alter table hierarchy add fk_department_id bigint REFERENCES department(pk_bint_id);
+ALTER TABLE user_details ADD COLUMN vchr_weekoff_day VARCHAR(10);
+ALTER TABLE user_details ADD COLUMN fk_religion_id BIGINT REFERENCES religion_caste(pk_bint_id);
+ALTER TABLE user_details ADD COLUMN fk_desig_id  BIGINT REFERENCES job_position (pk_bint_id);
+ALTER TABLE user_details ADD COLUMN fk_brand_id BIGINT REFERENCES brands (pk_bint_id);
+ALTER TABLE user_details ADD COLUMN fk_wps_id BIGINT REFERENCES wps(pk_bint_id);
+ALTER TABLE user_details ADD COLUMN json_documents JSONB;
+alter table user_details add column fk_dist_id bigint REFERENCES district(pk_bint_id);
+alter table user_details ADD COLUMN vchr_emp_remark TEXT;
+alter table user_details ADD COLUMN int_official_num BIGINT;
+alter table user_details ADD COLUMN json_weekoff JSONB;
+
+
+CREATE TABLE document_hrms(
+  	pk_bint_id BIGSERIAL PRIMARY KEY,
+  	vchr_module_name VARCHAR(50) NOT NULL,
+  	vchr_short_code VARCHAR(5) NOT NULL,
+  	int_number INTEGER NOT NULL
+);
+ALTER TABLE document_hrms ADD COLUMN fk_company_id BIGINT REFERENCES company(pk_bint_id);
+ALTER TABLE document_hrms ADD COLUMN chr_num_separate VARCHAR(2);
+ALTER TABLE document_hrms ADD COLUMN int_num_length INTEGER DEFAULT 1;
+
+CREATE TABLE emp_references(pk_bint_id BIGSERIAL PRIMARY KEY,
+  fk_employee_id BIGINT REFERENCES user_details(user_ptr_id),
+  vchr_name VARCHAR(150),
+  vchr_company_name VARCHAR(400),
+  vchr_desig VARCHAR(200),
+  vchr_phone VARCHAR(200),
+  vchr_email VARCHAR(200)
+);
+ALTER TABLE emp_references ADD COLUMN int_status INTEGER DEFAULT 1;
+
+CREATE TABLE emp_family(
+  pk_bint_id BIGSERIAL PRIMARY KEY,
+  vchr_name VARCHAR(150), vchr_realation VARCHAR(150),
+  dat_dob DATE, vchr_occupation VARCHAR(200),
+  vchr_alive VARCHAR(50),
+  fk_employee_id BIGINT REFERENCES user_details(user_ptr_id),
+  int_status INT
+);
+
+CREATE TABLE emp_edu_details(  pk_bint_id BIGSERIAL PRIMARY KEY,
+  fk_employee_id BIGINT REFERENCES user_details(user_ptr_id),
+  bln_highest_qualif BOOLEAN,
+  vchr_course VARCHAR(200),
+  vchr_institution VARCHAR(300),
+  vchr_university VARCHAR(300),
+  int_pass_year INTEGER,
+  bln_active BOOLEAN,
+  dbl_percentage DOUBLE PRECISION,
+  vchr_place VARCHAR (200),
+  vchr_qualif VARCHAR(200),
+  vchr_specialzation VARCHAR (200)
+);
+
+CREATE TABLE emp_exp_details(  pk_bint_id BIGSERIAL PRIMARY KEY,
+  	fk_employee_id BIGINT REFERENCES user_details(user_ptr_id),
+  	vchr_employer VARCHAR (300),
+  	vchr_designation VARCHAR (200),
+  	txt_exp_details TEXT,
+  	bln_active BOOLEAN
+  );
+
+
+CREATE TABLE shift_schedule(
+  pk_bint_id BIGSERIAL PRIMARY KEY,
+  vchr_name  VARCHAR(50),
+  vchr_code  VARCHAR(25),
+  bln_night BOOLEAN,
+  time_shift_from TIME,
+  time_shift_to TIME,
+  time_break_from TIME,
+  time_break_to TIME,
+  time_break_hrs TIME,
+  time_shed_hrs TIME,
+  time_full_day TIME,
+  time_half_day TIME,
+  bln_allowance BOOLEAN,
+  dbl_allowance_amt DOUBLE PRECISION,
+  vchr_remark TEXT,
+  int_status INT,
+  fk_created_id BIGINT REFERENCES auth_user(id),
+  fk_updated_id BIGINT REFERENCES auth_user(id),
+  dat_created TIMESTAMP ,
+  dat_updated TIMESTAMP
+);
+ALTER TABLE shift_schedule ALTER COLUMN time_full_day TYPE INTERVAL;
+ALTER TABLE shift_schedule ALTER COLUMN time_half_day TYPE INTERVAL;
+ALTER TABLE shift_schedule ALTER COLUMN time_shed_hrs TYPE INTERVAL;
+ALTER TABLE shift_schedule ALTER COLUMN time_break_hrs TYPE INTERVAL;
+ALTER TABLE shift_schedule ADD COLUMN bln_time_shift BOOLEAN DEFAULT FALSE;
+ALTER TABLE shift_schedule ADD COLUMN int_shift_type INTEGER DEFAULT 0;
+
+
+CREATE TABLE employee_shift(
+  pk_bint_id  BIGSERIAL PRIMARY KEY,
+  fk_employee_id BIGINT REFERENCES user_details(user_ptr_id),
+  int_shift_type INT,
+  json_shift JSONB,
+  bln_active BOOLEAN,
+  fk_created_id BIGINT REFERENCES auth_user(id),
+  fk_updated_id BIGINT REFERENCES auth_user(id),
+  dat_created TIMESTAMP,
+  dat_updated TIMESTAMP
+);
+
+CREATE TABLE user_history(
+  pk_bint_id BIGSERIAL PRIMARY KEY,
+  fk_user_id BIGINT REFERENCES user_details(user_ptr_id),
+  json_details JSONB,
+  int_type INTEGER,
+  bln_changed BOOLEAN DEFAULT FALSE,
+  fk_created_id BIGINT REFERENCES auth_user(id),
+  dat_created TIMESTAMP DEFAULT NOW(),
+  fk_approved_id BIGINT REFERENCES auth_user(id),
+  dat_approved TIMESTAMP,
+  int_status INTEGER
+);
+
+alter table group_permissions add column fk_desig_id BIGINT REFERENCES job_position(pk_bint_id);
+alter table user_details add fk_hierarchy_data_id bigint REFERENCES hierarchy_data(pk_bint_id);
