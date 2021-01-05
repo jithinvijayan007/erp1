@@ -381,6 +381,8 @@ alter table hierarchy_groups add column fk_department_id bigint REFERENCES depar
 alter table hierarchy add fk_department_id bigint REFERENCES department(pk_bint_id);
 
 alter table user_details add fk_group_id bigint REFERENCES groups(pk_bint_id);
+alter table user_details add column fk_hierarchy_group_id bigint REFERENCES hierarchy_groups(pk_bint_id);
+
 
 
 

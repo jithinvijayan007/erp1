@@ -16,7 +16,8 @@ from category.models import Category
 from states.models import District
 from salary_struct.models import SalaryStructure
 from job_position.models import JobPosition
-from hierarchy.models import HierarchyData
+from hierarchy.models import HierarchyData, HierarchyGroups
+
 class Financiers(models.Model):
     pk_bint_id = models.BigAutoField(primary_key=True)
     vchr_name = models.CharField(max_length=50)
@@ -137,6 +138,8 @@ class UserDetails(User,models.Model):
     json_function = JSONField(blank=True, null=True)  # This field type is a guess.
     fk_hierarchy_data = models.ForeignKey(HierarchyData, models.DO_NOTHING, blank=True, null=True)
     fk_group = models.ForeignKey(Groups, models.DO_NOTHING, blank=True, null=True)
+    fk_hierarchy_group = models.ForeignKey(HierarchyGroups, models.DO_NOTHING, blank=True, null=True)
+
     class Meta:
         managed = False
         db_table = 'user_details'
