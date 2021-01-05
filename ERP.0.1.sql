@@ -380,7 +380,7 @@ CREATE TABLE hierarchy_groups (pk_bint_id BIGSERIAL PRIMARY KEY,fk_hierarchy_id 
 alter table hierarchy_groups add column fk_department_id bigint REFERENCES department(pk_bint_id);
 alter table hierarchy add fk_department_id bigint REFERENCES department(pk_bint_id);
 
-
+alter table user_details add fk_group_id bigint REFERENCES groups(pk_bint_id);
 
 
 

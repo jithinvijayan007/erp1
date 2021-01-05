@@ -369,7 +369,9 @@ class AddUsers(APIView):
                                        vchr_disease = request.data.get('strIllnessDetails', None),
                                        vchr_emp_remark = request.data.get('strEmpRemarks') if request.data.get('strEmpRemarks') else None,
                                        int_official_num = int(request.data.get('intOfficialNumber')) if request.data.get('intOfficialNumber') else None,
-                                       fk_hierarchy_data_id = request.data.get('lstLoc', None))
+                                       fk_hierarchy_data_id = request.data.get('lstLoc', None),
+                                       fk_group_id = request.data.get('groupId', None)
+                                       )
                 ins_user.set_password(request.data.get('strPassword'))
                 ins_user.save()
                 # ============================================= Reference =================================================
@@ -1376,7 +1378,7 @@ class loginCheck(APIView):
     permission_classes=[AllowAny]
     def post(self,request):
         try :
-            # import pdb; pdb.set_trace()
+            import pdb; pdb.set_trace()
             str_username= request.data['_UserId']
             str_password=request.data['_Password']
             user = authenticate(request, username=str_username, password=str_password)
