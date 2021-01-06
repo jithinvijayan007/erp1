@@ -90,6 +90,15 @@ class UserGroupsAdd(APIView):
 
 
 class GroupListView(APIView):
+    def get(self,request):
+        try:
+            lst_groups = list(Groups.objects.filter(int_status=0,).values('pk_bint_id','vchr_code','vchr_name','fk_created_id','fk_updated_id','dat_created').order_by('-pk_bint_id'))
+            return Response({'status':1,'data':lst_groups})
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id),'details':'line no: ' + str(exc_tb.tb_lineno)})
+            return Response({'status':0})
+
     def post(self,request):
         try:
             # import pdb; pdb.set_trace()
