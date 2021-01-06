@@ -1381,7 +1381,7 @@ class loginCheck(APIView):
     permission_classes=[AllowAny]
     def post(self,request):
         try :
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             str_username= request.data['_UserId']
             str_password=request.data['_Password']
             user = authenticate(request, username=str_username, password=str_password)
@@ -1389,9 +1389,9 @@ class loginCheck(APIView):
                 if user.is_staff:
                     login(request, user)
                     # if settings.DEBUG:
-                    #     token_json = requests.post('http://'+request.get_host()+'/api-token-auth/',{'username':str_username,'password':str_password})
+                    #     token_json = requests.post(request.scheme+'://'+request.get_host()+'/api-token-auth/',{'username':str_username,'password':str_password})
                     # else:
-                    #     token_json = requests.post('https://'+request.get_host()+'/api-token-auth/',{'username':str_username,'password':str_password})
+                    #     token_json = requests.post(request.scheme+'://'+request.get_host()+'/api-token-auth/',{'username':str_username,'password':str_password})
                     token_json = requests.post(request.scheme+'://'+request.get_host()+'/api-token-auth/',{'username':str_username,'password':str_password})
                     token = json.loads(token_json._content.decode("utf-8"))['token']
                     str_name = 'Super User'
