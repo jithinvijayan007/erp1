@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from hierarchy.models import Hierarchy,HierarchyData,HierarchyGroups
-from django.db.models import Q,Case, When,CharField
+from django.db.models import Q,Case, When,CharField,F
 from django.db.models.functions import Concat
 from POS  import ins_logger
 import sys
@@ -64,7 +64,6 @@ class Levels(APIView):
     permission_classes = [AllowAny]
     def get(self,request):
         try:
-            # import pdb; pdb.set_trace()
             str_level_name = request.GET.get('hierarchy_name')
             if str_level_name:
                 dct_hierar = HierarchyData.objects.filter(fk_hierarchy__vchr_name = str_level_name).annotate(str_name=Case(When(vchr_name = None ,then =  'vchr_name'),default =Concat('vchr_name', Value(' - '), 'fk_hierarchy_data__vchr_name'),output_field = CharField())).values('pk_bint_id','str_name','vchr_code','fk_hierarchy_id','fk_hierarchy_data_id')
@@ -121,6 +120,8 @@ class HierarchyGroup(APIView):
     permission_classes = [AllowAny]
     def get(self,request):
         try:
+            # import pdb; pdb.set_trace()
+
             dep_id = request.GET.get('dept_id')
             hierarchy_id = request.GET.get('hierar_id')
             dct_filter = {}
@@ -137,17 +138,28 @@ class HierarchyGroup(APIView):
     
     def post(self,request):
         try:
-            dct_data = request.data['data']
+            # import pdb; pdb.set_trace()
+
+            # dct_data = request.data['data']
             dep_id = request.data['dept_id']
+            group_added = request.data.get('inserted')
+            group_removed = request.data.get('removed')
             dct_hierrachy_level = Hierarchy.objects.filter(fk_department = dep_id).values()
             dct_hierrachy_level = { data['vchr_name']:data for data in dct_hierrachy_level}
-            for level in dct_data:
-                for data in dct_data[level]:
+            for level in group_added:
+                for data in group_added[level]:
                     HierarchyGroups.objects.create(
                         fk_hierarchy_id = dct_hierrachy_level[level]['pk_bint_id'],
                         vchr_name = data,
                         int_status = 1
                     )
+            for level in group_removed:
+                for data in group_removed[level]:
+                    # HierarchyGroups.objects.update_or_create(
+                    #     vchr_name=data,
+                    #     defaults={'int_status': 0},
+                    # )
+                    HierarchyGroups.objects.filter(vchr_name=data).update(int_status=0)
             return Response({"status":1,"data":'success'})
 
         except Exception as e:
@@ -159,15 +171,27 @@ class GetHierarchyGroup(APIView):
     permission_classes = [AllowAny]
     def post(self,request):
         try:
+
             dep_id = request.data.get('dept_id')
             hierarchy_id = request.data.get('hierar_id')
+            
+
             dct_filter = {}
             if dep_id:
                 dct_filter['fk_hierarchy__fk_department_id'] = dep_id
             if hierarchy_id:
                 dct_filter['fk_hierarchy_id'] = hierarchy_id
-            dct_data = HierarchyGroups.objects.filter(**dct_filter).values()
-            return Response({"status":1,"data":dct_data})
+            dct_data = HierarchyGroups.objects.filter(**dct_filter,int_status=1).annotate(level_name=F('fk_hierarchy__vchr_name')).values('level_name','pk_bint_id','fk_hierarchy_id','vchr_name',)
+            dct_data_details = {}
+            for data in dct_data:
+                if dct_data_details.get(data['level_name']):
+                    dct_data_details.get(data['level_name']).append(data['vchr_name'])
+                else:
+                    dct_data_details[data['level_name']] = []
+                    dct_data_details[data['level_name']].append(data['vchr_name'])
+
+            dct_data_level = Hierarchy.objects.filter(fk_department_id = dep_id).values()
+            return Response({"status":1,"data":dct_data_details,'level_data':dct_data_level})
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id),'details':'line no: ' + str(exc_tb.tb_lineno)})
