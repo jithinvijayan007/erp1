@@ -1381,7 +1381,7 @@ class loginCheck(APIView):
     permission_classes=[AllowAny]
     def post(self,request):
         try :
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             str_username= request.data['_UserId']
             str_password=request.data['_Password']
             user = authenticate(request, username=str_username, password=str_password)

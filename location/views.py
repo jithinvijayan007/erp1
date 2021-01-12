@@ -5,6 +5,7 @@ from zone.models import Zone
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from location.models import PhysicalLocation,Country,District
 from states.models import States as State
+# from location.models import Location
 from POS import ins_logger
 import traceback
 import sys, os
@@ -81,3 +82,15 @@ class DistrictList(APIView):
             exc_type, exc_obj, exc_tb = sys.exc_info()
             ins_logger.logger.error(e,extra={'details':'line no: ' + str(exc_tb.tb_lineno),'user': 'user_id:' + str(request.user.id)})
             return Response({'status':0,'reason':e})
+
+# class Location(APIView):
+#     permission_classes = [IsAuthenticated]
+#     def get(self,request):
+#         try:
+#             vchr_pin_code = request.GET['query']
+#             lst_pin_code = Location.objects.filter(vchr_pin_code = vchr_pin_code).values()
+#             return Response({'status':1, 'lst_pin_code':lst_pin_code})
+#         except Exception as e:
+#             exc_type, exc_obj, exc_tb = sys.exc_info()
+#             ins_logger.logger.error(e,extra={'details':'line no: ' + str(exc_tb.tb_lineno),'user': 'user_id:' + str(request.user.id)})
+#             return Response({'status':0,'reason':e})
