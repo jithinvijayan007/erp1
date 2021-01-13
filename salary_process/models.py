@@ -8,7 +8,7 @@ from django.contrib.postgres.fields import JSONField
 
 class SalaryDetails(models.Model):
     pk_bint_id = models.BigAutoField(primary_key=True)
-    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True)
+    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True,related_name="salary_detials_employee")
     dbl_bp = models.FloatField(blank=True, null=True)
     dbl_da = models.FloatField(blank=True, null=True)
     dbl_hra = models.FloatField(blank=True, null=True)
@@ -18,7 +18,7 @@ class SalaryDetails(models.Model):
     dbl_gross = models.FloatField(blank=True, null=True)
     json_deduction = JSONField(blank=True, null=True)#{'ESI': 4.0, 'WWF': 20, 'SalaryAdvance': 0, 'PF': 59.0}
     json_allowance = JSONField(blank=True, null=True)#{'ESI': 19.0, 'Gratuity': 20.0, 'WWF': 20, 'PF': 59.0}
-    fk_created = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True, related_name = 'salary_details_fk_created')
+    fk_created = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True, related_name = 'salary_detailss_fk_created')
     dat_created = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     fk_updated = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True,related_name = 'salary_details_fk_updated')
     dat_updated = models.DateTimeField(blank=True, null=True)
@@ -49,7 +49,7 @@ class VariablePay(models.Model):
 
 class SalaryProcessed(models.Model):
     pk_bint_id = models.BigAutoField(primary_key=True)
-    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True, related_name = 'salary_processed_fk_employee')
+    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True, related_name = 'salary_process_fk_employee')
     fk_details = models.ForeignKey(SalaryDetails, models.DO_NOTHING, blank=True, null=True)
     int_month = models.IntegerField(blank=True, null=True)
     int_year = models.IntegerField(blank=True, null=True)

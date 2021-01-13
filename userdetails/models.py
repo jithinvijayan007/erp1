@@ -340,3 +340,28 @@ class EmpExpDetails(models.Model):
     class Meta:
         managed = False
         db_table = 'emp_exp_details'
+
+
+class SalaryDetails(models.Model):
+    pk_bint_id = models.BigAutoField(primary_key=True)
+    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True)
+    dbl_bp = models.FloatField(blank=True, null=True)
+    dbl_da = models.FloatField(blank=True, null=True)
+    dbl_hra = models.FloatField(blank=True, null=True)
+    dbl_cca = models.FloatField(blank=True, null=True)
+    dbl_sa = models.FloatField(blank=True, null=True)
+    dbl_wa = models.FloatField(blank=True, null=True)
+    dbl_gross = models.FloatField(blank=True, null=True)
+    json_deduction = JSONField(blank=True, null=True)#{'ESI': 4.0, 'WWF': 20, 'SalaryAdvance': 0, 'PF': 59.0}
+    json_allowance = JSONField(blank=True, null=True)#{'ESI': 19.0, 'Gratuity': 20.0, 'WWF': 20, 'PF': 59.0}
+    fk_created = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True, related_name = 'salary_detail_fk_created')
+    dat_created = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    fk_updated = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True,related_name = 'salary_detail_fk_updated')
+    dat_updated = models.DateTimeField(blank=True, null=True)
+    int_status = models.IntegerField(blank=True, null=True)# -1. Deactive, 0. Hold, 1.Active
+
+    class Meta:
+        managed = False
+        db_table = 'salary_details'
+    def __str__(self):
+        return self.fk_employee

@@ -423,6 +423,33 @@ ALTER TABLE groups ADD COLUMN int_area_type INTEGER;
 ALTER TABLE groups ADD COLUMN json_area_id JSONB;
 ALTER TABLE groups ADD COLUMN bln_active BOOLEAN;
 
+CREATE TABLE physical_location(
+  pk_bint_id BIGSERIAL PRIMARY KEY,
+  vchr_physical_loc VARCHAR(150)
+);
+
+CREATE TABLE salary_details(
+  pk_bint_id BIGSERIAL PRIMARY KEY,
+  fk_user_id BIGINT REFERENCES user_details(user_ptr_id),
+  dbl_bp DOUBLE PRECISION,
+  dbl_da DOUBLE PRECISION,
+  dbl_hra DOUBLE PRECISION,
+  dbl_cca DOUBLE PRECISION,
+  dbl_sa DOUBLE PRECISION,
+  dbl_wa DOUBLE PRECISION,
+  json_deduction JSONB,
+  json_allowance JSONB,
+  int_status INTEGER);
+
+alter table salary_details rename column fk_user_id to fk_employee_id;
+
+ALTER TABLE salary_details ADD COLUMN fk_updated_id BIGINT REFERENCES user_details(user_ptr_id);
+ALTER TABLE salary_details ADD COLUMN dat_updated TIMESTAMP;
+ALTER TABLE salary_details ADD COLUMN dbl_gross DOUBLE PRECISION DEFAULT 0.0;
+ALTER TABLE salary_details ADD COLUMN fk_created_id BIGINT REFERENCES auth_user(id);
+ALTER TABLE salary_details ADD COLUMN dat_created TIMESTAMP DEFAULT NOW();
+
+
 
 
 

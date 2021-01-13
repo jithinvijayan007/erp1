@@ -473,7 +473,7 @@ class GroupCreateViewNew(APIView):
     def post(self,request):
         try:
             # import pdb; pdb.set_trace()
-            ins_company = Company.objects.get(pk_bint_id = request.data['companyName'])
+            ins_company = 1
             dct_data = request.data['group_data']
             str_name = request.data['group_name']
             str_code = request.data['group_code']
