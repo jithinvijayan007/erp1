@@ -925,7 +925,8 @@ class GroupEditView(APIView):
                 ins_group_check = Groups.objects.filter(vchr_name__iexact = request.data['group_name'],fk_company = request.data['company_id'],int_status=0).exclude(pk_bint_id = int_group_id)
                 if ins_group_check:
                     return Response({'status':1,'data':'Group already exists'})
-                int_company_id = request.data['company_id']
+                # int_company_id = request.data.get('company_id') or 1
+                int_company_id = request.data.get('company_id') or 1
                 str_group_name = request.data['group_name']
                 str_group_code = request.data['group_code']
                 dct_data = request.data['group_data']
