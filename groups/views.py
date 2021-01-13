@@ -14,6 +14,8 @@ from userdetails.models import UserDetails as Userdetails
 # Create your views here.
 from POS import ins_logger
 from django.db.models import Value, BooleanField
+import json
+
 lst_add_disabled=[]
 lst_edit_disabled=[]
 lst_view_disabled=[]
@@ -92,7 +94,8 @@ class UserGroupsAdd(APIView):
 class GroupListView(APIView):
     def get(self,request):
         try:
-            lst_groups = list(Groups.objects.filter(int_status=0,).values('pk_bint_id','vchr_code','vchr_name','fk_created_id','fk_updated_id','dat_created').order_by('-pk_bint_id'))
+            # import pdb; pdb.set_trace()
+            lst_groups = list(Groups.objects.filter(int_status=1).values('pk_bint_id','vchr_code','vchr_name','fk_created_id','fk_updated_id','dat_created').order_by('-pk_bint_id'))
             return Response({'status':1,'data':lst_groups})
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -103,7 +106,9 @@ class GroupListView(APIView):
         try:
             # import pdb; pdb.set_trace()
 
-            int_company_id = request.data['company_id']
+            # int_company_id = request.data['company_id']
+            int_company_id = 1
+            # print("comp idd",int_company_id)
             lst_groups = []
             lst_add_permission = []
             lst_edit_permission = []
@@ -124,7 +129,7 @@ class GroupListView(APIView):
             # elif request.user.userdetails.fk_group.vchr_name=='COUNTRY HEAD':
             #     lst_grp=['BRANCH MANAGER','TERRITORY MANAGER','ZONE MANAGER','STATE HEAD','COUNTRY HEAD','STAFF','FINANCIER']
             ins_company = Company.objects.get(pk_bint_id = int_company_id)
-            ins_group = Groups.objects.filter(fk_company = ins_company,int_status=0).values('pk_bint_id','vchr_name','fk_company__vchr_name')
+            ins_group = Groups.objects.filter(fk_company = ins_company,int_status=1).values('pk_bint_id','vchr_name','fk_company__vchr_name')
             #if int_company_id>0:
                 #ins_company = CompanyDetails.objects.get(pk_bint_id = int_company_id)
                 #ins_group = Groups.objects.filter(fk_company = ins_company,bln_status = True).values('pk_bint_id','vchr_name','fk_company__vchr_name','fk_company__fk_company_type__vchr_company_type')
@@ -370,7 +375,10 @@ class CategoryListNew2(APIView):
         try:
             # import pdb; pdb.set_trace()
             int_company_id = request.data.get("role")
+
             lst_category_pks=CategoryItems.objects.filter(fk_company_id=int_company_id).values_list('fk_main_category_id',flat=True)
+            
+
             ins_main = MainCategory.objects.filter(pk_bint_id__in=lst_category_pks).values('pk_bint_id', 'vchr_main_category_name')
             lst_perms = []
             ins_CategoryItems=CategoryItems.objects.filter(fk_company_id=int_company_id).values('pk_bint_id','fk_sub_category_id','fk_main_category_id','fk_menu_category_id','fk_sub_category__vchr_sub_category_name','fk_main_category__vchr_main_category_name','fk_menu_category__vchr_menu_category_name')
@@ -465,14 +473,22 @@ class GroupCreateViewNew(APIView):
     def post(self,request):
         try:
             # import pdb; pdb.set_trace()
-            ins_company = Company.objects.get(pk_bint_id = request.data['company_id'])
+            ins_company = Company.objects.get(pk_bint_id = request.data['companyName'])
             dct_data = request.data['group_data']
             str_name = request.data['group_name']
             str_code = request.data['group_code']
+            dbl_experience = request.data['fltExp']
+            vchr_age_limit = request.data['strAgeLimit']
+            json_qualification = request.data['lstQualifications']
+            json_desc = request.data['lstDesc']
+            int_notice_perid = request.data['intNoticePeriod']
+            int_dept_id = request.data['intDepartmentId']
+            bln_active = True
+
 
             # int_department = int(request.data.get('department'))
             # ins_group_check = Groups.objects.filter(vchr_name__iexact = str_name,fk_company = ins_company,bln_status=True,fk_department_id = int_department)
-            ins_group_check = Groups.objects.filter(vchr_name__iexact = str_name,fk_company = ins_company,int_status = 0)
+            ins_group_check = Groups.objects.filter(vchr_name__iexact = str_name,int_status = 0,fk_company = ins_company)
             if ins_group_check:
                 # ins_prv_grp = Groups.objects.filter(vchr_name__iexact = str_name,fk_company = ins_company,bln_status=True,fk_department_id = int_department)
                 # if ins_prv_grp:
@@ -481,7 +497,111 @@ class GroupCreateViewNew(APIView):
             #     return Response({'status':'1','data':'Group already exists'})
             # ins_group = Groups.objects.create(vchr_name = str_name,fk_company = ins_company,bln_status=True,fk_department_id = int_department)
             with transaction.atomic():
-                ins_group = Groups.objects.create(vchr_name = str_name,vchr_code = str_code,fk_company = ins_company,int_status=0)
+                ins_group = Groups(vchr_name = str_name,
+                                                  vchr_code = str_code,
+                                                  int_status=1,
+                                                  fk_department_id = int_dept_id,
+                                                #   int_area_type = request.data.get("intApplyTo"),
+                                                #   json_area_id = request.data.get("lstAreaId"),
+                                                  fk_company_id = request.data['companyName'],
+                                                  dbl_experience = dbl_experience,
+                                                  json_qualification = json.dumps(json_qualification),
+                                                  vchr_age_limit = vchr_age_limit,
+                                                  json_desc = json.dumps(json_desc),
+                                                  int_notice_period = int_notice_perid,
+                                                  bln_active = True)
+                # import pdb; pdb.set_trace()
+                ins_group.save()
+                # if ins_group:
+                #     lst_gp_perms=[]
+                #     for main_key in dct_data:
+                #         if main_key in ['id','name','levelOneClicked','levelTwoClicked']:
+                #             continue
+                #         for sub_key in dct_data[main_key]:
+                #             if sub_key in ['id','name','levelOneClicked','levelTwoClicked','sub_status','bln_add_perm','bln_edit_perm','bln_delete_perm','bln_download_perm','bln_view_perm','add_disabled','edit_disabled','view_disabled','delete_disabled','download_disabled']:
+                #                 continue
+                #             for menu_key in dct_data[main_key][sub_key]:
+                #                 if menu_key in ['id','name','levelOneClicked','levelTwoClicked','sub_status','bln_add_perm','bln_edit_perm','bln_delete_perm','bln_download_perm','bln_view_perm','add_disabled','edit_disabled','view_disabled','delete_disabled','download_disabled']:
+                #                     continue
+                #                 # import pdb; pdb.set_trace()
+                #                 dct_temp=dct_data[main_key][sub_key][menu_key]
+                #                 if dct_temp['add_disabled']:
+                #                     bln_add = False
+                #                 elif dct_temp['bln_add_perm']:
+                #                     bln_add = True
+                #                 else:
+                #                     bln_add = False
+
+                #                 if dct_temp['edit_disabled']:
+                #                     bln_edit = False
+                #                 elif dct_temp['bln_edit_perm']:
+                #                     bln_edit = True
+                #                 else:
+                #                     bln_edit = False
+
+                #                 if dct_temp['view_disabled']:
+                #                     bln_view = False
+                #                 elif dct_temp['bln_view_perm']:
+                #                     bln_view = True
+                #                 else:
+                #                     bln_view = False
+
+                #                 if dct_temp['delete_disabled']:
+                #                     bln_delete = False
+                #                 elif dct_temp['bln_delete_perm']:
+                #                     bln_delete = True
+                #                 else:
+                #                     bln_delete = False
+                #                 if dct_temp['download_disabled']:
+                #                     bln_download = False
+                #                 elif dct_temp['bln_download_perm']:
+                #                     bln_download = True
+                #                 else:
+                #                     bln_download = False
+
+                #                 int_GroupPermissions=GroupPermissions(
+                #                     fk_groups_id = ins_group.pk_bint_id,
+                #                     fk_category_items_id = dct_temp['cat_id'],
+                #                     bln_add = bln_add,
+                #                     bln_edit = bln_edit,
+                #                     bln_view = bln_view,
+                #                     bln_delete = bln_delete,
+                #                     bln_download = bln_download
+                #                 )
+                #                 lst_gp_perms.append(int_GroupPermissions)
+                #     # import pdb; pdb.set_trace()
+                #     GroupPermissions.objects.bulk_create(lst_gp_perms)
+
+
+            return Response({'status':1,'data':'Group was successfully created'})
+        except Exception as e:
+            ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
+            Groups.objects.get(vchr_name = request.data['group_name']).delete()
+            return Response({'status':0,'data':str(e)})
+
+
+class GroupPermissionCreateView(APIView):
+    def post(self,request):
+        try:
+            # import pdb; pdb.set_trace()
+            # ins_company = Company.objects.get(pk_bint_id = request.data['company_id'])
+            dct_data = request.data['group_data']
+            int_group_id = request.data['intGroupId']
+            # str_name = request.data['group_name']
+            # str_code = request.data['group_code']
+
+            # int_department = int(request.data.get('department'))
+            # ins_group_check = Groups.objects.filter(vchr_name__iexact = str_name,fk_company = ins_company,bln_status=True,fk_department_id = int_department)
+            # ins_group_check = Groups.objects.filter(vchr_name__iexact = str_name,fk_company = ins_company,int_status = 0)
+            # if ins_group_check:
+                # ins_prv_grp = Groups.objects.filter(vchr_name__iexact = str_name,fk_company = ins_company,bln_status=True,fk_department_id = int_department)
+                # if ins_prv_grp:
+                # return Response({'status':'1','data':'Group already exists'})
+            # else:
+            #     return Response({'status':'1','data':'Group already exists'})
+            # ins_group = Groups.objects.create(vchr_name = str_name,fk_company = ins_company,bln_status=True,fk_department_id = int_department)
+            with transaction.atomic():
+                ins_group = Groups.objects.filter(pk_bint_id = int_group_id,int_status=0)
                 # import pdb; pdb.set_trace()
                 if ins_group:
                     lst_gp_perms=[]
@@ -529,9 +649,10 @@ class GroupCreateViewNew(APIView):
                                     bln_download = True
                                 else:
                                     bln_download = False
+                                # import pdb; pdb.set_trace()
 
                                 int_GroupPermissions=GroupPermissions(
-                                    fk_groups_id = ins_group.pk_bint_id,
+                                    fk_groups_id = int_group_id,
                                     fk_category_items_id = dct_temp['cat_id'],
                                     bln_add = bln_add,
                                     bln_edit = bln_edit,
@@ -540,7 +661,7 @@ class GroupCreateViewNew(APIView):
                                     bln_download = bln_download
                                 )
                                 lst_gp_perms.append(int_GroupPermissions)
-                    # import pdb; pdb.set_trace()
+                    # import pdb; pcdb.set_trace()
                     GroupPermissions.objects.bulk_create(lst_gp_perms)
 
 
@@ -549,6 +670,9 @@ class GroupCreateViewNew(APIView):
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
             Groups.objects.get(vchr_name = request.data['group_name']).delete()
             return Response({'status':0,'data':str(e)})
+
+
+    
 
 # class CategoryListNew(APIView):
 #     permission_classes = [AllowAny]
@@ -639,9 +763,11 @@ class GroupEditView(APIView):
     def post(self,request):
         try:
             # On edit or view page load
+            # import pdb; pdb.set_trace()
             if request.data.get('operation') == 'load':
-                int_group_id = int(request.data.get('group_id'))
-                int_company_id  = int(request.data.get('company_id', request.user.userdetails.fk_company_id))
+                int_group_id = request.data.get('group_id')
+                int_company_id  = 1
+                # int_company_id  = int(request.data.get('company_id', request.user.userdetails.fk_company_id))
                 dct_group = Groups.objects.filter(pk_bint_id = int_group_id).values('pk_bint_id','vchr_name','vchr_code').first()
                 ins_CategoryItems = CategoryItems.objects.filter(fk_company_id=int_company_id).values('pk_bint_id','fk_sub_category_id','fk_main_category_id','fk_menu_category_id','fk_sub_category__vchr_sub_category_name','fk_main_category__vchr_main_category_name','fk_menu_category__vchr_menu_category_name')
                 qry_gp_perm = GroupPermissions.objects.filter(fk_groups_id=int_group_id)
@@ -745,7 +871,7 @@ class GroupEditView(APIView):
                 dct_data = request.data['group_data']
 
                 with transaction.atomic():
-                    ins_group = Groups.objects.filter(pk_bint_id = int_group_id,int_status = 0)
+                    ins_group = Groups.objects.filter(pk_bint_id = int_group_id,int_status = 1)
                     ins_group.update(fk_company_id= int_company_id,vchr_name = str_group_name,vchr_code = str_group_code)
                     GroupPermissions.objects.filter(fk_groups_id = int_group_id).delete()
                     lst_gp_perms=[]

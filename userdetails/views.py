@@ -29,9 +29,12 @@ import requests
 import json
 import pandas as pd
 from userdetails.models import ReligionCaste
+from django.db.models import F, Q, Value, Case, When,TextField, IntegerField, CharField, DateField,BooleanField,DurationField,ExpressionWrapper, Func, FloatField
+
 # from company_permission.models import SubCategory, MenuCategory
 from company_permissions.models import SubCategory,MenuCategory
 from os import path
+from django.db.models.functions import Concat, Substr, Cast
 # Create your views here.
 
 
@@ -371,8 +374,8 @@ class AddUsers(APIView):
                                        vchr_emp_remark = request.data.get('strEmpRemarks') if request.data.get('strEmpRemarks') else None,
                                        int_official_num = int(request.data.get('intOfficialNumber')) if request.data.get('intOfficialNumber') else None,
                                        fk_hierarchy_data_id = request.data.get('lstLoc', None),
-                                       fk_group_id = request.data.get('groupId', None),
-                                       fk_hierarchy_group_id = request.data.get('hGroup', None))
+                                       fk_group_id = request.data.get('groupId', None))
+                                    #    fk_hierarchy_group_id = request.data.get('hGroup', None))
 
 
                 ins_user.set_password(request.data.get('strPassword'))
@@ -629,7 +632,7 @@ class AddUsers(APIView):
     def get(self,request):
         try:
             """View User"""
-
+            # import pdb; pdb.set_trace()
             int_user_id = request.GET.get("id")
             if int_user_id:
                 lst_user_details= list(UserDetails.objects.filter(user_ptr_id = int(int_user_id)).values('vchr_employee_code',
@@ -790,7 +793,8 @@ class AddUsers(APIView):
                 if request.GET.get('intRes') == '1':
                     bln_active = False
 
-                lst_user_details = list(UserDetails.objects.filter(is_active = bln_active).annotate(fullname=Concat('first_name', Value(' '),'vchr_middle_name', Value(' ') ,'last_name'), int_emp_id=Cast(Substr('vchr_employee_code',6), IntegerField())).extra(select ={'dat_doj' :"to_char(dat_doj,'DD-MM-YYYY')"}).values('int_emp_id',
+                lst_user_details = list(UserDetails.objects.filter(is_active = bln_active).annotate(fullname=Concat('first_name', Value(' '),'vchr_middle_name', Value(' ') ,'last_name'), int_emp_id=Cast(Substr('vchr_employee_code',6), TextField())).extra(select ={'dat_doj' :"to_char(dat_doj,'DD-MM-YYYY')"}).values(
+                                                                                         'int_emp_id',
                                                                                          'fullname','vchr_employee_code',
                                                                                          'first_name','last_name',
                                                                                          'username','bint_phone',
@@ -799,7 +803,7 @@ class AddUsers(APIView):
                                                                                          'fk_department__vchr_name',
                                                                                          'fk_category__vchr_name',
                                                                                          'fk_branch__vchr_name',
-                                                                                         'fk_brand__vchr_brand_name',
+                                                                                         'fk_brand__vchr_name',
                                                                                          'fk_company__vchr_name',
                                                                                          'fk_desig__vchr_name','vchr_level',
                                                                                          'vchr_grade','user_ptr_id').order_by('-int_emp_id'))
@@ -1381,7 +1385,7 @@ class loginCheck(APIView):
     permission_classes=[AllowAny]
     def post(self,request):
         try :
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             str_username= request.data['_UserId']
             str_password=request.data['_Password']
             user = authenticate(request, username=str_username, password=str_password)

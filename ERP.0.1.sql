@@ -406,3 +406,24 @@ INSERT INTO sub_category(fk_main_category_id,vchr_sub_category_name,vchr_sub_cat
 
 
 INSERT INTO country (vchr_name,vchr_code) VALUES ('INDIA','IND');
+
+
+ALTER TABLE groups ADD COLUMN dbl_experience DOUBLE PRECISION;
+ALTER TABLE groups ADD COLUMN json_qualification JSONB;
+ALTER TABLE groups ADD COLUMN vchr_age_limit VARCHAR (50);
+ALTER TABLE groups ADD COLUMN txt_desc TEXT;
+ALTER TABLE groups ADD COLUMN int_notice_period INTEGER;
+alter table groups add column json_desc JSONB;
+ALTER TABLE groups add column fk_company_id BIGINT REFERENCES company(pk_bint_id);
+ALTER TABLE groups ADD COLUMN bln_admin BOOLEAN;
+ALTER TABLE groups ADD COLUMN int_permission INTEGER;
+ALTER TABLE groups ADD COLUMN bln_brand BOOLEAN DEFAULT FALSE;
+ALTER TABLE groups ADD COLUMN fk_department_id BIGINT REFERENCES department(pk_bint_id);
+ALTER TABLE groups ADD COLUMN int_area_type INTEGER;
+ALTER TABLE groups ADD COLUMN json_area_id JSONB;
+ALTER TABLE groups ADD COLUMN bln_active BOOLEAN;
+
+
+
+
+
