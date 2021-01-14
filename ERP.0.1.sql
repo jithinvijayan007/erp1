@@ -423,6 +423,8 @@ ALTER TABLE groups ADD COLUMN int_area_type INTEGER;
 ALTER TABLE groups ADD COLUMN json_area_id JSONB;
 ALTER TABLE groups ADD COLUMN bln_active BOOLEAN;
 
+INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Desiganation Permission',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'GROUP'),'designationpermmison',1,'false','group-permission/addpermission');
+
 
 
 

@@ -374,11 +374,12 @@ class AddUsers(APIView):
                                        vchr_emp_remark = request.data.get('strEmpRemarks') if request.data.get('strEmpRemarks') else None,
                                        int_official_num = int(request.data.get('intOfficialNumber')) if request.data.get('intOfficialNumber') else None,
                                        fk_hierarchy_data_id = request.data.get('lstLoc', None),
-                                       fk_group_id = request.data.get('groupId', None))
-                                    #    fk_hierarchy_group_id = request.data.get('hGroup', None))
+                                       fk_group_id = request.data.get('groupId', None),
+                                       fk_hierarchy_group_id = request.data.get('hGroup', None))
 
 
                 ins_user.set_password(request.data.get('strPassword'))
+                # import pdb; pdb.set_trace()
                 ins_user.save()
                 # ============================================= Reference =================================================
                 lst_ref = json.loads(request.data.get('lstReference'))
