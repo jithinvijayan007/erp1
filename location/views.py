@@ -26,7 +26,7 @@ class PhysicalLocationList(APIView):
     def get(self,request):
         try:
             if not request.user.is_superuser and request.user.userdetails.fk_department.vchr_name.upper() == 'SALES':
-                lst_loc = list(PhysicalLocation.objects.filter(pk_bint_id__in=request.user.userdetails.json_physical_loc).values('pk_bint_id','vchr_physical_loc').order_by('vchr_physical_loc'))
+                lst_loc = list(PhysicalLocation.objects.filter(pk_bint_id=request.user.userdetails.json_physical_loc).values('pk_bint_id','vchr_physical_loc').order_by('vchr_physical_loc'))
             else:
                 lst_loc = list(PhysicalLocation.objects.values('pk_bint_id','vchr_physical_loc').order_by('vchr_physical_loc'))
 
