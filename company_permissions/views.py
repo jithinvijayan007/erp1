@@ -142,10 +142,10 @@ class CompanyPermissionSave(APIView):
 
             return Response({'status':1,'data':'successfully saved'})
         except Exception as e:
+            ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
             lst_category_items = CategoryItems.objects.filter(fk_company_id = int_company_id).values_list('pk_bint_id', flat=True)
             GroupPermissions.objects.filter(fk_category_items_id__in = lst_category_items).delete()
             CategoryItems.objects.filter(fk_company_id = int_company_id).delete()
             Userdetails.objects.filter(fk_company_id = int_company_id).delete()
             Groups.objects.filter(fk_company_id = int_company_id).delete()
-            ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
             return Response({'status':'0','data':str(e)})

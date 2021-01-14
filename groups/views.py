@@ -476,6 +476,7 @@ class CategoryListNew2(APIView):
 class GroupCreateViewNew(APIView):
     def post(self,request):
         try:
+            """Add Designation"""
             # import pdb; pdb.set_trace()
             ins_company = Company.objects.get(pk_bint_id = request.data['companyName'])
             dct_data = request.data['group_data']
@@ -586,7 +587,7 @@ class GroupCreateViewNew(APIView):
 
     def get(self,request):
         try:
-            """view Designation"""
+            """View Designation Data"""
             # import pdb; pdb.set_trace()
             # int_company_id = request.user.usermodel.fk_company_id
 
@@ -611,7 +612,7 @@ class GroupCreateViewNew(APIView):
 
     def put(self,request):
         try:
-            """Update Designation"""
+            """Update Designation data"""
             # import pdb; pdb.set_trace()
             int_designation_id  = request.data.get("groupId")
 
@@ -622,15 +623,15 @@ class GroupCreateViewNew(APIView):
 
             ins_designation = Groups.objects.filter(pk_bint_id = int_designation_id).update(vchr_name = request.data.get("strName"),
                                                                                             vchr_code = request.data.get("strCode"),
-                                                                                          fk_department_id = request.data.get("intDepartmentId"),
+                                                                                            fk_department_id = request.data.get("intDepartmentId"),
                                                                                         #   int_area_type = request.data.get("intApplyTo"),
                                                                                         #   json_area_id = request.data.get("lstAreaId"),
-                                                                                          dbl_experience = request.data.get("fltExp"),
-                                                                                          json_qualification = json.dumps(request.data.get("lstQualifications")),
-                                                                                          vchr_age_limit = request.data.get("strAgeLimit"),
+                                                                                            dbl_experience = request.data.get("fltExp"),
+                                                                                            json_qualification = json.dumps(request.data.get("lstQualifications")),
+                                                                                            vchr_age_limit = request.data.get("strAgeLimit"),
                                                                                         #   txt_desc = request.data.get("strDesc"),
-                                                                                          int_notice_period =request.data.get('intNoticePeriod'),
-                                                                                          json_desc = json.dumps(request.data.get("lstDesc")))
+                                                                                            int_notice_period =request.data.get('intNoticePeriod'),
+                                                                                            json_desc = json.dumps(request.data.get("lstDesc")))
             return Response({'status':1})
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -643,6 +644,7 @@ class GroupCreateViewNew(APIView):
 class GroupPermissionCreateView(APIView):
     def post(self,request):
         try:
+            """Add group permission"""
             # import pdb; pdb.set_trace()
             # ins_company = Company.objects.get(pk_bint_id = request.data['company_id'])
             dct_data = request.data['group_data']
@@ -916,6 +918,7 @@ class GroupEditView(APIView):
                         dct_main[data['fk_main_category__vchr_main_category_name']][data['fk_sub_category__vchr_sub_category_name']]['bln_download_perm'] = True
                     else:
                         dct_main[data['fk_main_category__vchr_main_category_name']][data['fk_sub_category__vchr_sub_category_name']]['bln_download_perm'] = False
+                # import pdb; pdb.set_trace()
 
                 return Response({'status':1,'data':dct_main,'dct_group':dct_group})
 
@@ -979,6 +982,7 @@ class GroupEditView(APIView):
                                 )
                                 lst_gp_perms.append(int_GroupPermissions)
                     GroupPermissions.objects.bulk_create(lst_gp_perms)
+                # import pdb; pdb.set_trace()
                 return Response({'status':1,'data':'Group was successfully updated'})
             elif request.data.get('operation') == 'view':
                 ins_groups = Groups.objects.filter(pk_bint_id = request.data.get('group_id')).values('fk_company_id')
@@ -1050,6 +1054,7 @@ class GroupEditView(APIView):
                     # 'code':str_company_code,
                     'name':str_company_name
                 }
+                # import pdb; pdb.set_trace()
                 return Response({'status':0,'perms':dct_final_perms,'group':str_group_name,'company':dct_company})
 
         except Exception as e:
