@@ -5,7 +5,6 @@ from rest_framework.permissions import AllowAny,IsAuthenticated
 from branch.models import Branch
 from rest_framework.response import Response
 from datetime import date,datetime
-from django.db.models import Q
 from groups.models import Groups
 from company_permissions.models import GroupPermissions,MainCategory,MenuCategory,SubCategory,CategoryItems
 from company.models import Company
@@ -15,6 +14,11 @@ from userdetails.models import UserDetails as Userdetails
 from POS import ins_logger
 from django.db.models import Value, BooleanField
 import json
+import sys
+from django.db.models.functions import Concat, Substr, Cast
+from django.db.models import F, Q, Value, IntegerField
+
+
 
 lst_add_disabled=[]
 lst_edit_disabled=[]
@@ -28,7 +32,7 @@ class UserGroupsAdd(APIView):
     def get(self,request):
         """listing groups"""
         try:
-            # import pdb; pdb.set_trace()
+            import pdb; pdb.set_trace()
             if request.data.get('groupId'):
                 lst_groups = list(Groups.objects.filter(int_status=0,pk_bint_id=request.data.get('groupId')).values('pk_bint_id','vchr_code','vchr_name','fk_created_id','fk_updated_id','dat_created').order_by('-pk_bint_id'))
             else:
@@ -472,8 +476,9 @@ class CategoryListNew2(APIView):
 class GroupCreateViewNew(APIView):
     def post(self,request):
         try:
+            """Add Designation"""
             # import pdb; pdb.set_trace()
-            ins_company = Company.objects.get(pk_bint_id = request.data['companyName'])
+            ins_company = 1
             dct_data = request.data['group_data']
             str_name = request.data['group_name']
             str_code = request.data['group_code']
@@ -580,9 +585,66 @@ class GroupCreateViewNew(APIView):
             return Response({'status':0,'data':str(e)})
 
 
+    def get(self,request):
+        try:
+            """View Designation Data"""
+            # import pdb; pdb.set_trace()
+            # int_company_id = request.user.usermodel.fk_company_id
+
+            if request.GET.get('groupId'):
+                int_id = int(request.GET.get('groupId'))
+
+                lst_job_position = list(Groups.objects.filter(pk_bint_id = int_id,bln_active = True).annotate(int_age_to = Cast(Substr('vchr_age_limit',4,6), IntegerField()),int_age_from = Cast(Substr('vchr_age_limit',1,2), IntegerField())).values('pk_bint_id',
+                                                                                                                                                                                                                                                        'vchr_name','vchr_code',
+                                                                                                                                                                                                                                                        'fk_department__vchr_name',
+                                                                                                                                                                                                                                                        'int_age_from','int_age_to',
+                                                                                                                                                                                                                                                        'int_area_type','json_area_id',
+                                                                                                                                                                                                                                                        'fk_department_id', 'dbl_experience',
+                                                                                                                                                                                                                                                        'json_qualification', 'vchr_age_limit',
+                                                                                                                                                                                                                                                        'txt_desc','int_notice_period','json_desc','bln_brand'))
+                
+            return Response({'status':1,'lst_job_position':lst_job_position})
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            ins_logger.logger.error(e,extra={'details':'line no: ' + str(exc_tb.tb_lineno),'user': 'user_id:' + str(request.user.id)})
+            return Response({'status':0,'reason':str(e)+ ' in Line No: '+str(exc_tb.tb_lineno)})
+
+
+    def put(self,request):
+        try:
+            """Update Designation data"""
+            # import pdb; pdb.set_trace()
+            int_designation_id  = request.data.get("groupId")
+
+            # ins_dup_job = Groups.objects.filter(vchr_name = request.data.get("strName"),bln_active = True).exclude(pk_bint_id = int_designation_id)
+            # if ins_dup_job:
+            #     return Response({'status':0,'reason':'Designation Already Exists'})
+
+
+            ins_designation = Groups.objects.filter(pk_bint_id = int_designation_id).update(vchr_name = request.data.get("strName"),
+                                                                                            vchr_code = request.data.get("strCode"),
+                                                                                            fk_department_id = request.data.get("intDepartmentId"),
+                                                                                        #   int_area_type = request.data.get("intApplyTo"),
+                                                                                        #   json_area_id = request.data.get("lstAreaId"),
+                                                                                            dbl_experience = request.data.get("fltExp"),
+                                                                                            json_qualification = json.dumps(request.data.get("lstQualifications")),
+                                                                                            vchr_age_limit = request.data.get("strAgeLimit"),
+                                                                                        #   txt_desc = request.data.get("strDesc"),
+                                                                                            int_notice_period =request.data.get('intNoticePeriod'),
+                                                                                            json_desc = json.dumps(request.data.get("lstDesc")))
+            return Response({'status':1})
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            ins_logger.logger.error(e,extra={'details':'line no: ' + str(exc_tb.tb_lineno),'user': 'user_id:' + str(request.user.id)})
+            return Response({'status':0,'reason':str(e)+ ' in Line No: '+str(exc_tb.tb_lineno)})
+
+ 
+
+
 class GroupPermissionCreateView(APIView):
     def post(self,request):
         try:
+            """Add group permission"""
             # import pdb; pdb.set_trace()
             # ins_company = Company.objects.get(pk_bint_id = request.data['company_id'])
             dct_data = request.data['group_data']
@@ -856,6 +918,7 @@ class GroupEditView(APIView):
                         dct_main[data['fk_main_category__vchr_main_category_name']][data['fk_sub_category__vchr_sub_category_name']]['bln_download_perm'] = True
                     else:
                         dct_main[data['fk_main_category__vchr_main_category_name']][data['fk_sub_category__vchr_sub_category_name']]['bln_download_perm'] = False
+                # import pdb; pdb.set_trace()
 
                 return Response({'status':1,'data':dct_main,'dct_group':dct_group})
 
@@ -919,6 +982,7 @@ class GroupEditView(APIView):
                                 )
                                 lst_gp_perms.append(int_GroupPermissions)
                     GroupPermissions.objects.bulk_create(lst_gp_perms)
+                # import pdb; pdb.set_trace()
                 return Response({'status':1,'data':'Group was successfully updated'})
             elif request.data.get('operation') == 'view':
                 ins_groups = Groups.objects.filter(pk_bint_id = request.data.get('group_id')).values('fk_company_id')
@@ -990,6 +1054,7 @@ class GroupEditView(APIView):
                     # 'code':str_company_code,
                     'name':str_company_name
                 }
+                # import pdb; pdb.set_trace()
                 return Response({'status':0,'perms':dct_final_perms,'group':str_group_name,'company':dct_company})
 
         except Exception as e:

@@ -30,11 +30,11 @@ import json
 import pandas as pd
 from userdetails.models import ReligionCaste
 from django.db.models import F, Q, Value, Case, When,TextField, IntegerField, CharField, DateField,BooleanField,DurationField,ExpressionWrapper, Func, FloatField
-
 # from company_permission.models import SubCategory, MenuCategory
 from company_permissions.models import SubCategory,MenuCategory
 from os import path
 from django.db.models.functions import Concat, Substr, Cast
+from userdetails.models import SalaryDetails
 # Create your views here.
 
 
@@ -374,11 +374,12 @@ class AddUsers(APIView):
                                        vchr_emp_remark = request.data.get('strEmpRemarks') if request.data.get('strEmpRemarks') else None,
                                        int_official_num = int(request.data.get('intOfficialNumber')) if request.data.get('intOfficialNumber') else None,
                                        fk_hierarchy_data_id = request.data.get('lstLoc', None),
-                                       fk_group_id = request.data.get('groupId', None))
-                                    #    fk_hierarchy_group_id = request.data.get('hGroup', None))
+                                       fk_group_id = request.data.get('groupId', None),
+                                       fk_hierarchy_group_id = request.data.get('hGroup', None))
 
 
                 ins_user.set_password(request.data.get('strPassword'))
+                # import pdb; pdb.set_trace()
                 ins_user.save()
                 # ============================================= Reference =================================================
                 lst_ref = json.loads(request.data.get('lstReference'))
@@ -658,8 +659,8 @@ class AddUsers(APIView):
                                                                                                    'vchr_pan_no','vchr_aadhar_no',
                                                                                                    'vchr_img','vchr_bank_name',
                                                                                                    'vchr_acc_no','vchr_ifsc',
-                                                                                                   'fk_brand_id','fk_product_id','int_weekoff_type',
-                                                                                                   'fk_brand__vchr_brand_name','fk_product__vchr_product_name',
+                                                                                                   'fk_brand_id','json_function','int_weekoff_type',
+                                                                                                   'fk_brand__vchr_name',
                                                                                                    'vchr_file_no','json_physical_loc','vchr_address',
                                                                                                    'vchr_po','vchr_land_mark','vchr_place','int_pincode','fk_dist__vchr_name','fk_dist_id',
                                                                                                    'fk_dist__fk_state__vchr_name','fk_dist__fk_state_id',
@@ -723,9 +724,9 @@ class AddUsers(APIView):
                                                                                                                     'strDesig',
                                                                                                                     'vchrExpDetails'))
                 lst_phy_loc_id = lst_user_details[0]['json_physical_loc']
-                if lst_phy_loc_id :
-                    lst_phy_loc_name = PhysicalLocation.objects.filter(pk_bint_id__in  = lst_phy_loc_id).values_list('vchr_physical_loc',flat=True)
-                    lst_user_details[0].update({'lst_phy_loc_name':lst_phy_loc_name})
+                # if lst_phy_loc_id :
+                #     lst_phy_loc_name = PhysicalLocation.objects.filter(pk_bint_id__in  = lst_phy_loc_id).values_list('vchr_physical_loc',flat=True)
+                #     lst_user_details[0].update({'lst_phy_loc_name':lst_phy_loc_name})
 
                 ins_employee_shift = EmployeeShift.objects.filter(fk_employee_id = int(int_user_id),bln_active = True).values('json_shift','int_shift_type').first()
 
@@ -816,9 +817,10 @@ class AddUsers(APIView):
 
     def put(self,request):
         try:
+            
             with transaction.atomic():
                 """Update User """
-
+                import pdb; pdb.set_trace()
                 int_user_id = int(request.data.get("intId"))
                 username = request.data.get('strUserName')
                 bln_approve = True
@@ -1060,7 +1062,7 @@ class AddUsers(APIView):
                                     vchr_acc_no = request.data.get("intAccountNum").zfill(16) if request.data.get("intAccountNum") else None,
                                     vchr_ifsc = request.data.get("strIfscCode"),
                                     fk_brand_id = int(request.data.get("intBrandId")) if request.data.get("intBrandId") else None,
-                                    fk_product_id = int(request.data.get("intProductId")) if request.data.get("intProductId") else None,
+                                    json_function = int(request.data.get("intProductId")) if request.data.get("intProductId") else None,
                                     vchr_file_no = request.data.get("strFileNo"),
                                     vchr_address = request.data.get("strAddress"),
                                     json_physical_loc = lst_phy_loc,
