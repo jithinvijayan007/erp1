@@ -85,6 +85,7 @@ urlpatterns = [
     url(r'^paytm_api/',include('paytm_api.urls',namespace = "paytm_api")),
     url(r'^hierarchy/',include('hierarchy.urls',namespace="hierarchy")),
     url(r'^job_position/',include('job_position.urls',namespace="job_position")),
+    url(r'^mobile/', include('enquiry_mobile.urls', namespace='mobile')),
 
     #--------------------------------------------
     url(r'^api-token-auth/', obtain_jwt_token),

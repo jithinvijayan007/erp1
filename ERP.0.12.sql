@@ -123,3 +123,10 @@ Alter TABLE item_enquiry DROP COLUMN fk_item_exchange_id;
 Alter TABLE item_enquiry DROP COLUMN dbl_exchange_amt;
 
 ALTER TABLE item_enquiry ADD COLUMN  fk_item_exchange_id BIGINT REFERENCES item_exchange(pk_bint_id);
+
+ALTER TABLE stockmaster ADD vchr_purchase_order_number varchar(50);
+
+create table priority (pk_bint_id BIGSERIAL PRIMARY KEY,vchr_priority_name varchar(50),bln_status boolean, fk_company_id BIGINT REFERENCES company(pk_bint_id));
+alter table products add fk_company_id BIGINT REFERENCES company(pk_bint_id);
+alter table products add dct_product_spec jsonb;
+alter table products add bln_visible boolean;
