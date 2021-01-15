@@ -2432,7 +2432,7 @@ class AddEnquiry(APIView):
 class GetDetailsForAddMobileLead(APIView):
     def post(self,request):
         try:
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             dct_for_enquiry = {}
             int_user = User.objects.get(id = int(request.data.get('user_id',0)))
             int_companyId = request.GET.get('company_id',request.user.userdetails.fk_company_id)
