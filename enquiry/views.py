@@ -15,6 +15,8 @@ from POS import ins_logger
 from datetime import datetime
 # from sqlalchemy.orm import sessionmaker
 from django.db.models import Count,Sum,IntegerField
+from userdetails.models import UserDetails
+from customer.models import CustomerDetails
 
 
 BranchStockMasterSA=BranchStockMaster.sa
@@ -416,3 +418,39 @@ class EcomStockCheck(APIView):
             exc_type, exc_obj, exc_tb = sys.exc_info()
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id),'details':'line no: ' + str(exc_tb.tb_lineno)})
             return Response({'status':0,'message':str_message,'int_avail_qty':int_current_quantity[0]['total_qty']})
+
+
+
+class CustomerTypeahead(APIView):
+    permission_classes=[IsAuthenticated]
+    """this class was taken from bi suite to get customer deatils using
+    customer mobile number
+    """
+    def post(self,request):
+        try:
+            str_search_term = request.data.get('term',-1)
+            str_username = request.data.get('username')
+            ins_user = UserDetails.objects.get(username = str_username)
+            lst_customers = []
+            if str_search_term != -1:
+                # .filter(fk_company = ins_user.fk_company)\
+                ins_customer = CustomerDetails.objects.filter(Q(int_mobile__icontains=str_search_term))\
+                .values('id','int_mobile','vchr_name','cust_email','cust_salutation','cust_customertype','cust_smsaccess')[:50]
+                if ins_customer:
+                    for itr_item in ins_customer:
+                        dct_customer = {}
+                        dct_customer['mobile'] = itr_item['int_mobile']
+                        dct_customer['fname'] = itr_item['vchr_name'].capitalize()
+                        dct_customer['lname'] = "".capitalize()
+                        dct_customer['id'] = itr_item['pk_bint_id']
+                        dct_customer['email'] = itr_item['vchr_email']
+                        dct_customer['salutation'] = itr_item['cust_salutation']
+                        dct_customer['customertype'] = itr_item['int_cust_type']
+                        dct_customer['sms'] = itr_item['cust_smsaccess']
+                        lst_customers.append(dct_customer)
+                return Response({'status':'success','data':lst_customers})
+            else:
+                return Response({'status':'empty','data':lst_customers})
+        except Exception as e:
+            ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
+            return Response({'status':'1','data':str(e)})

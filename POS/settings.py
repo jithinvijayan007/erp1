@@ -110,7 +110,19 @@ INSTALLED_APPS = [
     'leave_management',
     'professional_tax',
     'location',
-    
+    'enquiry_mobile',
+    'stock_app',
+    'expenses',
+    'source',
+    'priority',
+    'reminder',
+    'staff_rewards',
+    'staff_rewards2',
+    'buy_back',
+    'na_enquiry',
+    'finance_enquiry',
+    'adminsettings',
+    'customer_rating'
 
 ]
 REST_FRAMEWORK = {
@@ -213,7 +225,7 @@ if DEBUG:
     DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'oxygen_db',
+                'NAME': 'oxygen2',
                 'USER': 'admin',
                 'PASSWORD':'tms@123',
                 'HOST': '127.0.0.1',

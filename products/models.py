@@ -3,6 +3,7 @@ from django.contrib.postgres.fields import JSONField
 from category.models import Category
 from django.utils import timezone
 # from userdetails.models import UserDetails as Userdetails
+from company.models import Company
 
 # Create your models here.
 class Specifications(models.Model):
@@ -28,6 +29,10 @@ class Products(models.Model):
     # json_sales = JSONField(blank=True, null=True)  # This field type is a guess.22222
     int_sales = models.IntegerField(blank=True, null=True) #1 sales 2 service 3 sales and service
     int_type = models.IntegerField(blank=True, null=True,default=0)
+    fk_company = models.ForeignKey(Company, models.DO_NOTHING, blank=True, null=True)
+    bln_visible = models.NullBooleanField()
+    dct_product_spec = models.TextField(blank=True, null=True)  # This field type is a guess.
+
     class Meta:
         managed = False
         db_table = 'products'

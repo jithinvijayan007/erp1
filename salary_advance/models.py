@@ -5,7 +5,7 @@ from userdetails.models import UserDetails
 
 class SalaryAdvance(models.Model):
     pk_bint_id = models.BigAutoField(primary_key=True)
-    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True, related_name="fk_user")
+    fk_employee = models.ForeignKey(UserDetails, models.DO_NOTHING, blank=True, null=True, related_name="fk_employee_salary_advance")
     dbl_amount = models.FloatField(blank=True, null=True)
     vchr_purpose = models.CharField(max_length=200, blank=True, null=True)
     int_month = models.IntegerField(blank=True, null=True)

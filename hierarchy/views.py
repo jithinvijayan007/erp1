@@ -159,7 +159,7 @@ class HierarchyGroup(APIView):
                     #     vchr_name=data,
                     #     defaults={'int_status': 0},
                     # )
-                    HierarchyGroups.objects.filter(vchr_name=data).update(int_status=0)
+                    HierarchyGroups.objects.filter(pk_bint_id=data).update(int_status=0)
             return Response({"status":1,"data":'success'})
 
         except Exception as e:
@@ -184,11 +184,19 @@ class GetHierarchyGroup(APIView):
             dct_data = HierarchyGroups.objects.filter(**dct_filter,int_status=1).annotate(level_name=F('fk_hierarchy__vchr_name')).values('level_name','pk_bint_id','fk_hierarchy_id','vchr_name',)
             dct_data_details = {}
             for data in dct_data:
+                # import pdb; pdb.set_trace()
                 if dct_data_details.get(data['level_name']):
-                    dct_data_details.get(data['level_name']).append(data['vchr_name'])
+                    dct_group = {}
+                    dct_group["id"]=int(data['pk_bint_id'])
+                    dct_group["name"]=data['vchr_name']
+                    
+                    dct_data_details.get(data['level_name']).append(dct_group)
                 else:
                     dct_data_details[data['level_name']] = []
-                    dct_data_details[data['level_name']].append(data['vchr_name'])
+                    dct_group = {}
+                    dct_group["id"]=int(data['pk_bint_id'])
+                    dct_group["name"]=data['vchr_name']
+                    dct_data_details[data['level_name']].append(dct_group)
 
             dct_data_level = Hierarchy.objects.filter(fk_department_id = dep_id).values()
             return Response({"status":1,"data":dct_data_details,'level_data':dct_data_level})

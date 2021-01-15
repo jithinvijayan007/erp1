@@ -383,7 +383,8 @@ alter table hierarchy add fk_department_id bigint REFERENCES department(pk_bint_
 alter table user_details add fk_group_id bigint REFERENCES groups(pk_bint_id);
 alter table user_details add column fk_hierarchy_group_id bigint REFERENCES hierarchy_groups(pk_bint_id);
 
-
+alter table customer_details add column vchr_gender varchar(10) ;
+alter table customer_details add COLUMN cust_smsaccess BOOLEAN;
 
 
 
@@ -423,6 +424,7 @@ ALTER TABLE groups ADD COLUMN int_area_type INTEGER;
 ALTER TABLE groups ADD COLUMN json_area_id JSONB;
 ALTER TABLE groups ADD COLUMN bln_active BOOLEAN;
 
+INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Desiganation Permission',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'GROUP'),'designationpermmison',1,'false','group-permission/addpermission');
 CREATE TABLE physical_location(
   pk_bint_id BIGSERIAL PRIMARY KEY,
   vchr_physical_loc VARCHAR(150)
