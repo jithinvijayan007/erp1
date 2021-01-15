@@ -383,7 +383,8 @@ alter table hierarchy add fk_department_id bigint REFERENCES department(pk_bint_
 alter table user_details add fk_group_id bigint REFERENCES groups(pk_bint_id);
 alter table user_details add column fk_hierarchy_group_id bigint REFERENCES hierarchy_groups(pk_bint_id);
 
-
+alter table customer_details add column vchr_gender varchar(10) ;
+alter table customer_details add COLUMN cust_smsaccess BOOLEAN;
 
 
 
