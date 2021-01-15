@@ -1461,9 +1461,9 @@ class loginCheck(APIView):
                         'EDIT': False,
                         'DELETE': False
                         }
-                    int_desig_id = request.user.userdetails.fk_desig_id
+                    int_desig_id = request.user.userdetails.fk_group_id
                     if int_desig_id:
-                        rst_menu_group = GroupPermissions.objects.filter( fk_desig_id = int_desig_id).values('pk_bint_id','fk_category_items__fk_menu_category__vchr_menu_category_name','fk_category_items__fk_sub_category__vchr_sub_category_name','bln_add','bln_edit','bln_view','bln_delete').order_by('fk_category_items__fk_menu_category__int_menu_category_order')
+                        rst_menu_group = GroupPermissions.objects.filter( fk_groups_id = int_desig_id).values('pk_bint_id','fk_category_items__fk_menu_category__vchr_menu_category_name','fk_category_items__fk_sub_category__vchr_sub_category_name','bln_add','bln_edit','bln_view','bln_delete').order_by('fk_category_items__fk_menu_category__int_menu_category_order')
                         for dct_data in rst_menu_group:
                             dct_insert = {}
                             dct_insert['NAME'] = dct_data['fk_category_items__fk_menu_category__vchr_menu_category_name']
