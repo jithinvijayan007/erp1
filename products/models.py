@@ -32,7 +32,7 @@ class Products(models.Model):
     fk_company = models.ForeignKey(Company, models.DO_NOTHING, blank=True, null=True)
     bln_visible = models.NullBooleanField()
     dct_product_spec = models.TextField(blank=True, null=True)  # This field type is a guess.
-
+    vchr_product_img = models.ImageField();
     class Meta:
         managed = False
         db_table = 'products'

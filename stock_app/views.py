@@ -21,10 +21,10 @@ class SupplierTypeHead(APIView):
         try:
             ins_object =[]
             if request.data.get('TYPE') == 'SUPPLIER':
-                ins_object = list(Supplier.objects.filter(vchr_name__icontains= request.data.get('term') , fk_company = request.user.usermodel.fk_company)
+                ins_object = list(Supplier.objects.filter(vchr_name__icontains= request.data.get('term') , fk_company = request.user.userdetails.fk_company)
                     .values('pk_bint_id','vchr_code','vchr_name'))
             elif request.data.get('TYPE') == 'BRANCH':
-                ins_object = list(Branch.objects.filter(vchr_name__icontains= request.data.get('term') , fk_company = request.user.usermodel.fk_company)
+                ins_object = list(Branch.objects.filter(vchr_name__icontains= request.data.get('term') , fk_company = request.user.userdetails.fk_company)
                     .values('pk_bint_id','vchr_code','vchr_name'))
             elif request.data.get('TYPE') == 'PRODUCT':
                 ins_object = list(Products.objects.filter(vchr_product_name__icontains= request.data.get('term')).exclude(vchr_product_name__in=['MYG CARE','SMART CHOICE','PROFITABILITY'])
@@ -32,7 +32,7 @@ class SupplierTypeHead(APIView):
             elif request.data.get('TYPE') == 'BRAND':
                 if request.data.get('product_id'):
                     # ins_object = list(Brands.objects.filter(vchr_brand_name__icontains= request.data.get('term') ,
-                    #         fk_company = request.user.usermodel.fk_company_id)
+                    #         fk_company = request.user.userdetails.fk_company_id)
                     #     .values('id','vchr_brand_name'))
                     ins_object = list(Items.objects.filter(fk_brand__vchr_brand_name__icontains= request.data.get('term'),fk_product = request.data.get('product_id'))
                         .values('fk_brand','fk_brand__vchr_brand_name').distinct())
@@ -52,10 +52,10 @@ class AddStock(APIView):
     def post(self,request):
         try:
             # import pdb; pdb.set_trace()
-            ins_document = Document.objects.select_for_update().filter(vchr_module_name = 'PURCHASEORDER',fk_company = request.user.usermodel.fk_company)
+            ins_document = Document.objects.select_for_update().filter(vchr_module_name = 'PURCHASEORDER',fk_company = request.user.userdetails.fk_company)
             if not ins_document:
-                ins_document_object = Document.objects.create(fk_company_id = request.user.usermodel.fk_company_id, vchr_module_name = 'PURCHASEORDER',vchr_short_code = 'PO',int_number = 0)
-                ins_document = Document.objects.select_for_update().filter(vchr_module_name = 'PURCHASEORDER',fk_company = request.user.usermodel.fk_company)
+                ins_document_object = Document.objects.create(fk_company_id = request.user.userdetails.fk_company_id, vchr_module_name = 'PURCHASEORDER',vchr_short_code = 'PO',int_number = 0)
+                ins_document = Document.objects.select_for_update().filter(vchr_module_name = 'PURCHASEORDER',fk_company = request.user.userdetails.fk_company)
             str_code = ins_document[0].vchr_short_code
             int_doc_num = ins_document[0].int_number + 1
             ins_document.update(int_number = int_doc_num)
@@ -67,10 +67,10 @@ class AddStock(APIView):
             lst_stock = request.data['stockData']
             if lst_stock['vchr_mode'] == 'credit':
                 ins_stock = Stockmaster.objects.create(dat_added= lst_stock['dat_stock'],fk_supplier_id = lst_stock['fk_supplier'],vchr_payment_mode = lst_stock['vchr_mode'],dbl_paid_amount = float(0),
-                    fk_branch_id = lst_stock['fk_branch'],fk_company = request.user.usermodel.fk_company,fk_user = request.user.usermodel, vchr_purchase_order_number=str_order_no )
+                    fk_branch_id = lst_stock['fk_branch'],fk_company = request.user.userdetails.fk_company,fk_user = request.user.userdetails, vchr_purchase_order_number=str_order_no )
             else:
                 ins_stock = Stockmaster.objects.create(dat_added= lst_stock['dat_stock'],fk_supplier_id = lst_stock['fk_supplier'],vchr_payment_mode = lst_stock['vchr_mode'],dbl_paid_amount = float(lst_stock.get('int_paid_amount')),
-                    fk_branch_id = lst_stock['fk_branch'],fk_company = request.user.usermodel.fk_company,fk_user = request.user.usermodel, vchr_purchase_order_number=str_order_no)
+                    fk_branch_id = lst_stock['fk_branch'],fk_company = request.user.userdetails.fk_company,fk_user = request.user.userdetails, vchr_purchase_order_number=str_order_no)
             if ins_stock.pk_bint_id:
                 lst_query_set = []
                 for data in lst_product:

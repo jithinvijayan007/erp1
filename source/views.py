@@ -22,8 +22,8 @@ class SourceAPIView(APIView):
             if id > 0:
                 lst_source = list(Source.objects.filter(pk_bint_id = id,bln_status=True).values('vchr_source_name','bln_is_campaign'))
             else:
-                lst_source = list(Source.objects.filter(bln_status=True,fk_company=request.user.usermodel.fk_company).values('vchr_source_name','pk_bint_id').order_by('pk_bint_id'))
-                # lst_source = list(Source.objects.filter(bln_status=True,fk_company=request.user.usermodel.fk_company).values('vchr_source_name','pk_bint_id','fk_category','fk_category__vchr_category_name').order_by('pk_bint_id'))
+                lst_source = list(Source.objects.filter(bln_status=True,fk_company=request.user.userdetails.fk_company).values('vchr_source_name','pk_bint_id').order_by('pk_bint_id'))
+                # lst_source = list(Source.objects.filter(bln_status=True,fk_company=request.user.userdetails.fk_company).values('vchr_source_name','pk_bint_id','fk_category','fk_category__vchr_category_name').order_by('pk_bint_id'))
             return Response(lst_source)
 
         except Exception as e:
@@ -31,7 +31,7 @@ class SourceAPIView(APIView):
 
     def post(self, request,):
         try:
-            int_company = request.user.usermodel.fk_company_id
+            int_company = request.user.userdetails.fk_company_id
             in_count=Source.objects.filter(bln_status=True,fk_company=int_company).count()
             str_name = request.data['vchr_name'].upper()
             ins_name = Source.objects.filter(vchr_source_name = str_name,bln_status=True,fk_company=int_company)
@@ -57,7 +57,7 @@ class SourceAPIView(APIView):
             str_name = request.data['vchr_name'].upper()
             #category=ExpensesCategory.objects.get(pk_bint_id=int(request.data.get('category_id')))
 
-            ins_name = Source.objects.filter(~Q(pk_bint_id=int_id) & Q(bln_status=True) & Q(vchr_source_name = str_name) & Q(fk_company = request.user.usermodel.fk_company))
+            ins_name = Source.objects.filter(~Q(pk_bint_id=int_id) & Q(bln_status=True) & Q(vchr_source_name = str_name) & Q(fk_company = request.user.userdetails.fk_company))
 
             if not ins_name:
                 Source.objects.filter(pk_bint_id = int_id,bln_status=True).update(vchr_source_name = str_name,bln_is_campaign=request.data['bln_is_campaign'])

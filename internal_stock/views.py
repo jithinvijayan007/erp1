@@ -206,7 +206,7 @@ class AddRequest(APIView):
 
 
 
-            # to_email = UserModel.objects.filter(fk_branch_id = request.user.usermodel.fk_branch_id,fk_company_id = request.user.usermodel.fk_company_id,fk_group__vchr_name = group_name,is_active=True).values('email').first()['email']
+            # to_email = UserModel.objects.filter(fk_branch_id = request.user.userdetails.fk_branch_id,fk_company_id = request.user.userdetails.fk_company_id,fk_group__vchr_name = group_name,is_active=True).values('email').first()['email']
 
             return Response({'status':1,'message':'Request Successfully Registered'})
         except Exception as e:

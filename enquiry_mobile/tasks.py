@@ -79,7 +79,7 @@
 # #         ins_enquiry = EnquiryMaster.objects.filter(chr_doc_status='N',fk_company_id = ins_company[0]['pk_bint_id'],vchr_enquiry_num = enquiry_no).values().order_by('-pk_bint_id')
 # #         ins_customer = CustomerModel.objects.filter(fk_company_id = ins_company[0]['pk_bint_id'],id = ins_enquiry[0]['fk_customer_id']).values().order_by('-id')
 # #         # ins_branch = Branch.objects.filter(fk_company_id = ins_company[0]['pk_bint_id']).values().order_by('-pk_bint_id')
-# #         ins_branch = Branch.objects.filter(pk_bint_id = request.user.usermodel.fk_branch_id).values().order_by('-pk_bint_id')
+# #         ins_branch = Branch.objects.filter(pk_bint_id = request.user.userdetails.fk_branch_id).values().order_by('-pk_bint_id')
 # #         images = settings.HOSTNAME+'/static/'+ins_company[0]['vchr_logo']
 # #         # createing qr code shafeer
 # #         url_qr_code = pyqrcode.create(settings.HOSTNAME+"view_enquiry/"+ins_enquiry[0]['vchr_hash'])

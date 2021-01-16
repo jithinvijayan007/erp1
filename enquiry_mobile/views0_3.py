@@ -99,7 +99,7 @@ class GetDataForMobileEnquiry(APIView):
         try:
             lst_product_visible = []
             lst_product = []
-            ins_product = Products.objects.filter(fk_company = request.user.usermodel.fk_company).exclude(vchr_product_name__in=['MYG CARE','SMART CHOICE','PROFITABILITY'] ).values('id','vchr_product_name','bln_visible','dct_product_spec').order_by('id')
+            ins_product = Products.objects.filter(fk_company = request.user.userdetails.fk_company).exclude(vchr_product_name__in=['MYG CARE','SMART CHOICE','PROFITABILITY'] ).values('id','vchr_product_name','bln_visible','dct_product_spec').order_by('id')
             lst_other_prodcuts = []
             lst_product_smart_choice = []
             dct_na_stock_product = {}
@@ -152,12 +152,12 @@ class GetDataForMobileEnquiry(APIView):
                     #     lst_product.append(dct_product)
 
 
-                lst_source = list(Source.objects.filter(bln_status=True,fk_company_id = request.user.usermodel.fk_company_id).values('vchr_source_name','pk_bint_id').order_by('pk_bint_id'))
-                lst_priority = list(Priority.objects.filter(bln_status=True,fk_company_id = request.user.usermodel.fk_company_id).values('vchr_priority_name','pk_bint_id').order_by('pk_bint_id'))
-                # lst_financier = list(Financiers.objects.filter(bln_active=True,fk_company_id = request.user.usermodel.fk_company_id).values('vchr_name','pk_bint_id').order_by('pk_bint_id'))
-                lst_financier = list(UserModel.objects.filter(fk_financier__bln_active=True,fk_company_id = request.user.usermodel.fk_company_id,fk_branch_id = request.user.usermodel.fk_branch_id).annotate(vchr_name=F('fk_financier__vchr_name'),pk_bint_id=F('fk_financier__pk_bint_id')).values('vchr_name','pk_bint_id').order_by('fk_financier__pk_bint_id'))
+                lst_source = list(Source.objects.filter(bln_status=True,fk_company_id = request.user.userdetails.fk_company_id).values('vchr_source_name','pk_bint_id').order_by('pk_bint_id'))
+                lst_priority = list(Priority.objects.filter(bln_status=True,fk_company_id = request.user.userdetails.fk_company_id).values('vchr_priority_name','pk_bint_id').order_by('pk_bint_id'))
+                # lst_financier = list(Financiers.objects.filter(bln_active=True,fk_company_id = request.user.userdetails.fk_company_id).values('vchr_name','pk_bint_id').order_by('pk_bint_id'))
+                lst_financier = list(UserModel.objects.filter(fk_financier__bln_active=True,fk_company_id = request.user.userdetails.fk_company_id,fk_branch_id = request.user.userdetails.fk_branch_id).annotate(vchr_name=F('fk_financier__vchr_name'),pk_bint_id=F('fk_financier__pk_bint_id')).values('vchr_name','pk_bint_id').order_by('fk_financier__pk_bint_id'))
 
-                int_companyId = request.GET.get('id',request.user.usermodel.fk_company_id)
+                int_companyId = request.GET.get('id',request.user.userdetails.fk_company_id)
 
                 if UserModel.objects.filter(is_active=True,id=request.user.id).values('fk_branch'):
                     int_branch_id = UserModel.objects.filter(is_active=True,id=request.user.id).values('fk_branch')[0]['fk_branch']
@@ -223,15 +223,15 @@ class EnquiryList(APIView):
                                         .join(ProductsSA,ItemEnquirySA.fk_product_id == ProductsSA.id)\
                                         .outerjoin(EnquiryFinanceSA,EnquiryMasterSA.pk_bint_id == EnquiryFinanceSA.fk_enquiry_master_id)\
                                         .order_by(desc(EnquiryMasterSA.dat_created_at))
-            if request.user.usermodel.fk_group.vchr_name.upper()=='ADMIN':
+            if request.user.userdetails.fk_group.vchr_name.upper()=='ADMIN':
                 pass
-            elif request.user.usermodel.fk_group.vchr_name.upper()=='BRANCH MANAGER':
-                rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.usermodel.fk_branch_id)
-            elif request.user.usermodel.int_area_id:
-                # lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+            elif request.user.userdetails.fk_group.vchr_name.upper()=='BRANCH MANAGER':
+                rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
+            elif request.user.userdetails.int_area_id:
+                # lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
                 rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
             else:
-                rst_enquiry =rst_enquiry.filter(EnquiryMasterSA.fk_branch_id== request.user.usermodel.fk_branch_id,EnquiryMasterSA.fk_assigned_id==request.user.id)
+                rst_enquiry =rst_enquiry.filter(EnquiryMasterSA.fk_branch_id== request.user.userdetails.fk_branch_id,EnquiryMasterSA.fk_assigned_id==request.user.id)
 
             if int_pending:
                 rst_enquiry = rst_enquiry.filter(ItemEnquirySA.vchr_enquiry_status.notin_(lst_statuses))
@@ -449,9 +449,9 @@ class AddEnquiry(APIView):
                                             ItemFollowup.objects.bulk_create(lst_query_set);
                                             '''
                                     # for notifications
-                                    # ins_manager=UserModel.objects.filter(fk_branch_id=request.user.usermodel.fk_branch_id,fk_group__vchr_name='BRANCH MANAGER').values_list('username',flat=True)
+                                    # ins_manager=UserModel.objects.filter(fk_branch_id=request.user.userdetails.fk_branch_id,fk_group__vchr_name='BRANCH MANAGER').values_list('username',flat=True)
 
-                                    ins_manager=UserModel.objects.filter(fk_branch_id=request.user.usermodel.fk_branch_id,fk_group__vchr_name='BRANCH MANAGER').values_list('username',flat=True)
+                                    ins_manager=UserModel.objects.filter(fk_branch_id=request.user.userdetails.fk_branch_id,fk_group__vchr_name='BRANCH MANAGER').values_list('username',flat=True)
                                     if ins_manager:
                                         str_url='/crm/viewmobilelead'
                                         str_msg= ins_master.vchr_enquiry_num+' is booked'
@@ -573,8 +573,8 @@ class EnquiryView(APIView):
             # import pdb; pdb.set_trace()
             else:
                 int_branch_id = EnquiryMaster.objects.filter(pk_bint_id =int_enquiry_id).values('fk_branch_id').first()['fk_branch_id']
-                lst_financier = list(UserModel.objects.filter(fk_financier__bln_active=True,fk_company_id = request.user.usermodel.fk_company_id,fk_branch_id = int_branch_id).annotate(vchr_name=F('fk_financier__vchr_name'),pk_bint_id=F('fk_financier__pk_bint_id')).values('vchr_name','pk_bint_id').order_by('fk_financier__pk_bint_id'))
-            # lst_financier = list(Financiers.objects.filter(bln_active=True,fk_company_id = request.user.usermodel.fk_company_id).values('vchr_name','pk_bint_id').order_by('pk_bint_id'))
+                lst_financier = list(UserModel.objects.filter(fk_financier__bln_active=True,fk_company_id = request.user.userdetails.fk_company_id,fk_branch_id = int_branch_id).annotate(vchr_name=F('fk_financier__vchr_name'),pk_bint_id=F('fk_financier__pk_bint_id')).values('vchr_name','pk_bint_id').order_by('fk_financier__pk_bint_id'))
+            # lst_financier = list(Financiers.objects.filter(bln_active=True,fk_company_id = request.user.userdetails.fk_company_id).values('vchr_name','pk_bint_id').order_by('pk_bint_id'))
             if not int_enquiry_id or int_enquiry_id == 'undefined' :
                 session.close()
                 return Response({'status': '1','data':'Enquiry id must be provided'})
@@ -687,7 +687,7 @@ class AddFollowup(APIView):
                     #     return Response({'status':'5', 'data':'Selected '+rst_enq.fk_brand.vchr_brand_name+'-'+rst_enq.fk_item.vchr_item_name+' quantity '+str(request.data.get('int_followup_quantity'))+' exceeds available stock quantity of '+str(int_available)+' in your branch'})
                 ins_item_follow_up = ItemFollowup(fk_item_enquiry = ItemEnquiry.objects.get(pk_bint_id = request.data['int_service_id']),\
                     vchr_notes = request.data['vchr_followup_remarks'],vchr_enquiry_status = request.data['vchr_followup_status'],\
-                    int_status = int_status,dbl_amount = request.data['int_followup_amount'],fk_user = request.user.usermodel,\
+                    int_status = int_status,dbl_amount = request.data['int_followup_amount'],fk_user = request.user.userdetails,\
                     fk_updated_id = fk_updated_by,dat_followup = dat_created,dat_updated = dat_updated_time,int_quantity=request.data.get('int_followup_quantity'))
                 ins_item_follow_up.save()
 
@@ -725,7 +725,7 @@ class AddFollowup(APIView):
                     ins_obj.update(dbl_imei_json = {"imei" : request.data.get('lst_imei',[])},int_sold = request.data.get('int_followup_quantity'))
                     '''Following code commented in order to prevent lost case if same product booked multiple times'''
 
-                    '''ins_item_enq_exist = ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer_id = ins_customer_id,fk_enquiry_master__fk_company = request.user.usermodel.fk_company,fk_product_id=ins_obj.first().fk_product_id).exclude(vchr_enquiry_status = 'BOOKED')
+                    '''ins_item_enq_exist = ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer_id = ins_customer_id,fk_enquiry_master__fk_company = request.user.userdetails.fk_company,fk_product_id=ins_obj.first().fk_product_id).exclude(vchr_enquiry_status = 'BOOKED')
                     if ins_item_enq_exist:
                         ins_item_enq_exist.update(vchr_enquiry_status = 'LOST')
                         lst_query_set = []
@@ -735,15 +735,15 @@ class AddFollowup(APIView):
                                                               vchr_enquiry_status = 'LOST',
                                                               int_status = 1,
                                                               dbl_amount = 0.0,
-                                                              fk_user = request.user.usermodel,
-                                                              fk_updated = request.user.usermodel,
+                                                              fk_user = request.user.userdetails,
+                                                              fk_updated = request.user.userdetails,
                                                               dat_followup = datetime.now(),
                                                               dat_updated = datetime.now())
                             lst_query_set.append(ins_follow_up)
                         if lst_query_set:
                             ItemFollowup.objects.bulk_create(lst_query_set);
                         '''
-                int_enquiry_id = EnquiryMaster.objects.get(chr_doc_status = 'N',vchr_enquiry_num = str_enquiry_no, fk_company_id = request.user.usermodel.fk_company_id).pk_bint_id
+                int_enquiry_id = EnquiryMaster.objects.get(chr_doc_status = 'N',vchr_enquiry_num = str_enquiry_no, fk_company_id = request.user.userdetails.fk_company_id).pk_bint_id
                 # enquiry_print(str_enquiry_no,request,ins_user)
                 return JsonResponse({'status':'success','value':'Follow-up completed successfully!','remarks':request.data['vchr_followup_remarks'],'followup':request.data['vchr_followup_status'],'amount':request.data['int_followup_amount'],'change':int_status,'enqId':int_enquiry_id,'int_quantity':request.data.get('int_followup_quantity')})
 
@@ -778,7 +778,7 @@ class BranchTypeahed(APIView):
     def post(self,request):
         try:
             int_branch_id = request.data.get('id')
-            lst_financier = list(UserModel.objects.filter(fk_financier__bln_active=True,fk_company_id = request.user.usermodel.fk_company_id,fk_branch_id = int_branch_id).annotate(vchr_name=F('fk_financier__vchr_name'),pk_bint_id=F('fk_financier__pk_bint_id')).values('vchr_name','pk_bint_id').order_by('fk_financier__pk_bint_id'))
+            lst_financier = list(UserModel.objects.filter(fk_financier__bln_active=True,fk_company_id = request.user.userdetails.fk_company_id,fk_branch_id = int_branch_id).annotate(vchr_name=F('fk_financier__vchr_name'),pk_bint_id=F('fk_financier__pk_bint_id')).values('vchr_name','pk_bint_id').order_by('fk_financier__pk_bint_id'))
             return JsonResponse({'status':'success','data':lst_financier})
         except Exception as e:
             print(e)

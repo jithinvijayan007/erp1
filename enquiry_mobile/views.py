@@ -102,7 +102,7 @@ class EnquiryInvoicedSave(APIView):
                     dct_details = request.data.get('details')
                     ins_user = UserModel.objects.get(id = request.user.id)
                     lst_item_enquiry_new = []
-                    # import pdb; pdb.set_trace()
+                    # 
                     # ins_follow_up = ItemFollowup.objects.filter(vchr_enquiry_status = 'IMEI PENDING',fk_item_enquiry__vchr_enquiry_status='BOOKED',fk_item_enquiry__fk_enquiry_master_id=request.data['enquiry_id'])
                     # ins_follow_up.update(fk_item_enquiry__vchr_enquiry_status='IMG PENDING')
                     #
@@ -194,14 +194,14 @@ class EnquiryInvoicedSave(APIView):
                         ItemEnquiry.objects.filter(pk_bint_id__in = lost_item_enquiry).update(vchr_enquiry_status='CONVERTED')
 
                     # ====================================================================================================================
-                    # import pdb; pdb.set_trace()
+                    # 
                     # lst_item_enq_id = ItemFollowup.objects.filter(vchr_enquiry_status = 'IMEI PENDING',fk_item_enquiry__vchr_enquiry_status='INVOICED',fk_item_enquiry__fk_enquiry_master_id=request.data['enquiry_id']).values_list('fk_item_enquiry_id',flat=True)
                     # ItemEnquiry.objects.filter(pk_bint_id__in=lst_item_enq_id).update(vchr_enquiry_status='IMAGE PENDING')
                     # ItemFollowup.objects.filter(fk_item_enquiry_id__in=lst_item_enq_id,vchr_enquiry_status='INVOICED').update(vchr_enquiry_status='IMAGE PENDING')
 
                     # ----------------------------------------------
                     ins_data  = ItemFollowup.objects.filter(vchr_enquiry_status = 'IMEI PENDING',fk_item_enquiry__fk_enquiry_master_id = request.data['enquiry_id'])
-                    # import pdb; pdb.set_trace()
+                    # 
                     if ins_data:
                         ItemEnquiry.objects.filter(fk_enquiry_master=request.data['enquiry_id'],vchr_enquiry_status='INVOICED').update(vchr_enquiry_status='IMAGE PENDING')
                         ItemFollowup.objects.filter(fk_item_enquiry_id__fk_enquiry_master=request.data['enquiry_id'],fk_item_enquiry_id__vchr_enquiry_status='IMAGE PENDING',vchr_enquiry_status='INVOICED').update(vchr_enquiry_status='IMAGE PENDING')
@@ -249,7 +249,7 @@ class EnquiryInvoicedSave(APIView):
                                         json_staff={}
 
                             ############################## incentives handling #################
-                                        # import pdb; pdb.set_trace()
+                                        # 
                                         lst_item_enquiry_all = ItemEnquiry.objects.filter(fk_enquiry_master_id = request.data['enquiry_id'],vchr_enquiry_status='INVOICED').values('pk_bint_id','fk_item_id','fk_item__fk_product_id','fk_item__fk_brand_id','int_sold','fk_enquiry_master__fk_assigned_id','dbl_amount','dbl_discount_amount','int_type','dbl_gdp_amount','dbl_gdew_amount','dbl_actual_gdp','dbl_actual_gdew')
                                         int_promoter=UserModel.objects.filter(id=lst_item_enquiry_all[0]['fk_enquiry_master__fk_assigned_id'],is_active=True).annotate(promo=Case(When(fk_brand_id__gte=1,then=Value(2)),default=Value(3),output_field=IntegerField())).values('promo','fk_branch_id','fk_brand_id').first()
                                         lst_available=[int_promoter['promo'],1]
@@ -349,7 +349,7 @@ class EnquiryInvoicedSave(APIView):
                                                             ins_item_reward=RewardsAvailable2(json_staff=json_staff,fk_rewards_master_id=item_data['fk_rewards_master_id'],fk_rewards_details_id=item_data['pk_bint_id'],fk_item_enquiry_id=data['pk_bint_id'],dbl_mop_amount=item_amount['dbl_apx_amount'],dat_reward=datetime.now())
                                                             ins_item_reward.save()
 
-                                            # import pdb; pdb.set_trace()
+                                            # 
                                             item_data=RewardsDetails2.objects.filter(int_to__in=lst_available,int_quantity_from__lte=data['int_sold'],int_quantity_to__gte=data['int_sold'],fk_rewards_master__fk_created_by__fk_company_id=request.user.userdetails.fk_company_id,int_map_type=2,int_map_id=data['fk_item_id'],fk_rewards_master__dat_from__lte=datetime.now().date(),fk_rewards_master__dat_to__gte=datetime.now().date(),fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_rewards_master_id','int_quantity_from','int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','int_mop_sale').order_by('int_quantity_to').first()
                                             total_reward=0
                                             if item_data:
@@ -545,7 +545,7 @@ class EnquiryInvoicedSave(APIView):
                             if lst_company[0]=="REWARDS1":
 
                                                     ############################## incentives handling #################
-                                                    # import pdb; pdb.set_trace()
+                                                    # 
                                                     lst_item_enquiry_all = ItemEnquiry.objects.filter(fk_enquiry_master_id = request.data['enquiry_id'],vchr_enquiry_status='INVOICED').values('pk_bint_id','fk_item_id','fk_item__fk_product_id','fk_item__fk_brand_id','int_sold','fk_enquiry_master__fk_assigned_id','dbl_amount','dbl_discount_amount','int_type','dbl_gdp_amount','dbl_gdew_amount','dbl_actual_gdp','dbl_actual_gdew')
                                                     if not lst_item_enquiry_all:
                                                         return JsonResponse({'status':'success'})
@@ -650,7 +650,7 @@ class EnquiryInvoicedSave(APIView):
                                                                     if json_staffs:
                                                                         ins_item_reward =  RewardsAvailable(json_staff = json_staffs,fk_rewards_master_id=item_data['fk_reward_details__fk_rewards_master_id'],fk_rewards_details_id=item_data['fk_reward_details'],fk_item_enquiry_id=data['pk_bint_id'],dbl_mop_amount=item_amount['dbl_apx_amount'],dat_reward=datetime.now())
                                                                         ins_item_reward.save()
-                                                        # import pdb; pdb.set_trace()
+                                                        # 
                                                         item_data = RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0,fk_reward_details__int_quantity_from__lte=data['int_sold'],fk_reward_details__int_quantity_to__gte=data['int_sold'],fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=request.user.userdetails.fk_company_id,fk_reward_details__int_map_type=1,fk_reward_details__int_map_id=data['fk_item__fk_brand_id'],fk_reward_details__fk_rewards_master__dat_from__lte=datetime.now().date(),fk_reward_details__fk_rewards_master__dat_to__gte=datetime.now().date(),fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(request.user.userdetails.fk_branch_id)]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','fk_reward_details__int_quantity_from','fk_reward_details__int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','fk_reward_details__int_mop_sale','fk_reward_details').order_by('fk_reward_details__int_quantity_to',"-pk_bint_id").first()
 
 
@@ -1420,12 +1420,12 @@ class getProductPrice(APIView):
     """Estimated amount and mrp of a purticular item"""
     def post(self,request):
         try:
-            # import pdb; pdb.set_trace()
+            # 
             int_id = request.data.get('itemId')
             flt_amount = 0
             if int_id:
-                rst_data = Items.objects.filter(id = int_id).values('dbl_apx_amount','dbl_mrp_price').first()
-                str_item_code = Items.objects.filter(id = int_id).values('vchr_item_code')[0]['vchr_item_code']
+                rst_data = Items.objects.filter(pk_bint_id = int_id).annotate(dbl_mrp_price = F('dbl_mrp'),dbl_apx_amount = F('dbl_mop')).values('dbl_apx_amount','dbl_mrp_price').first()
+                str_item_code = Items.objects.filter(pk_bint_id = int_id).values('vchr_item_code')[0]['vchr_item_code']
 
 
                 dat_today = datetime.strftime(datetime.now(),'%Y-%m-%d')
@@ -1437,19 +1437,20 @@ class getProductPrice(APIView):
                 if rst_data:
                     return JsonResponse({'status':'success', 'item_amount_per_qty':rst_data['dbl_apx_amount'], 'int_buyback_amount' :int_buyback_amount, 'mrp':rst_data['dbl_mrp_price'] })
                 # url and passing parameter for getting the item price
-                url = 'http://devserv1.gdpplus.in/Item_Model_Selling_Price.aspx'
-                params = {'model':str_item_code}
-                r = requests.get(url, params=params)
+                # url = 'http://devserv1.gdpplus.in/Item_Model_Selling_Price.aspx'
+                # params = {'model':str_item_code}
+                # r = requests.get(url, params=params)
 
-                if r.status_code == 200:
-                    data = json.dumps(r.text)
-                    if data.split('\\')[0] != '"[]':
-                        # splitting the response string to get the amount
-                        flt_amount = float(data.split('\\')[6].split(':')[1].split('}')[0])
-                        Items.objects.filter(id = int_id).update(dbl_apx_amount = flt_amount)
+                # if r.status_code == 200:
+                #     data = json.dumps(r.text)
+                #     if data.split('\\')[0] != '"[]':
+                #         # splitting the response string to get the amount
+                #         flt_amount = float(data.split('\\')[6].split(':')[1].split('}')[0])
+                #         Items.objects.filter(id = int_id).update(dbl_apx_amount = flt_amount)
 
 
-            return JsonResponse({'status':'success', 'item_amount_per_qty':flt_amount , 'int_buyback_amount' :int_buyback_amount, 'mrp':rst_data['dbl_mrp_price']})
+            # return JsonResponse({'status':'success', 'item_amount_per_qty':flt_amount , 'int_buyback_amount' :int_buyback_amount, 'mrp':rst_data['dbl_mrp_price']})
+            return JsonResponse({'status':'success', 'item_amount_per_qty':flt_amount,  'mrp':0})
         except Exception as e:
             return JsonResponse({'status':'failed','reason':str(e)})
 
@@ -1459,12 +1460,13 @@ class getItemStock(APIView):
     """Available stock of purticular item"""
     def post(self,request):
         try:
+            # import pdb; pdb.set_trace()
             int_id = request.data.get('itemId')     #item id
             flt_amount = 0
             lst_branches = []
             dct_branches = {}
             if int_id:
-                str_item_code = Items.objects.filter(id = int_id).values('vchr_item_code')[0]['vchr_item_code']     #item code of item id
+                str_item_code = Items.objects.filter(pk_bint_id = int_id).values('vchr_item_code')[0]['vchr_item_code']     #item code of item id
                 # str_item_code = 2232366
                 branch_name = Branch.objects.filter(pk_bint_id = request.user.userdetails.fk_branch_id).values('vchr_name').first()['vchr_name']      #branch name of current user
                 int_territory = Branch.objects.filter(pk_bint_id = request.user.userdetails.fk_branch_id).values('fk_territory').first()['fk_territory']      #territory or current user
@@ -2092,7 +2094,7 @@ class AddEnquiry(APIView):
                     dct_gdp_data={data_gdp['vchr_item_name']:{'product_id':data_gdp['fk_product_id'],'brand_id':data_gdp['fk_brand_id'],'pk_bint_id':data_gdp['id'],'item_code':data_gdp['vchr_item_code']} for data_gdp in ins_gp_item}
 
                     # ---------------POS API--------------
-                    # import pdb; pdb.set_trace()
+                    # 
                     dct_pos_data = {}
                     dct_pos_data['vchr_cust_name'] = ins_customer.cust_fname+' '+ins_customer.cust_lname
                     dct_pos_data['vchr_cust_email'] = ins_customer.cust_email
@@ -2126,7 +2128,7 @@ class AddEnquiry(APIView):
 
                         for dct_enquiry in dct_data[dct_sub]:
                             if not dct_enquiry['mobileNa']:
-                                # import pdb; pdb.set_trace()
+                                # 
                                 int_product_id=Products.objects.filter(vchr_product_name__iexact = dct_enquiry['str_product'],fk_company=ins_user.fk_company).values_list('id',flat=True).first()
                                 ins_brand = Brands.objects.get(id = int(dct_enquiry['fk_brand_id']))
                                 ins_item = Items.objects.get(id = int(dct_enquiry['fk_item_id']))
@@ -2155,7 +2157,7 @@ class AddEnquiry(APIView):
                                     imei_list = []
                                 else:
                                     imei_list = dct_enquiry['lst_imei']
-                                # import pdb; pdb.set_trace()
+                                # 
                                 if dct_enquiry.get('vchr_enquiry_status','') == 'BOOKED':
                                     ins_item_enq = ItemEnquiry(fk_enquiry_master = ins_master,
                                                                 fk_product_id=int_product_id,
@@ -2432,7 +2434,7 @@ class AddEnquiry(APIView):
 class GetDetailsForAddMobileLead(APIView):
     def post(self,request):
         try:
-            # import pdb; pdb.set_trace()
+            
             dct_for_enquiry = {}
             int_user = User.objects.get(id = int(request.data.get('user_id',0)))
             int_companyId = request.GET.get('company_id',request.user.userdetails.fk_company_id)
@@ -3390,7 +3392,7 @@ class EnquiryInvoiceUpdate(APIView):
     def post(self,request):
         try:
             with transaction.atomic():
-                # import pdb; pdb.set_trace()
+                # 
 
                 str_remark = request.data.get('str_remarks') or ""
                 dct_item_data = request.data.get('dct_item_data')
@@ -3569,7 +3571,7 @@ class EnquiryInvoiceUpdate(APIView):
                                                             dat_followup = datetime.now(),
                                                             dat_updated = datetime.now())
                 lst_deleted_item = list(set(lst_item_code_cur_all)-set(lst_old_item))
-                # import pdb; pdb.set_trace()
+                # 
                 # IMAGE PENDING -NOTIFICATION
                 if str_status == 'IMAGE PENDING':
                     if str_data.split('-')[0] == '0' and ItemEnquiry.objects.filter(pk_bint_id =  str_data.split('-')[1]).exclude(vchr_enquiry_status='INVOICED'):
@@ -3641,7 +3643,7 @@ class EnquiryInvoiceUpdate(APIView):
     # def post(self,request):
         # try:
         #     with transaction.atomic():
-        #         # import pdb; pdb.set_trace()
+        #         # 
         #         str_remark = request.data.get('str_remarks') or ""
         #         dct_item_data = request.data.get('dct_item_data')
         #         int_type=request.data.get('int_type')
@@ -3669,7 +3671,7 @@ class EnquiryInvoiceUpdate(APIView):
         #         dct_old_item = {}
         #         dct_new_item = {}
         #         # Structure the old item details with item enquiry id keys to update item enquiry table
-        #         # import pdb; pdb.set_trace()
+        #         # 
         #
         #         """Data to payment_details"""
         #         lst_payment_details=[]
@@ -3678,7 +3680,7 @@ class EnquiryInvoiceUpdate(APIView):
         #             lst_payment_details.append(ins_payment_details)
         #         PaymentDetails.objects.bulk_create(lst_payment_details)
         #
-        #         # import pdb; pdb.set_trace()
+        #         # 
         #         for dct_enquiry in lst_item_data:
         #             if dct_enquiry['itemEnqId'] and dct_enquiry['itemEnqId'] not in dct_old_item:
         #                 dct_old_item[dct_enquiry['itemEnqId']] ={}
@@ -3750,7 +3752,7 @@ class EnquiryInvoiceUpdate(APIView):
         #                         dct_new_item[dct_enquiry['strItemCode']]['data']['dbl_tax'] = dct_enquiry['dbl_tax']
         #                         dct_new_item[dct_enquiry['strItemCode']]['data']['json_tax'] = dct_enquiry['json_tax']
         #
-        #         # import pdb; pdb.set_trace()
+        #         # 
         #         for int_id in dct_old_item:
         #             ins_item_enq = ItemEnquiry.objects.filter(pk_bint_id =  dct_old_item[int_id]['data']['itemEnqId'])
         #
@@ -3826,7 +3828,7 @@ class EnquiryInvoiceUpdate(APIView):
         #             # int_type = '1'
         #             # int_type = '2'
         #
-        #             # import pdb; pdb.set_trace()
+        #             # 
         #             if dct_new_item[int_id]['data']['status'] == 1:
         #
         #                 rst_data = Items.objects.values('vchr_item_name').filter(id = dct_item_code_details[int_id]['id'],vchr_item_name__in = ['GDOT','GDEW']).first()
@@ -4141,7 +4143,7 @@ class EnquiryInvoiceUpdate(APIView):
 def special_rewards_script_sudheesh(str_pk_id):
     try:
         # enquiry_num
-        # import pdb; pdb.set_trace()
+        # 
         with transaction.atomic():
             int_eq_pk_bint_id=int(str_pk_id)
             user_id = EnquiryMaster.objects.get(pk_bint_id = int_eq_pk_bint_id).fk_assigned_id
@@ -5344,7 +5346,7 @@ class BookCreditEnquiry(APIView):
                 dct_pos_data['lst_item'] = []
                 dct_pos_data['dbl_total_amt'] = 0
                 dct_pos_data['dbl_discount'] = 0
-                # import pdb; pdb.set_trace()
+                # 
 
                 for ins_item in ins_item_enq:
                     dct_item = {}
@@ -6010,7 +6012,7 @@ def special_rewards_script(str_pk_id):
 
 # ===========================================================================================================================================================================================================================================================================================================================================================================================================
             """price band wise rewards"""
-            # import pdb; pdb.set_trace()
+            # 
 
             """map type product price"""
             total_reward=0
@@ -7325,7 +7327,7 @@ def special_rewards(str_pk_id):
 
 # ===========================================================================================================================================================================================================================================================================================================================================================================================================
             """price band wise rewards"""
-            # import pdb; pdb.set_trace()
+            # 
 
             """map type product price"""
             total_reward=0
@@ -8197,7 +8199,7 @@ class AddReturnItemEnquiry(APIView):
 
                 # ============================================================================================================
                 # a=1/0
-                # import pdb; pdb.set_trace()
+                # 
                 return Response({'status':'success'})
 
         except Exception as e:
@@ -8210,7 +8212,7 @@ class CreateExchangeItem(APIView):
       permission_classes=[AllowAny]
       def post(self,request):
           with transaction.atomic():
-            # import pdb; pdb.set_trace()
+            # 
             ins_company=CompanyDetails.objects.filter(vchr_code__iexact='myg').first()
             ins_document = Document.objects.select_for_update().filter(vchr_module_name = 'ENQUIRY',fk_company = ins_company)
             str_code = ins_document[0].vchr_short_code

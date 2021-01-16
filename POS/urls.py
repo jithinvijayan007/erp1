@@ -86,6 +86,7 @@ urlpatterns = [
     url(r'^hierarchy/',include('hierarchy.urls',namespace="hierarchy")),
     url(r'^job_position/',include('job_position.urls',namespace="job_position")),
     url(r'^mobile/', include('enquiry_mobile.urls', namespace='mobile')),
+    url(r'^inventory/', include('inventory.urls', namespace='inventory')),
 
     #--------------------------------------------
     url(r'^api-token-auth/', obtain_jwt_token),
