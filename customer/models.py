@@ -26,6 +26,8 @@ class CustomerDetails(models.Model):
     int_cust_type = models.IntegerField(blank=True, null=True,default=0) #1 - corporate customer 2 - credit customer 3 - sez customer 4 - cash customer
     dbl_credit_balance = models.FloatField(blank=True, null=True,default=0)
     dbl_credit_limit = models.FloatField(blank=True, null=True,default=0)
+    cust_smsaccess = models.NullBooleanField()
+    cust_salutation = models.CharField(max_length=10, blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'customer_details'
