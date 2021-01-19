@@ -130,3 +130,5 @@ create table priority (pk_bint_id BIGSERIAL PRIMARY KEY,vchr_priority_name varch
 alter table products add fk_company_id BIGINT REFERENCES company(pk_bint_id);
 alter table products add dct_product_spec jsonb;
 alter table products add bln_visible boolean;
+
+-- alter table products add column vchr_product_img varchar(300);
