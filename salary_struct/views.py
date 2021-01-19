@@ -113,7 +113,7 @@ class SalaryStructureList(APIView):
 
 
             """List Salary Structure"""
-            # int_company_id = request.user.usermodel.fk_company_id
+            # int_company_id = request.user.userdetails.fk_company_id
             lst_salary_struct = list(SalaryStructure.objects.filter(bln_active = True).values('pk_bint_id','vchr_name',
                                                                                               'dbl_bp_da','dbl_da','dbl_bp_da_per','json_rules').order_by('-pk_bint_id'))
 

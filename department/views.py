@@ -70,7 +70,7 @@ class DepartmentList(APIView):
             # import pdb; pdb.set_trace()
             """List Department"""
             # import pdb; pdb.set_trace()
-            # int_company_id = request.user.usermodel.fk_company_id
+            # int_company_id = request.user.userdetails.fk_company_id
             lst_department = list(Department.objects.filter(int_status = 1).values('pk_bint_id','vchr_code','vchr_name','fk_company_id').order_by('vchr_name'))
             lst_filter = Hierarchy.objects.all().values('vchr_name','pk_bint_id','int_level')
             return Response({'status':1,'lst_department':lst_department,'filter':lst_filter})

@@ -89,12 +89,12 @@ class NAReportDownload(APIView):
 
 
                     """Permission wise filter for data"""
-                    if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES','COUNTRY HEAD']:
+                    if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES','COUNTRY HEAD']:
                         pass
-                    elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
-                        rst_enquiry = rst_enquiry.filter(BranchSA.pk_bint_id == request.user.usermodel.fk_branch_id)
-                    elif request.user.usermodel.int_area_id:
-                        lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+                    elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
+                        rst_enquiry = rst_enquiry.filter(BranchSA.pk_bint_id == request.user.userdetails.fk_branch_id)
+                    elif request.user.userdetails.int_area_id:
+                        lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
                         rst_enquiry = rst_enquiry.filter(BranchSA.pk_bint_id.in_(lst_branch))
                     else:
                         session.close()

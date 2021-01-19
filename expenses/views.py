@@ -25,7 +25,7 @@ class AddExpensesAPIView(APIView):
             bln_recurring = request.data.get('recurring')
             int_company_id = int(request.data.get('company_id'))
 
-            ins_expence = Expenses(fk_category=ExpensesCategory.objects.get(pk_bint_id=int_category_id),vchr_name = str_name,bln_recurring = bln_recurring,fk_company = CompanyDetails.objects.get(pk_bint_id = int_company_id),fk_branch=request.user.usermodel.fk_branch,bln_status = True)
+            ins_expence = Expenses(fk_category=ExpensesCategory.objects.get(pk_bint_id=int_category_id),vchr_name = str_name,bln_recurring = bln_recurring,fk_company = CompanyDetails.objects.get(pk_bint_id = int_company_id),fk_branch=request.user.userdetails.fk_branch,bln_status = True)
             if bln_recurring:
                 ins_expence.dat_expiry = request.data.get('dat_expiry')
                 ins_expence.dbl_amount = request.data.get('dbl_amount')
@@ -38,9 +38,9 @@ class AddExpensesAPIView(APIView):
     def get(self,request):
         try:
             if request.GET.get('id'):
-                lst_expenses = list(Expenses.objects.filter(pk_bint_id = int(request.GET.get('id')),bln_status = True,fk_company = request.user.usermodel.fk_company_id,fk_branch=request.user.usermodel.fk_branch).values('vchr_name','bln_recurring','pk_bint_id','dat_expiry','dbl_amount','fk_category','fk_category__vchr_category_name'))
+                lst_expenses = list(Expenses.objects.filter(pk_bint_id = int(request.GET.get('id')),bln_status = True,fk_company = request.user.userdetails.fk_company_id,fk_branch=request.user.userdetails.fk_branch).values('vchr_name','bln_recurring','pk_bint_id','dat_expiry','dbl_amount','fk_category','fk_category__vchr_category_name'))
             else:
-                lst_expenses = list(Expenses.objects.filter(bln_status = True,fk_company = request.user.usermodel.fk_company_id,fk_branch=request.user.usermodel.fk_branch).values('vchr_name','bln_recurring','pk_bint_id','dat_expiry','dbl_amount','fk_category','fk_category__vchr_category_name'))
+                lst_expenses = list(Expenses.objects.filter(bln_status = True,fk_company = request.user.userdetails.fk_company_id,fk_branch=request.user.userdetails.fk_branch).values('vchr_name','bln_recurring','pk_bint_id','dat_expiry','dbl_amount','fk_category','fk_category__vchr_category_name'))
             return JsonResponse({'status':'success','data':lst_expenses})
         except Exception as e:
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
@@ -59,7 +59,7 @@ class AddExpensesAPIView(APIView):
             vchr_name = str_name,
             bln_recurring = bln_recurring,
             fk_company = CompanyDetails.objects.get(pk_bint_id = int_company_id),
-            fk_branch=request.user.usermodel.fk_branch,
+            fk_branch=request.user.userdetails.fk_branch,
             dat_expiry = None,
             dbl_amount = None
             )

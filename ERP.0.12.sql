@@ -132,3 +132,21 @@ alter table products add dct_product_spec jsonb;
 alter table products add bln_visible boolean;
 
 -- alter table products add column vchr_product_img varchar(300);
+
+CREATE TABLE item_details (pk_bint_id BIGSERIAL PRIMARY KEY,fk_item_id BIGINT REFERENCES item(pk_bint_id),json_spec JSONB,vchr_item_img VARCHAR(300));
+alter table brands add fk_company_id BIGINT REFERENCES company(pk_bint_id);
+alter table item add dbl_myg_amount DOUBLE PRECISION;
+
+ALTER TABLE products add vchr_product_img VARCHAR(300);
+
+
+
+CREATE TABLE buy_back(
+  pk_bint_id BIGSERIAL PRIMARY KEY,
+  dat_start TIMESTAMP WITHOUT TIME ZONE,
+  dat_end TIMESTAMP WITHOUT TIME ZONE,
+  fk_item_id BIGINT REFERENCES item(pk_bint_id),
+  int_quantity INTEGER,
+  dbl_amount DOUBLE PRECISION,
+  int_status INTEGER DEFAULT 1
+);

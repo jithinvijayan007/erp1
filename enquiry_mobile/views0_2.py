@@ -693,7 +693,7 @@ class AddFollowup(APIView):
             if int_status:
                 ins_user = UserModel.objects.get(id = request.user.id)
                 # enquiry_print(str_enquiry_no,request,ins_user)
-            int_enquiry_id = EnquiryMaster.objects.get(chr_doc_status = 'N',vchr_enquiry_num = str_enquiry_no, fk_company_id = request.user.usermodel.fk_company_id).pk_bint_id
+            int_enquiry_id = EnquiryMaster.objects.get(chr_doc_status = 'N',vchr_enquiry_num = str_enquiry_no, fk_company_id = request.user.userdetails.fk_company_id).pk_bint_id
             return JsonResponse({'status':'success','value':'Follow-up completed successfully!','remarks':request.data['vchr_followup_remarks'],'followup':request.data['vchr_followup_status'],'amount':request.data['int_followup_amount'],'change':int_status,'enqId':int_enquiry_id,'int_quantity':request.data.get('int_followup_quantity')})
 
         except Exception as e:

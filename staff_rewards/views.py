@@ -79,27 +79,27 @@ RewardsAvailableJS = metadata.tables['rewards_available']
 def GetUserList(request):
 
 
-                userListData=UserModel.objects.filter(is_active=True,fk_company=request.user.usermodel.fk_company_id).exclude(username='TDX-ADMIN').values('id','fk_branch_id','fk_group__vchr_name','int_area_id','fk_group').order_by('-id')
-                int_companyId=request.user.usermodel.fk_company_id
+                userListData=UserModel.objects.filter(is_active=True,fk_company=request.user.userdetails.fk_company_id).exclude(username='TDX-ADMIN').values('id','fk_branch_id','fk_group__vchr_name','int_area_id','fk_group').order_by('-id')
+                int_companyId=request.user.userdetails.fk_company_id
 
-                if request.user.usermodel.fk_group.vchr_name.upper()=='ADMIN':
+                if request.user.userdetails.fk_group.vchr_name.upper()=='ADMIN':
                     userListData=userListData.values_list('id',flat=True)
-                elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
-                    userListData = userListData.filter(fk_branch_id = request.user.usermodel.fk_branch_id).values_list('id',flat=True)
-                elif request.user.usermodel.int_area_id:
-                    lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+                elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
+                    userListData = userListData.filter(fk_branch_id = request.user.userdetails.fk_branch_id).values_list('id',flat=True)
+                elif request.user.userdetails.int_area_id:
+                    lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
                     userListData = userListData.values_list('id',flat=True).filter(fk_branch_id__in=lst_branch,int_area_id=None)
-                    if request.user.usermodel.fk_group.vchr_name == 'COUNTRY HEAD':
-                        lst_managers = list(State.objects.filter(fk_country_id=request.user.usermodel.int_area_id).values_list('pk_bint_id',flat='True'))
+                    if request.user.userdetails.fk_group.vchr_name == 'COUNTRY HEAD':
+                        lst_managers = list(State.objects.filter(fk_country_id=request.user.userdetails.int_area_id).values_list('pk_bint_id',flat='True'))
                         lst_managers += list(Zone.objects.filter(fk_state_id__in=lst_managers).values_list('pk_bint_id',flat='True'))
                         lst_managers += list(Territory.objects.filter(fk_zone_id__in=lst_managers).values_list('pk_bint_id',flat='True'))
                         user = UserModel.objects.filter(Q(fk_group__vchr_name='STATE HEAD')|Q(fk_group__vchr_name='ZONE MANAGER')|Q(fk_group__vchr_name='TERRITORY MANAGER'),is_active=True,int_area_id__in=set(lst_managers)).exclude(fk_group__vchr_name='ADMIN').values_list('id',flat=True).order_by('-id')
-                    elif request.user.usermodel.fk_group.vchr_name == 'STATE HEAD':
-                        lst_managers = list(Zone.objects.filter(fk_state_id=request.user.usermodel.int_area_id).values_list('pk_bint_id',flat='True'))
+                    elif request.user.userdetails.fk_group.vchr_name == 'STATE HEAD':
+                        lst_managers = list(Zone.objects.filter(fk_state_id=request.user.userdetails.int_area_id).values_list('pk_bint_id',flat='True'))
                         lst_managers += list(Territory.objects.filter(fk_zone_id__in=lst_managers).values_list('pk_bint_id',flat='True'))
                         user = UserModel.objects.filter(Q(fk_group__vchr_name='ZONE MANAGER')|Q(fk_group__vchr_name='TERRITORY MANAGER'),is_active=True,int_area_id__in=set(lst_managers)).exclude(fk_group__vchr_name='ADMIN').values_list('id',flat=True).order_by('-id')
-                    elif request.user.usermodel.fk_group.vchr_name == 'ZONE MANAGER':
-                        lst_territory = Territory.objects.filter(fk_zone_id=request.user.usermodel.int_area_id).values_list('pk_bint_id',flat='True')
+                    elif request.user.userdetails.fk_group.vchr_name == 'ZONE MANAGER':
+                        lst_territory = Territory.objects.filter(fk_zone_id=request.user.userdetails.int_area_id).values_list('pk_bint_id',flat='True')
                         user = UserModel.objects.filter(is_active=True,int_area_id__in=lst_territory,fk_branch_id=None,fk_group__vchr_name='TERRITORY MANAGER').exclude(fk_group__vchr_name='ADMIN').values_list('id',flat=True).order_by('-id')
                     else:
                         user = []
@@ -155,7 +155,7 @@ class AddReward(APIView):
                             return Response({'status':'failed','reason':'Reward Already Exist'})
                 ins_reward_master = RewardsMaster.objects.get(pk_bint_id=request.data.get('id'))
                 ins_reward_master.int_status = 0
-                ins_reward_master.fk_updated_by = request.user.usermodel
+                ins_reward_master.fk_updated_by = request.user.userdetails
                 RewardsDetails.objects.filter(fk_rewards_master=ins_reward_master).update(int_status=-1)
                 RewardAssigned.objects.filter(fk_reward_details_id__fk_rewards_master=ins_reward_master).update(int_status=-1)
             else:
@@ -174,7 +174,7 @@ class AddReward(APIView):
 
                 ins_reward_master = RewardsMaster()
                 ins_reward_master.int_status = 1
-                ins_reward_master.fk_created_by = request.user.usermodel
+                ins_reward_master.fk_created_by = request.user.userdetails
             ins_reward_master.dat_from = from_date
             ins_reward_master.dat_to = to_date
             if area_type:
@@ -275,7 +275,7 @@ class AddReward(APIView):
             id = request.data.get('id')
             confirm = request.data.get('confirm')
             if confirm:
-                RewardsMaster.objects.filter(pk_bint_id=id).update(int_status=-1,fk_updated_by = request.user.usermodel)
+                RewardsMaster.objects.filter(pk_bint_id=id).update(int_status=-1,fk_updated_by = request.user.userdetails)
                 RewardsDetails.objects.filter(fk_rewards_master_id=id).update(int_status=-1)
                 RewardAssigned.objects.filter(fk_reward_details_id__fk_rewards_master_id = id).update(int_status=-1)
             elif RewardsAvailable.objects.filter(fk_rewards_master_id=id):
@@ -322,7 +322,7 @@ class GetRewardDetails(APIView):
 
             # print(lst_staff_data)
             lst_branch_id=[]
-            if request.user.usermodel.fk_department.vchr_code.upper() == 'HOD':
+            if request.user.userdetails.fk_department.vchr_code.upper() == 'HOD':
                 lst_branch_id = list(Branch.objects.filter().values_list('pk_bint_id',flat=True))
                 rst_staff_details =session.query(UserModelSA.user_ptr_id.label('staff_id'),\
                                                             func.concat(AuthUserSA.first_name," ",AuthUserSA.last_name).label('staff_name'),\
@@ -339,10 +339,10 @@ class GetRewardDetails(APIView):
                                 .join(BranchSA,(BranchSA.pk_bint_id == UserModelSA.fk_branch_id) | (BranchSA.fk_territory_id== UserModelSA.int_area_id)).filter(and_(BranchSA.pk_bint_id.in_(lst_branch_id),BranchSA.pk_bint_id==branch_id))\
                                 .filter(RewardsPaidSA.dat_paid>='2019-06-25')\
                                 .group_by('staff_id','branch_name')
-            elif request.user.usermodel.int_area_id:
-                lst_branch_id=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
-                # if request.user.usermodel.fk_group.vchr_name.upper()=='TERRITORY MANAGER':
-                #     lst_area_id.append(request.user.usermodel.int_area_id)
+            elif request.user.userdetails.int_area_id:
+                lst_branch_id=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+                # if request.user.userdetails.fk_group.vchr_name.upper()=='TERRITORY MANAGER':
+                #     lst_area_id.append(request.user.userdetails.int_area_id)
                 # else:
                 #     lst_area_id.append(Branch.objects.filter(pk_bint_id__in=lst_branch_id).values_list(fk_territory_id).group_by(fk_territory_id))
                 rst_staff_details =session.query(UserModelSA.user_ptr_id.label('staff_id'),\
@@ -365,7 +365,7 @@ class GetRewardDetails(APIView):
 
 
             else:
-                    lst_branch_id.append(request.user.usermodel.fk_branch_id)
+                    lst_branch_id.append(request.user.userdetails.fk_branch_id)
             #taking details of staff
                     rst_staff_details =session.query(UserModelSA.user_ptr_id.label('staff_id'),\
                                             func.concat(AuthUserSA.first_name," ",AuthUserSA.last_name).label('staff_name'),\
@@ -374,14 +374,14 @@ class GetRewardDetails(APIView):
                                             .join(AuthUserSA,AuthUserSA.id == UserModelSA.user_ptr_id)\
                                             .join(GroupsSA,GroupsSA.pk_bint_id == UserModelSA.fk_group_id)\
                                             .join(BranchSA,BranchSA.pk_bint_id == UserModelSA.fk_branch_id)\
-                                            .filter(and_(BranchSA.pk_bint_id==request.user.usermodel.fk_branch_id,BranchSA.pk_bint_id==branch_id))\
+                                            .filter(and_(BranchSA.pk_bint_id==request.user.userdetails.fk_branch_id,BranchSA.pk_bint_id==branch_id))\
                                             .filter(UserModelSA.user_ptr_id.in_(lst_staff_id))
                     rst_rewards_paid =session.query(RewardsPaidSA.fk_staff_id.label('staff_id'),\
                                     func.sum(func.coalesce(RewardsPaidSA.dbl_paid,0)).label('total_reward_paid'),\
                                     BranchSA.vchr_name.label('branch_name'))\
                                     .join(UserModelSA,UserModelSA.user_ptr_id == RewardsPaidSA.fk_staff_id)\
                                     .join(BranchSA,(BranchSA.pk_bint_id == UserModelSA.fk_branch_id) | (BranchSA.fk_territory_id== UserModelSA.int_area_id))\
-                                    .filter(and_(BranchSA.pk_bint_id==request.user.usermodel.fk_branch_id,BranchSA.pk_bint_id==branch_id))\
+                                    .filter(and_(BranchSA.pk_bint_id==request.user.userdetails.fk_branch_id,BranchSA.pk_bint_id==branch_id))\
                                     .filter(RewardsPaidSA.dat_paid>='2019-06-25')\
                                     .group_by('staff_id','branch_name')
 
@@ -467,10 +467,10 @@ class RewardPaidSave(APIView):
                     staff_id = ins_paid['staff_id']
                     paid_amount = ins_paid['to_pay']
                     if staff_id and paid_amount:
-                        ins_reward_paid = RewardsPaid.objects.create(fk_staff_id=int(staff_id),dbl_paid=paid_amount,dat_paid=datetime.now(),int_status=0,fk_created_by=request.user.usermodel,vchr_transaction_id=vchr_transaction_id,fk_branch_id=request.user.usermodel.fk_branch_id)
+                        ins_reward_paid = RewardsPaid.objects.create(fk_staff_id=int(staff_id),dbl_paid=paid_amount,dat_paid=datetime.now(),int_status=0,fk_created_by=request.user.userdetails,vchr_transaction_id=vchr_transaction_id,fk_branch_id=request.user.userdetails.fk_branch_id)
                         dct_item = {}
                         dct_item['staff_code'] = User.objects.get(id=staff_id,is_active=True).username
-                        # dct_item['branch_code'] = request.user.usermodel.fk_branch.vchr_code
+                        # dct_item['branch_code'] = request.user.userdetails.fk_branch.vchr_code
                         dct_item['amount'] = paid_amount
                         # dct_item['dat_created'] = datetime.now()
                         # dct_item['created_by'] = request.user.username
@@ -479,7 +479,7 @@ class RewardPaidSave(APIView):
                     else:
                         return Response({'status':'failed'})
             if lst_pos_data:
-                dct_pos_data['branch_code'] = request.user.usermodel.fk_branch.vchr_code
+                dct_pos_data['branch_code'] = request.user.userdetails.fk_branch.vchr_code
                 dct_pos_data['dat_created'] = datetime.strftime(datetime.now(),'%Y-%m-%d')
                 dct_pos_data['created_by'] = request.user.username
                 dct_pos_data['lstIncentive']=lst_pos_data
@@ -690,12 +690,12 @@ class StaffRewardList(APIView):
             int_staff_id = request.data.get('intStaffId')
             lst_branch=[]
 
-            if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','MARKETING','AUDITOR','AUDITING ADMIN','B TEAM','PRODUCT MANAGER']:
-                lst_branch = list(Branch.objects.filter(fk_company_id=request.user.usermodel.fk_company_id).values_list('pk_bint_id',flat=True))
-            elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']:
-                lst_branch = [request.user.usermodel.fk_branch_id]
-            elif request.user.usermodel.int_area_id:
-                lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','MARKETING','AUDITOR','AUDITING ADMIN','B TEAM','PRODUCT MANAGER']:
+                lst_branch = list(Branch.objects.filter(fk_company_id=request.user.userdetails.fk_company_id).values_list('pk_bint_id',flat=True))
+            elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']:
+                lst_branch = [request.user.userdetails.fk_branch_id]
+            elif request.user.userdetails.int_area_id:
+                lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
             # listig all staff id's and it reward amount
             rst_staff_list = session.query(RewardsAvailableJS.c.json_staff.label('staff_id'))\
                                 .outerjoin(ItemEnquirySA,ItemEnquirySA.pk_bint_id==RewardsAvailableJS.c.fk_item_enquiry_id)\
@@ -756,7 +756,7 @@ class StaffRewardList(APIView):
                 rst_staff_details = rst_staff_details.filter(GroupsSA.vchr_name.in_(['TERRITORY MANAGER','ZONE MANAGER','STATE MANAGER','COUNTRY MANAGER','B TEAM','PRODUCT MANAGER']))
             elif str_type.upper() == 'BRANCH' and int_area_id:
                 rst_staff_details = rst_staff_details.filter(and_(UserModelSA.fk_branch_id ==int_area_id,GroupsSA.vchr_name.in_(['BRANCH MANAGER','ASSISTANT BRANCH MANAGER','STAFF','Floor Manager1','Floor Manager2','Floor Manager3','Floor Manager4','ASM1','ASM2','ASM3','ASM4'])))
-            elif str_type.upper() == 'BRANCH' and  int_area_id==None and request.user.usermodel.fk_group.vchr_name!="STAFF":
+            elif str_type.upper() == 'BRANCH' and  int_area_id==None and request.user.userdetails.fk_group.vchr_name!="STAFF":
                 flagt=True
                 # rst_rewards_paid = session.query(func.sum(func.coalesce(RewardsPaidSA.dbl_paid,0)).label('total_reward_paid'),\
                 #                     BranchSA.pk_bint_id.label('branch_id'),\
@@ -772,7 +772,7 @@ class StaffRewardList(APIView):
 
                         flagt=True
                         rst_staff_details = rst_staff_details.filter(UserModelSA.fk_branch_id.in_(branch_list))
-                        if request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']:
+                        if request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']:
                                                 session.close()
                                                 return Response({'status':'success','data':[]})
 
@@ -782,7 +782,7 @@ class StaffRewardList(APIView):
                 flagz=True
                 territory_list=list(Territory.objects.filter(fk_zone_id=int_area_id).values_list("pk_bint_id",flat=True))
                 rst_staff_details = rst_staff_details.filter(or_(UserModelSA.int_area_id.in_(territory_list),UserModelSA.fk_branch_id.in_(branch_list)))
-                if request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']:
+                if request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']:
                                         session.close()
                                         return Response({'status':'success','data':[]})
 
@@ -791,16 +791,16 @@ class StaffRewardList(APIView):
 
             elif str_type.upper() == 'ZONE' :
                 rst_staff_details = rst_staff_details.filter(GroupsSA.vchr_name=='ZONE MANAGER')
-            elif str_type.upper() == 'PRODUCT MANAGER' or request.user.usermodel.fk_group.vchr_name.upper()=='' :
+            elif str_type.upper() == 'PRODUCT MANAGER' or request.user.userdetails.fk_group.vchr_name.upper()=='' :
                 rst_staff_details = rst_staff_details.filter(GroupsSA.vchr_name=='PRODUCT MANAGER')
                 flagb=True
-            elif str_type.upper() == 'B TEAM' or request.user.usermodel.fk_group.vchr_name.upper()=='B TEAM':
+            elif str_type.upper() == 'B TEAM' or request.user.userdetails.fk_group.vchr_name.upper()=='B TEAM':
                 rst_staff_details = rst_staff_details.filter(GroupsSA.vchr_name=='B TEAM')
                 flagb=True
 
-            if request.user.usermodel.fk_group.vchr_name.upper() in ['ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']:
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']:
                 rst_staff_details=rst_staff_details.filter(GroupsSA.vchr_name!='BRANCH MANAGER')
-            if (str_type.upper()=='BRANCH' or (str_type.upper() == 'TERRITORY' and int_area_id) or (str_type.upper()=='ALL') and request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','STAFF','ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']) or request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN','ZONE MANAGER','TERRITORY MANAGER','PRODUCT MANAGER','B TEAM']:
+            if (str_type.upper()=='BRANCH' or (str_type.upper() == 'TERRITORY' and int_area_id) or (str_type.upper()=='ALL') and request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','STAFF','ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']) or request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN','ZONE MANAGER','TERRITORY MANAGER','PRODUCT MANAGER','B TEAM']:
                     pass
             else:
                 session.close()
@@ -838,30 +838,30 @@ class StaffRewardList(APIView):
             #                                     .filter(UserModelSA.user_ptr_id == int_staff_id)
 
 
-            # if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN']:
+            # if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN']:
             #     pass
-            # elif request.user.usermodel.fk_group.vchr_name.upper()=='BRANCH MANAGER':
+            # elif request.user.userdetails.fk_group.vchr_name.upper()=='BRANCH MANAGER':
             #     rst_staff_details = session.query(UserModelSA.user_ptr_id.label('staff_id'),\
             #                                     func.concat(AuthUserSA.first_name," ",AuthUserSA.last_name).label('staff_name'),\
             #                                     BranchSA.vchr_name.label('branch_name'))\
             #                                     .join(AuthUserSA,AuthUserSA.id == UserModelSA.user_ptr_id)\
             #                                     .join(BranchSA,BranchSA.pk_bint_id == UserModelSA.fk_branch_id)\
-            #                                     .filter(BranchSA.pk_bint_id == request.user.usermodel.fk_branch_id)
+            #                                     .filter(BranchSA.pk_bint_id == request.user.userdetails.fk_branch_id)
             #
             #
-            # elif request.user.usermodel.fk_group.vchr_name.upper()=='ASSISTANT BRANCH MANAGER':
+            # elif request.user.userdetails.fk_group.vchr_name.upper()=='ASSISTANT BRANCH MANAGER':
             #     rst_staff_details = session.query(UserModelSA.user_ptr_id.label('staff_id'),\
             #                                     func.concat(AuthUserSA.first_name," ",AuthUserSA.last_name).label('staff_name'),\
             #                                     BranchSA.vchr_name.label('branch_name'))\
             #                                     .join(AuthUserSA,AuthUserSA.id == UserModelSA.user_ptr_id)\
             #                                     .join(GroupsSA,GroupsSA.pk_bint_id == UserModelSA.fk_group_id)\
             #                                     .join(BranchSA,BranchSA.pk_bint_id == UserModelSA.fk_branch_id)\
-            #                                     .filter(BranchSA.pk_bint_id == request.user.usermodel.fk_branch_id)\
+            #                                     .filter(BranchSA.pk_bint_id == request.user.userdetails.fk_branch_id)\
             #                                     .filter(GroupsSA.vchr_name != 'BRANCH MANAGER' )
             #
             #
-            # elif request.user.usermodel.int_area_id:
-            #     lst_branch = show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+            # elif request.user.userdetails.int_area_id:
+            #     lst_branch = show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
             #     rst_staff_details = session.query(UserModelSA.user_ptr_id.label('staff_id'),\
             #                                     func.concat(AuthUserSA.first_name," ",AuthUserSA.last_name).label('staff_name'),\
             #                                     BranchSA.vchr_name.label('branch_name'))\
@@ -1027,14 +1027,14 @@ class StaffRewardList(APIView):
                 rst_staff_details = rst_staff_details.filter(UserModelSA.user_ptr_id == int_staff_id)
             flagb=False
             lst_data = []
-            if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN']:
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN']:
                 pass
-            elif request.user.usermodel.fk_group.vchr_name.upper()=='BRANCH MANAGER':
-                # ins_reward_available = ins_reward_available.filter(fk_staff__fk_branch=request.user.usermodel.fk_branch)
-                rst_staff_details = rst_staff_details.filter(BranchSA.pk_bint_id == request.user.usermodel.fk_branch_id)
-            elif request.user.usermodel.fk_group.vchr_name.upper()=='ASSISTANT BRANCH MANAGER':
-                # ins_reward_available = ins_reward_available.filter(fk_staff__fk_branch=request.user.usermodel.fk_branch).exclude(fk_staff__fk_group__vchr_name='BRANCH MANAGER')
-                rst_staff_details = rst_staff_details.filter(BranchSA.pk_bint_id == request.user.usermodel.fk_branch_id).filter(GroupsSA.vchr_name != 'BRANCH MANAGER')
+            elif request.user.userdetails.fk_group.vchr_name.upper()=='BRANCH MANAGER':
+                # ins_reward_available = ins_reward_available.filter(fk_staff__fk_branch=request.user.userdetails.fk_branch)
+                rst_staff_details = rst_staff_details.filter(BranchSA.pk_bint_id == request.user.userdetails.fk_branch_id)
+            elif request.user.userdetails.fk_group.vchr_name.upper()=='ASSISTANT BRANCH MANAGER':
+                # ins_reward_available = ins_reward_available.filter(fk_staff__fk_branch=request.user.userdetails.fk_branch).exclude(fk_staff__fk_group__vchr_name='BRANCH MANAGER')
+                rst_staff_details = rst_staff_details.filter(BranchSA.pk_bint_id == request.user.userdetails.fk_branch_id).filter(GroupsSA.vchr_name != 'BRANCH MANAGER')
             if str_type.upper()=='BRANCH':
                 rst_staff_details=rst_staff_details.filter(and_(UserModelSA.fk_branch_id!=None,UserModelSA.int_area_id==None,GroupsSA.vchr_name.in_(['BRANCH MANAGER','ASSISTANT BRANCH MANAGER','STAFF'])))
             if str_type.upper()=='BRANCH' and int_area_id:
@@ -1114,20 +1114,20 @@ class RewardPaidList(APIView):
             # pdb.set_trace()
             ins_reward_paid = RewardsPaid.objects.filter(dat_paid__date__range=(dat_from,dat_to),int_status=1).values('pk_bint_id','vchr_transaction_id','dbl_paid','dat_paid','fk_staff__fk_branch__vchr_name').annotate(staff_name=Concat('fk_staff__first_name',Value(' '),'fk_staff__last_name'))
 
-            if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN']:
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN']:
                 pass
-            elif request.user.usermodel.fk_group.vchr_name.upper()=='BRANCH MANAGER':
-                ins_reward_paid = ins_reward_paid.filter(fk_staff__fk_branch=request.user.usermodel.fk_branch)
-            elif request.user.usermodel.fk_group.vchr_name.upper()=='ASSISTANT BRANCH MANAGER':
-                ins_reward_paid = ins_reward_paid.filter(fk_staff__fk_branch=request.user.usermodel.fk_branch).exclude(fk_staff__fk_group__vchr_name='BRANCH MANAGER')
+            elif request.user.userdetails.fk_group.vchr_name.upper()=='BRANCH MANAGER':
+                ins_reward_paid = ins_reward_paid.filter(fk_staff__fk_branch=request.user.userdetails.fk_branch)
+            elif request.user.userdetails.fk_group.vchr_name.upper()=='ASSISTANT BRANCH MANAGER':
+                ins_reward_paid = ins_reward_paid.filter(fk_staff__fk_branch=request.user.userdetails.fk_branch).exclude(fk_staff__fk_group__vchr_name='BRANCH MANAGER')
             if int_branch_id:
                 ins_reward_paid = ins_reward_paid.filter(fk_staff__fk_branch_id=int_branch_id)
             lst_data = []
 
-            if request.user.usermodel.int_area_id:
+            if request.user.userdetails.int_area_id:
                 ins_reward_paid = RewardsPaid.objects.filter(dat_paid__date__range=(dat_from,dat_to),int_status=1).values('pk_bint_id','vchr_transaction_id','dbl_paid','dat_paid','fk_staff').annotate(staff_name=Concat('fk_staff__first_name',Value(' '),'fk_staff__last_name'))
 
-                lst_branch = show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+                lst_branch = show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
                 lst_territory_id=Branch.objects.filter(pk_bint_id__in=lst_branch).values_list('fk_territory_id',flat=True)
                 ins_reward_paid = ins_reward_paid.filter(Q(fk_staff__fk_branch__in=lst_branch) | Q (fk_staff__int_area_id__in=lst_territory_id))
 
@@ -1177,17 +1177,17 @@ class StaffByBranch(APIView):
             if str_search_term:
                 lst_user = []
                 if int_branch_id:
-                    userListData = UserModel.objects.annotate(full_name=Concat('first_name',Value(' '),'last_name')).filter(Q(username__icontains=str_search_term) | Q(full_name__icontains=str_search_term), fk_company = request.user.usermodel.fk_company,is_active=True,int_area_id=None,fk_branch_id=int_branch_id).exclude(username='TDX-ADMIN').values('id','full_name','username','fk_branch__vchr_name')
+                    userListData = UserModel.objects.annotate(full_name=Concat('first_name',Value(' '),'last_name')).filter(Q(username__icontains=str_search_term) | Q(full_name__icontains=str_search_term), fk_company = request.user.userdetails.fk_company,is_active=True,int_area_id=None,fk_branch_id=int_branch_id).exclude(username='TDX-ADMIN').values('id','full_name','username','fk_branch__vchr_name')
                 else:
-                    userListData = UserModel.objects.annotate(full_name=Concat('first_name',Value(' '),'last_name')).filter(Q(username__icontains=str_search_term) | Q(full_name__icontains=str_search_term), fk_company = request.user.usermodel.fk_company,is_active=True,int_area_id=None).exclude(username='TDX-ADMIN').values('id','full_name','username','fk_branch__vchr_name')
-                if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN']:
+                    userListData = UserModel.objects.annotate(full_name=Concat('first_name',Value(' '),'last_name')).filter(Q(username__icontains=str_search_term) | Q(full_name__icontains=str_search_term), fk_company = request.user.userdetails.fk_company,is_active=True,int_area_id=None).exclude(username='TDX-ADMIN').values('id','full_name','username','fk_branch__vchr_name')
+                if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN']:
                     pass
-                elif request.user.usermodel.fk_group.vchr_name.upper()=='BRANCH MANAGER':
-                    userListData = userListData.filter(fk_branch=request.user.usermodel.fk_branch)
-                elif request.user.usermodel.fk_group.vchr_name.upper()=='ASSISTANT BRANCH MANAGER':
-                    userListData = userListData.filter(fk_branch=request.user.usermodel.fk_branch).exclude(fk_group__vchr_name='BRANCH MANAGER')
-                elif request.user.usermodel.int_area_id:
-                    lst_branch = show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+                elif request.user.userdetails.fk_group.vchr_name.upper()=='BRANCH MANAGER':
+                    userListData = userListData.filter(fk_branch=request.user.userdetails.fk_branch)
+                elif request.user.userdetails.fk_group.vchr_name.upper()=='ASSISTANT BRANCH MANAGER':
+                    userListData = userListData.filter(fk_branch=request.user.userdetails.fk_branch).exclude(fk_group__vchr_name='BRANCH MANAGER')
+                elif request.user.userdetails.int_area_id:
+                    lst_branch = show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
                     userListData = userListData.filter(fk_branch_id__in=lst_branch)
                 for value in list(userListData):
                     dct_temp = {}
@@ -1215,16 +1215,16 @@ class RewardPaidListDownload(APIView):
 
             lst_branch = []
 
-            if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN']:
-                lst_branch = Branch.objects.filter(fk_company_id = request.user.usermodel.fk_company_id).values_list('pk_bint_id',flat=True)
-            elif request.user.usermodel.fk_group.vchr_name.upper()=='BRANCH MANAGER':
-                lst_branch.append(request.user.usermodel.fk_branch_id)
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN']:
+                lst_branch = Branch.objects.filter(fk_company_id = request.user.userdetails.fk_company_id).values_list('pk_bint_id',flat=True)
+            elif request.user.userdetails.fk_group.vchr_name.upper()=='BRANCH MANAGER':
+                lst_branch.append(request.user.userdetails.fk_branch_id)
 
-            elif request.user.usermodel.fk_group.vchr_name.upper()=='ASSISTANT BRANCH MANAGER':
-                lst_branch.append(request.user.usermodel.fk_branch_id)
+            elif request.user.userdetails.fk_group.vchr_name.upper()=='ASSISTANT BRANCH MANAGER':
+                lst_branch.append(request.user.userdetails.fk_branch_id)
 
-            elif request.user.usermodel.int_area_id:
-                lst_branch = show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+            elif request.user.userdetails.int_area_id:
+                lst_branch = show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
 
             rst_reward = session.query(func.DATE(RewardsPaidSA.dat_paid).label('dat'),RewardsPaidSA.vchr_transaction_id.label('voucher_code'),RewardsPaidSA.dbl_paid.label('amount'),BranchSA.vchr_name.label('branch'),func.concat(AuthUserSA.first_name,' ',AuthUserSA.last_name).label('staff_name'),func.coalesce(" "," "))\
                                 .join(UserModelSA,UserModelSA.user_ptr_id == RewardsPaidSA.fk_staff_id)\

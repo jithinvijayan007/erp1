@@ -84,7 +84,7 @@ class ViewUser(APIView):
         '''list all users'''
 
         try:
-            # import pdb; pdb.set_trace()
+            # 
             if request.GET.get("id"):
                 pk_bint_id=int(request.GET.get("id"))
                 if(UserDetails.objects.filter(user_ptr_id=pk_bint_id,is_active=1)):
@@ -200,9 +200,9 @@ class ViewUser(APIView):
 #     def post(self,request):
 #         '''add users'''
 #         try:
-#             # import pdb; pdb.set_trace()
+#             # 
 #             with transaction.atomic():
-#                 # import pdb; pdb.set_trace()
+#                 # 
 #                 first_name  = str(request.data.get('firstname'))
 #                 bint_phone = int(request.data.get('contactno'))
 #                 # str_pssrsttkn= str(request.data.get('vchr_pssrsttkn'))
@@ -288,7 +288,7 @@ class AddUsers(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-            # import pdb; pdb.set_trace()
+            
             with transaction.atomic():
                 username = str(request.data.get('strUserName'))
                 if UserDetails.objects.filter(username = username):
@@ -348,7 +348,7 @@ class AddUsers(APIView):
                                        vchr_ifsc = request.data.get("strIfscCode", None),
                                        fk_brand_id = int(request.data.get("intBrandId")) if request.data.get("intBrandId") else None,
                                     #    fk_product_id = int(request.data.get("intProductId")) if request.data.get("intProductId") else None,
-                                       json_function = request.data.get("intProductId", None),
+                                       json_function = json.loads(request.data.get("intProductId")) if request.data.get("intProductId") else None,
                                        vchr_file_no = request.data.get("strFileNo", None),
                                        json_physical_loc = lst_phy_loc,
                                        vchr_address = request.data.get("strAddress", None),
@@ -376,6 +376,9 @@ class AddUsers(APIView):
                                        fk_hierarchy_data_id = request.data.get('lstLoc', None),
                                        fk_group_id = request.data.get('groupId', None),
                                        fk_hierarchy_group_id = request.data.get('hGroup', None))
+                                    #    )
+                                    #    fk_hierarchy_group_id = request.data.get('hGroup', None))
+                                    #    fk_group_id = request.data.get('groupId', None),
 
 
                 ins_user.set_password(request.data.get('strPassword'))
@@ -501,6 +504,7 @@ class AddUsers(APIView):
                 # ===============================================================================================================
 
                 # ==================================================== History ==================================================
+                # 
                 if request.data.get('blnNewEmp') == 'true':
                     AppliedJobDetails.objects.filter(pk_bint_id=request.data.get('intNewEmpJobId')).update(int_offer_status=7)
                     AppliedJobDetails.objects.filter(Q(fk_applicant_id=request.data.get('intNewEmpId')) & ~Q(pk_bint_id=request.data.get('intNewEmpJobId'))).update(int_offer_status=-2)
@@ -532,7 +536,7 @@ class AddUsers(APIView):
                 dct_history['vchr_acc_no'] =  {'Value':request.data.get("intAccountNum").zfill(16) if request.data.get("intAccountNum") else None, 'bln_change':False}
                 dct_history['vchr_ifsc'] =  {'Value':request.data.get('strIfscCode'), 'bln_change':False}
                 dct_history['fk_brand_id'] =  {'Value':int(request.data.get("intBrandId")) if request.data.get("intBrandId") else None, 'bln_change':False}
-                dct_history['fk_product_id'] =  {'Value':int(request.data.get("intProductId")) if request.data.get("intProductId") else None, 'bln_change':False}
+                dct_history['json_function'] =  {'Value':request.data.get("intProductId") if request.data.get("intProductId") else None, 'bln_change':False}
                 dct_history['vchr_file_no'] =  {'Value':request.data.get("strFileNo"), 'bln_change':False}
                 dct_history['vchr_address'] =  {'Value':request.data.get('strAddress'), 'bln_change':False}
                 dct_history['int_weekoff_type'] =  {'Value':int(request.data.get("intWeekOffType")) if request.data.get("intWeekOffType") else None, 'bln_change':False}
@@ -633,7 +637,7 @@ class AddUsers(APIView):
     def get(self,request):
         try:
             """View User"""
-            # import pdb; pdb.set_trace()
+            
             int_user_id = request.GET.get("id")
             if int_user_id:
                 lst_user_details= list(UserDetails.objects.filter(user_ptr_id = int(int_user_id)).values('vchr_employee_code',
@@ -671,7 +675,9 @@ class AddUsers(APIView):
                                                                                                    'vchr_emergency_person','vchr_emergency_relation',
                                                                                                    'fk_wps__vchr_name','fk_wps_id','vchr_disease',
                                                                                                    'vchr_emp_remark', 'int_official_num', 'json_documents'))
-
+                dict_products =[]
+                if lst_user_details[0].get('json_function'):
+                    dict_products = Products.objects.filter(pk_bint_id__in = json.loads(lst_user_details[0].get('json_function'))).values("pk_bint_id","vchr_name")
 
                 lst_ref_details= list(EmpReferences.objects.filter(fk_employee_id = int(int_user_id), int_status = 1).annotate(intRefId = F('pk_bint_id'),
                                                                                                             strRefName = F('vchr_name'),
@@ -786,7 +792,8 @@ class AddUsers(APIView):
                     ins_fixd_amt = FixedAllowance.objects.filter(fk_employee_id = int(int_user_id),int_status = 1).values('dbl_amount')
                     if ins_fixd_amt:
                         dct_data['FixedAllowance'] = ins_fixd_amt[0]['dbl_amount']
-                return Response({'status':1,'lst_userdetailsview':lst_user_details,'lstRefDetails':lst_ref_details,'lstFamilyDetails':lst_family_details,'lstEduDetails':lst_edu_details,'lstExpDetails':lst_exp_details})
+
+                return Response({'status':1,'lst_userdetailsview':lst_user_details,'lstRefDetails':lst_ref_details,'lstFamilyDetails':lst_family_details,'lstEduDetails':lst_edu_details,'lstExpDetails':lst_exp_details,'lstfunctions':dict_products})
 
             else:
                 """List User"""
@@ -820,7 +827,7 @@ class AddUsers(APIView):
             
             with transaction.atomic():
                 """Update User """
-                import pdb; pdb.set_trace()
+                # 
                 int_user_id = int(request.data.get("intId"))
                 username = request.data.get('strUserName')
                 bln_approve = True
@@ -900,7 +907,7 @@ class AddUsers(APIView):
                 dct_history['vchr_acc_no'] = {'Value':request.data.get("intAccountNum").zfill(16) if request.data.get("intAccountNum") else None, 'bln_change':ins_user_details.vchr_acc_no != request.data.get("intAccountNum").zfill(16) if request.data.get("intAccountNum") else None}
                 dct_history['vchr_ifsc'] ={'Value': request.data.get('strIfscCode'), 'bln_change':ins_user_details.vchr_ifsc != request.data.get('strIfscCode')}
                 dct_history['fk_brand_id'] = {'Value':int(request.data.get("intBrandId")) if request.data.get("intBrandId") else None, 'bln_change':ins_user_details.fk_brand_id != int(request.data.get('intBrandId')) if request.data.get("intBrandId") else False}
-                dct_history['fk_product_id'] = {'Value':int(request.data.get("intProductId")) if request.data.get("intProductId") else None, 'bln_change':ins_user_details.fk_product_id != int(request.data.get('intProductId')) if request.data.get("intProductId") else False}
+                dct_history['json_function'] = {'Value':(request.data.get("intProductId")) if request.data.get("intProductId") else None, 'bln_change':ins_user_details.json_function != (request.data.get('intProductId')) if request.data.get("intProductId") else False}
                 dct_history['vchr_file_no'] = {'Value':request.data.get("strFileNo"), 'bln_change':ins_user_details.vchr_file_no != request.data.get('strFileNo')}
                 dct_history['vchr_address'] = {'Value':request.data.get('strAddress'), 'bln_change':ins_user_details.vchr_address != request.data.get('strAddress')}
                 dct_history['int_weekoff_type'] = {'Value':int(request.data.get("intWeekOffType")) if request.data.get("intWeekOffType") else None, 'bln_change':ins_user_details.int_weekoff_type != int(request.data.get("intWeekOffType")) if request.data.get("intWeekOffType") else None}
@@ -1062,7 +1069,7 @@ class AddUsers(APIView):
                                     vchr_acc_no = request.data.get("intAccountNum").zfill(16) if request.data.get("intAccountNum") else None,
                                     vchr_ifsc = request.data.get("strIfscCode"),
                                     fk_brand_id = int(request.data.get("intBrandId")) if request.data.get("intBrandId") else None,
-                                    json_function = int(request.data.get("intProductId")) if request.data.get("intProductId") else None,
+                                    json_function = request.data.get("intProductId") if request.data.get("intProductId") else None,
                                     vchr_file_no = request.data.get("strFileNo"),
                                     vchr_address = request.data.get("strAddress"),
                                     json_physical_loc = lst_phy_loc,
@@ -1314,7 +1321,7 @@ class UpdateUser(APIView):
     def post(self,request):
         '''update user'''
         try:
-            # import pdb; pdb.set_trace()
+            # 
             with transaction.atomic():
 
                 # str_pssrsttkn= request.data.get('vchr_pssrsttkn')
@@ -1387,7 +1394,7 @@ class loginCheck(APIView):
     permission_classes=[AllowAny]
     def post(self,request):
         try :
-            # import pdb; pdb.set_trace()
+            # 
             str_username= request.data['_UserId']
             str_password=request.data['_Password']
             user = authenticate(request, username=str_username, password=str_password)
@@ -1488,11 +1495,11 @@ class loginCheck(APIView):
     # permission_classes=[AllowAny]
     # def post(self,request):
     #     try :
-    #         # import pdb; pdb.set_trace()
+    #         # 
     #         str_username= request.data['_UserId']
     #         str_password=request.data['_Password']
     #         # if(Userdetails.objects.filter(username=str_username)):
-    #         #import pdb; pdb.set_trace()
+    #         #
     #         user = authenticate(request, username=str_username, password=str_password)
 
 
@@ -1515,7 +1522,7 @@ class loginCheck(APIView):
     #             token = json.loads(token_json._content.decode("utf-8"))['token']
     #             str_name=(user.first_name +' '+ user.last_name).title()
     #             email=user.email or ''
-    #             # import pdb; pdb.set_trace()
+    #             # 
     #             rst_user = UserDetails.objects.filter(user_ptr_id=request.user.id).values('fk_branch_id','fk_branch_id__vchr_name','fk_company_id','fk_group__vchr_name','fk_branch__vchr_code')
     #             branch_id = rst_user[0]['fk_branch_id']
     #             bln_indirect_discount = False
@@ -1737,7 +1744,7 @@ class GenerateGuest(APIView):
     def post(self,request):
         '''add guest'''
         try:
-            # import pdb; pdb.set_trace()
+            # 
             branch_id = request.user.userdetails.fk_branch_id
             group_id = request.data['intGroup']
             branch_code = request.user.userdetails.fk_branch.vchr_code
@@ -1824,7 +1831,7 @@ class AddUserBI(APIView):
     permission_classes = [AllowAny]
     def post(self,request):
         try:
-            # import pdb; pdb.set_trace()
+            # 
             if request.data.get('update_password'):
                 """to change password"""
                 userobject = UserDetails.objects.get(username = request.data.get('str_username'))
@@ -1855,7 +1862,7 @@ class AddUserBI(APIView):
                 int_company_id = Company.objects.filter(vchr_name__iexact = request.data.get('str_company_name')).values_list('pk_bint_id',flat = True).first()
                 int_created_id = UserDetails.objects.filter(username = str_created_username).values_list('id',flat = True).first()
 
-                # import pdb; pdb.set_trace()
+                # 
                 json_product = None
                 if json_product_names:
                     json_product_id = list(Products.objects.filter(vchr_name__in = json_product_names).values_list('pk_bint_id',flat = True))
@@ -1956,7 +1963,7 @@ class ChangePassword(APIView):
         }
         """
         try:
-            # import pdb; pdb.set_trace()
+            # 
             _username= request.data.get('userName')
             _password=request.data.get('oldPassword')
             new_password = request.data.get('newPassword')

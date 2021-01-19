@@ -372,12 +372,12 @@ class PendingEnquiryList(APIView):
                 #     rst_enquiry = rst_enquiry.filter(NaEnquiryMasterSA.fk_branch_id == int_branch_id)
 
                 """Permission wise filter for data"""
-                if request.user.usermodel.fk_group.vchr_name.upper()=='ADMIN':
+                if request.user.userdetails.fk_group.vchr_name.upper()=='ADMIN':
                     pass
-                elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
-                    rst_enquiry = rst_enquiry.filter(BranchSA.pk_bint_id == request.user.usermodel.fk_branch_id)
-                elif request.user.usermodel.int_area_id:
-                    lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+                elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
+                    rst_enquiry = rst_enquiry.filter(BranchSA.pk_bint_id == request.user.userdetails.fk_branch_id)
+                elif request.user.userdetails.int_area_id:
+                    lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
                     rst_enquiry = rst_enquiry.filter(BranchSA.pk_bint_id.in_(lst_branch))
                 else:
                     session.close()
@@ -537,7 +537,7 @@ class EnquiryList(APIView):
     permission_classes=[IsAuthenticated]
     def post(self,request):
         try:
-            int_company_id = request.user.usermodel.fk_company_id
+            int_company_id = request.user.userdetails.fk_company_id
             # int_company_id=1
             if not int_company_id:
                 return Response({'status':'1','data':["No company found"]})
@@ -566,15 +566,15 @@ class EnquiryList(APIView):
                 lst_data=[]
                 tmp_dct={}
                 ####permision wise
-                if request.user.usermodel.fk_group.vchr_name.upper()=='ADMIN':
+                if request.user.userdetails.fk_group.vchr_name.upper()=='ADMIN':
                     pass
-                elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
-                    rst_enquiry = rst_enquiry.filter(BranchSA.pk_bint_id == request.user.usermodel.fk_branch_id)
-                elif request.user.usermodel.int_area_id:
-                    lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+                elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
+                    rst_enquiry = rst_enquiry.filter(BranchSA.pk_bint_id == request.user.userdetails.fk_branch_id)
+                elif request.user.userdetails.int_area_id:
+                    lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
                     rst_enquiry = rst_enquiry.filter(BranchSA.pk_bint_id.in_(lst_branch))
-                elif request.user.usermodel.fk_group.vchr_name.upper()=='STAFF':
-                    rst_enquiry =rst_enquiry.filter(NaEnquiryMasterSA.fk_branch_id== request.user.usermodel.fk_branch_id,NaEnquiryMasterSA.fk_assigned_id==request.user.id)
+                elif request.user.userdetails.fk_group.vchr_name.upper()=='STAFF':
+                    rst_enquiry =rst_enquiry.filter(NaEnquiryMasterSA.fk_branch_id== request.user.userdetails.fk_branch_id,NaEnquiryMasterSA.fk_assigned_id==request.user.id)
                 else:
                     session.close()
                     return Response({'status':'failed','reason':'No data'})

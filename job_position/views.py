@@ -88,7 +88,7 @@ class AddJobPosition(APIView):
         try:
             """view Job Position"""
             # import pdb; pdb.set_trace()
-            # int_company_id = request.user.usermodel.fk_company_id
+            # int_company_id = request.user.userdetails.fk_company_id
 
             if request.GET.get('id'):
                 int_id = int(request.GET.get('id'))

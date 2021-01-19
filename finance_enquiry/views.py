@@ -67,7 +67,7 @@ class UpdateFinanceEnquiry(APIView):
                     ItemEnquiry.objects.filter(fk_enquiry_master = int_enquiry_master_id,vchr_enquiry_status = 'TO PROCESS').update(vchr_enquiry_status='BOOKED',int_fop = 1)
                     ins_obj = ItemEnquiry.objects.filter(pk_bint_id__in = lst_item_enq_id)
 
-                    ins_item_enq_exist = ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer_id = ins_customer_id,fk_enquiry_master__fk_company = request.user.usermodel.fk_company,fk_product_id=ins_obj.first().fk_product_id).exclude(vchr_enquiry_status = 'BOOKED')
+                    ins_item_enq_exist = ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer_id = ins_customer_id,fk_enquiry_master__fk_company = request.user.userdetails.fk_company,fk_product_id=ins_obj.first().fk_product_id).exclude(vchr_enquiry_status = 'BOOKED')
                     if ins_item_enq_exist:
                         '''Following code commented in order to prevent lost case if same product booked multiple times'''
 
@@ -80,8 +80,8 @@ class UpdateFinanceEnquiry(APIView):
                                                               int_status = 1,
                                                               dbl_amount = 0.0,
                                                               int_quantity = 0,
-                                                              fk_user = request.user.usermodel,
-                                                              fk_updated = request.user.usermodel,
+                                                              fk_user = request.user.userdetails,
+                                                              fk_updated = request.user.userdetails,
                                                               dat_followup = datetime.now(),
                                                               dat_updated = datetime.now())
                             lst_query_set.append(ins_follow_up)
@@ -247,7 +247,7 @@ class AddFinanceCustomerAPIView(APIView):
                     ins_obj = ItemEnquiry.objects.filter(pk_bint_id__in = lst_item_enq_id)
                     '''Following code commented in order to prevent lost case if same product booked multiple times'''
 
-                    '''ins_item_enq_exist = ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer_id = fk_enquiry_master.fk_customer_id,fk_enquiry_master__fk_company = request.user.usermodel.fk_company,fk_product_id=ins_obj.first().fk_product_id).exclude(vchr_enquiry_status = 'BOOKED')
+                    '''ins_item_enq_exist = ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer_id = fk_enquiry_master.fk_customer_id,fk_enquiry_master__fk_company = request.user.userdetails.fk_company,fk_product_id=ins_obj.first().fk_product_id).exclude(vchr_enquiry_status = 'BOOKED')
                     if ins_item_enq_exist:
                         ins_item_enq_exist.update(vchr_enquiry_status = 'LOST')
                         lst_query_set = []
@@ -258,8 +258,8 @@ class AddFinanceCustomerAPIView(APIView):
                                                               int_status = 1,
                                                               dbl_amount = 0.0,
                                                               int_quantity = 0,
-                                                              fk_user = request.user.usermodel,
-                                                              fk_updated = request.user.usermodel,
+                                                              fk_user = request.user.userdetails,
+                                                              fk_updated = request.user.userdetails,
                                                               dat_followup = datetime.now(),
                                                               dat_updated = datetime.now())
                             lst_query_set.append(ins_follow_up)
