@@ -21,7 +21,7 @@ class PriorityAPIView(APIView):
     def get(self, request,):
         try:
             # import pdb; pdb.set_trace()
-            ins_company = request.user.usermodel.fk_company
+            ins_company = request.user.userdetails.fk_company
             id = int(request.GET.get('id',0))
             if id > 0:
                 lst_priority = list(Priority.objects.filter(pk_bint_id = id,bln_status=True).values('vchr_priority_name'))
@@ -34,7 +34,7 @@ class PriorityAPIView(APIView):
 
     def post(self, request,):
         try:
-            int_company_id = request.user.usermodel.fk_company_id
+            int_company_id = request.user.userdetails.fk_company_id
             str_name = request.data['vchr_name'].upper()
             ins_name = Priority.objects.filter(vchr_priority_name = str_name,bln_status=True,fk_company_id = int_company_id)
             in_count=Priority.objects.filter(bln_status=True,fk_company_id = int_company_id).count()
@@ -55,7 +55,7 @@ class PriorityAPIView(APIView):
             int_id = int(request.data['id'])
             str_name = request.data['vchr_name'].upper()
 
-            ins_name = Priority.objects.filter(~Q(pk_bint_id=int_id) & Q(bln_status=True) & Q(vchr_priority_name = str_name) & Q(fk_company = request.user.usermodel.fk_company))
+            ins_name = Priority.objects.filter(~Q(pk_bint_id=int_id) & Q(bln_status=True) & Q(vchr_priority_name = str_name) & Q(fk_company = request.user.userdetails.fk_company))
 
             if not ins_name:
                 Priority.objects.filter(pk_bint_id = int_id,bln_status=True).update(vchr_priority_name = str_name)

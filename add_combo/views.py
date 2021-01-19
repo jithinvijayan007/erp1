@@ -77,7 +77,7 @@ class AddCombo(APIView):
                     ins_item_offer.int_quantity = item_quantity
                     ins_item_offer.dat_to = dat_to
                     ins_item_offer.dat_from =dat_from
-                    # ins_item_offer.fk_company_id = request.user.usermodel.fk_company_id
+                    # ins_item_offer.fk_company_id = request.user.userdetails.fk_company_id
                     ins_item_offer.fk_company_id = user.userdetails.fk_company_id
                     ins_item_offer.save()
 

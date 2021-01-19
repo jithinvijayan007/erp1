@@ -122,7 +122,8 @@ INSTALLED_APPS = [
     'na_enquiry',
     'finance_enquiry',
     'adminsettings',
-    'customer_rating'
+    'customer_rating',
+    'inventory',
 
 ]
 REST_FRAMEWORK = {

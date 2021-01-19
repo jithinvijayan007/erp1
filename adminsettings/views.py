@@ -23,7 +23,7 @@ class SaveAdminSettings(APIView):
                     lst_value.append(str_code['vchr_value'])
                 else:
                     lst_value = str_code['vchr_value']
-                ins_admin_settings = AdminSettings.objects.filter(vchr_code = str_code['vchr_code'],fk_company = request.user.usermodel.fk_company).update(
+                ins_admin_settings = AdminSettings.objects.filter(vchr_code = str_code['vchr_code'],fk_company = request.user.userdetails.fk_company).update(
                                 vchr_value = lst_value,
                                 bln_enabled = str_code['bln_enabled']
                 )
@@ -34,7 +34,7 @@ class SaveAdminSettings(APIView):
     def get(self, request,):
         try:
             # import pdb; pdb.set_trace()
-            lst_data = list(AdminSettings.objects.filter(fk_company_id = request.user.usermodel.fk_company_id).values('pk_bint_id','vchr_name','vchr_value','bln_enabled','vchr_code').order_by('pk_bint_id'))
+            lst_data = list(AdminSettings.objects.filter(fk_company_id = request.user.userdetails.fk_company_id).values('pk_bint_id','vchr_name','vchr_value','bln_enabled','vchr_code').order_by('pk_bint_id'))
             return JsonResponse({'status':'success','data':lst_data})
         except Exception as e:
             return JsonResponse({'status':'failed','reason':str(e)})

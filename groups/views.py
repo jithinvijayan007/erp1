@@ -589,7 +589,7 @@ class GroupCreateViewNew(APIView):
         try:
             """View Designation Data"""
             # import pdb; pdb.set_trace()
-            # int_company_id = request.user.usermodel.fk_company_id
+            # int_company_id = request.user.userdetails.fk_company_id
 
             if request.GET.get('groupId'):
                 int_id = int(request.GET.get('groupId'))
