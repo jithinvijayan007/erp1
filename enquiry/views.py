@@ -435,7 +435,7 @@ class CustomerTypeahead(APIView):
             if str_search_term != -1:
                 # .filter(fk_company = ins_user.fk_company)\
                 ins_customer = CustomerDetails.objects.filter(Q(int_mobile__icontains=str_search_term))\
-                .values('id','int_mobile','vchr_name','cust_email','cust_salutation','cust_customertype','cust_smsaccess')[:50]
+                .values('pk_bint_id','int_mobile','vchr_name','vchr_email','cust_salutation','int_cust_type','cust_smsaccess')[:50]
                 if ins_customer:
                     for itr_item in ins_customer:
                         dct_customer = {}
