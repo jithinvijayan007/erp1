@@ -150,3 +150,34 @@ CREATE TABLE buy_back(
   dbl_amount DOUBLE PRECISION,
   int_status INTEGER DEFAULT 1
 );
+ALTER TABLE customer_details add cust_salutation varchar(10);
+
+INSERT INTO document (vchr_module_name,vchr_short_code,int_number,fk_company_id) values ('ENQUIRY','ENQ',847919,1);
+
+ALTER TABLE enquiry_master add fk_source_id BIGINT REFERENCES source(pk_bint_id);
+
+ALTER TABLE enquiry_master add fk_priority_id BIGINT REFERENCES priority(pk_bint_id);
+
+ALTER TABLE source add fk_category_id BIGINT REFERENCES category(pk_bint_id);
+
+ALTER TABLE enquiry_master alter vchr_customer_type drop not null;
+
+ALTER TABLE enquiry_master alter  vchr_enquiry_priority drop not null;
+
+ALTER TABLE enquiry_master alter  vchr_enquiry_source drop not null;
+
+ALTER TABLE enquiry_master add  vchr_item_name varchar(10);
+
+CREATE TABLE item_followup (
+    pk_bint_id BIGSERIAL PRIMARY KEY,
+    fk_item_enquiry_id BIGINT REFERENCES item_enquiry(pk_bint_id) NOT NULL,
+    dat_followup TIMESTAMP DEFAULT NOW(),
+    fk_user_id BIGINT REFERENCES user_details(user_ptr_id),
+    vchr_notes VARCHAR(250),
+    vchr_enquiry_status VARCHAR(50) NOT NULL,
+    int_status INTEGER,
+    dbl_amount DOUBLE PRECISION,
+    fk_updated_id BIGINT REFERENCES user_details(user_ptr_id) NULL,
+    dat_updated TIMESTAMP NULL,
+    int_quantity INTEGER
+);
