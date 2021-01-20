@@ -348,7 +348,7 @@ class AddUsers(APIView):
                                        vchr_ifsc = request.data.get("strIfscCode", None),
                                        fk_brand_id = int(request.data.get("intBrandId")) if request.data.get("intBrandId") else None,
                                     #    fk_product_id = int(request.data.get("intProductId")) if request.data.get("intProductId") else None,
-                                       json_function = json.loads(request.data.get("intProductId")) if request.data.get("intProductId") else None,
+                                       json_function = request.data.get("intProductId") if request.data.get("intProductId") else None,
                                        vchr_file_no = request.data.get("strFileNo", None),
                                        json_physical_loc = lst_phy_loc,
                                        vchr_address = request.data.get("strAddress", None),
@@ -674,7 +674,8 @@ class AddUsers(APIView):
                                                                                                    'vchr_salutation','fk_religion_id','fk_religion__vchr_name','vchr_marital_status','vchr_blood_group',
                                                                                                    'vchr_emergency_person','vchr_emergency_relation',
                                                                                                    'fk_wps__vchr_name','fk_wps_id','vchr_disease',
-                                                                                                   'vchr_emp_remark', 'int_official_num', 'json_documents'))
+                                                                                                   'vchr_emp_remark', 'int_official_num', 'json_documents',
+                                                                                        'fk_hierarchy_data__fk_hierarchy_id','fk_group_id','fk_hierarchy_data_id','fk_hierarchy_group_id'))
                 dict_products =[]
                 if lst_user_details[0].get('json_function'):
                     dict_products = Products.objects.filter(pk_bint_id__in = json.loads(lst_user_details[0].get('json_function'))).values("pk_bint_id","vchr_name")

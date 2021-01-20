@@ -43,9 +43,9 @@ CREATE TABLE stockmaster(
     dbl_paid_amount DOUBLE PRECISION ,
     fk_branch_id BIGINT REFERENCES branch(pk_bint_id) NOT NULL,
     fk_company_id BIGINT REFERENCES company(pk_bint_id) NOT NULL,
-    fk_user_id BIGINT REFERENCES user_details(user_ptr_id) NOT NULL,
+    fk_user_id BIGINT REFERENCES userdetails(user_ptr_id) NOT NULL,
     dat_updated  TIMESTAMP ,
-    fk_updated_id BIGINT REFERENCES user_details(user_ptr_id)
+    fk_updated_id BIGINT REFERENCES userdetails(user_ptr_id)
 );
 
 CREATE TABLE stockdetails(
@@ -181,3 +181,15 @@ CREATE TABLE item_followup (
     dat_updated TIMESTAMP NULL,
     int_quantity INTEGER
 );
+
+-- ALTER TABLE products drop column fk_created_id;
+-- ALTER TABLE products drop column fk_updated_id;
+-- ALTER TABLE products add column fk_created_id bigint REFERENCES user_details(user_ptr_id);
+-- ALTER TABLE products add column fk_updated_id bigint REFERENCES user_details(user_ptr_id);
+
+ALTER TABLE brands add column fk_company_id bigint REFERENCES company(pk_bint_id);
+-- ALTER TABLE item_category  drop column fk_created_id;
+-- ALTER TABLE item_category add column fk_created_id bigint REFERENCES user_details(user_ptr_id);
+-- ALTER TABLE item_category  drop column fk_updated_id;
+-- ALTER TABLE item_category add column fk_updated_id bigint REFERENCES user_details(user_ptr_id);
+alter TABLE customer_details add cust_activestate boolean;
