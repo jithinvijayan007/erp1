@@ -43,9 +43,9 @@ CREATE TABLE stockmaster(
     dbl_paid_amount DOUBLE PRECISION ,
     fk_branch_id BIGINT REFERENCES branch(pk_bint_id) NOT NULL,
     fk_company_id BIGINT REFERENCES company(pk_bint_id) NOT NULL,
-    fk_user_id BIGINT REFERENCES user_details(user_ptr_id) NOT NULL,
+    fk_user_id BIGINT REFERENCES userdetails(user_ptr_id) NOT NULL,
     dat_updated  TIMESTAMP ,
-    fk_updated_id BIGINT REFERENCES user_details(user_ptr_id)
+    fk_updated_id BIGINT REFERENCES userdetails(user_ptr_id)
 );
 
 CREATE TABLE stockdetails(
@@ -150,3 +150,5 @@ CREATE TABLE buy_back(
   dbl_amount DOUBLE PRECISION,
   int_status INTEGER DEFAULT 1
 );
+
+alter TABLE customer_details add cust_activestate boolean;
