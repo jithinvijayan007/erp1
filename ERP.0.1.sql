@@ -9,7 +9,7 @@ CREATE TABLE salary_structure(
 );
 
 
-CREATE TABLE  user_details(
+CREATE TABLE  userdetails(
   user_ptr_id BIGINT REFERENCES auth_user PRIMARY KEY,
   vchr_employee_code VARCHAR(50),
   fk_category_id BIGINT REFERENCES category(pk_bint_id),
@@ -33,56 +33,56 @@ CREATE TABLE  user_details(
   json_allowance JSONB);
 
 
-ALTER TABLE user_details ADD COLUMN vchr_weekoff_day VARCHAR(10);
-ALTER TABLE user_details ADD COLUMN bint_emergency_phno BIGINT;
-ALTER TABLE user_details ADD COLUMN vchr_father_name VARCHAR(30);
-ALTER TABLE user_details ADD COLUMN vchr_salutation VARCHAR(10);
-ALTER TABLE user_details ADD COLUMN fk_religion_id BIGINT REFERENCES religion_caste(pk_bint_id);
-ALTER TABLE user_details ADD COLUMN vchr_marital_status VARCHAR(30);
-ALTER TABLE user_details ADD COLUMN vchr_blood_group VARCHAR(10);
-ALTER TABLE user_details ADD COLUMN vchr_emergency_person VARCHAR(100);
-ALTER TABLE user_details ADD COLUMN vchr_emergency_relation VARCHAR(30);
-ALTER TABLE user_details ADD COLUMN bln_pass_reset BOOLEAN DEFAULT FALSE;
-ALTER TABLE user_details ALTER COLUMN vchr_father_name TYPE VARCHAR(150);
-ALTER TABLE user_details ADD COLUMN vchr_pf_no VARCHAR(100);
-ALTER TABLE user_details ADD COLUMN int_hierarchy_type INTEGER DEFAULT 0;
-ALTER TABLE user_details ADD vchr_password_reset_token text NULL;
-ALTER TABLE user_details ADD dat_password_reset_timer TIMESTAMP NULL;
-ALTER TABLE user_details ADD COLUMN dbl_gross DOUBLE PRECISION;
-ALTER TABLE user_details DROP COLUMN vchr_desig ;
-ALTER TABLE user_details ADD COLUMN fk_desig_id  BIGINT REFERENCES job_position (pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN vchr_weekoff_day VARCHAR(10);
+ALTER TABLE userdetails ADD COLUMN bint_emergency_phno BIGINT;
+ALTER TABLE userdetails ADD COLUMN vchr_father_name VARCHAR(30);
+ALTER TABLE userdetails ADD COLUMN vchr_salutation VARCHAR(10);
+ALTER TABLE userdetails ADD COLUMN fk_religion_id BIGINT REFERENCES religion_caste(pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN vchr_marital_status VARCHAR(30);
+ALTER TABLE userdetails ADD COLUMN vchr_blood_group VARCHAR(10);
+ALTER TABLE userdetails ADD COLUMN vchr_emergency_person VARCHAR(100);
+ALTER TABLE userdetails ADD COLUMN vchr_emergency_relation VARCHAR(30);
+ALTER TABLE userdetails ADD COLUMN bln_pass_reset BOOLEAN DEFAULT FALSE;
+ALTER TABLE userdetails ALTER COLUMN vchr_father_name TYPE VARCHAR(150);
+ALTER TABLE userdetails ADD COLUMN vchr_pf_no VARCHAR(100);
+ALTER TABLE userdetails ADD COLUMN int_hierarchy_type INTEGER DEFAULT 0;
+ALTER TABLE userdetails ADD vchr_password_reset_token text NULL;
+ALTER TABLE userdetails ADD dat_password_reset_timer TIMESTAMP NULL;
+ALTER TABLE userdetails ADD COLUMN dbl_gross DOUBLE PRECISION;
+ALTER TABLE userdetails DROP COLUMN vchr_desig ;
+ALTER TABLE userdetails ADD COLUMN fk_desig_id  BIGINT REFERENCES job_position (pk_bint_id);
 
-ALTER TABLE user_details ADD COLUMN vchr_middle_name VARCHAR(150);
-ALTER TABLE user_details ADD COLUMN int_payment INT;
-ALTER TABLE user_details ADD COLUMN vchr_pan_no VARCHAR(150);
-ALTER TABLE user_details ADD COLUMN vchr_aadhar_no VARCHAR(150);
-ALTER TABLE user_details ADD COLUMN vchr_img VARCHAR(300);
-ALTER TABLE user_details ADD COLUMN vchr_bank_name VARCHAR(300);
-ALTER TABLE user_details ADD COLUMN vchr_acc_no VARCHAR(150);
-ALTER TABLE user_details ADD COLUMN vchr_ifsc VARCHAR(150);
-ALTER TABLE user_details ADD COLUMN fk_brand_id BIGINT REFERENCES brand (pk_bint_id);
-ALTER TABLE user_details ADD COLUMN json_function JSONB;
-ALTER TABLE user_details ADD COLUMN vchr_file_no VARCHAR(150);
-ALTER TABLE user_details ADD COLUMN vchr_physical_loc VARCHAR(200);
-ALTER TABLE user_details DROP COLUMN fk_group_id;
-ALTER TABLE user_details ADD COLUMN vchr_address TEXT;
-ALTER TABLE user_details ADD COLUMN int_weekoff_type INT;
-ALTER TABLE user_details DROP COLUMN vchr_physical_loc;
-ALTER TABLE user_details ADD COLUMN json_physical_loc JSONB;
-ALTER TABLE user_details ADD COLUMN dat_resignation DATE;
-ALTER TABLE user_details ADD COLUMN txt_resignation_reason TEXT;
-ALTER TABLE user_details ALTER COLUMN vchr_address TYPE VARCHAR(100);
-ALTER TABLE user_details ADD COLUMN vchr_po VARCHAR(75);
-ALTER TABLE user_details ADD COLUMN vchr_land_mark VARCHAR(150);
-ALTER TABLE user_details ADD COLUMN vchr_place VARCHAR(100);
-ALTER TABLE user_details ADD COLUMN int_pincode INTEGER;
-ALTER TABLE user_details ADD COLUMN fk_dist_id BIGINT REFERENCES district(pk_bint_id);
-ALTER TABLE user_details ADD COLUMN vchr_esi_no VARCHAR(100);
-ALTER TABLE user_details ADD COLUMN vchr_uan_no VARCHAR(100);
-ALTER TABLE user_details ADD COLUMN vchr_wwf_no VARCHAR(100);
-ALTER TABLE user_details ADD COLUMN int_act_status INTEGER DEFAULT 1;
-ALTER TABLE user_details ADD COLUMN fk_wps_id BIGINT REFERENCES wps(pk_bint_id);
-ALTER TABLE user_details ADD COLUMN vchr_disease VARCHAR(400);
+ALTER TABLE userdetails ADD COLUMN vchr_middle_name VARCHAR(150);
+ALTER TABLE userdetails ADD COLUMN int_payment INT;
+ALTER TABLE userdetails ADD COLUMN vchr_pan_no VARCHAR(150);
+ALTER TABLE userdetails ADD COLUMN vchr_aadhar_no VARCHAR(150);
+ALTER TABLE userdetails ADD COLUMN vchr_img VARCHAR(300);
+ALTER TABLE userdetails ADD COLUMN vchr_bank_name VARCHAR(300);
+ALTER TABLE userdetails ADD COLUMN vchr_acc_no VARCHAR(150);
+ALTER TABLE userdetails ADD COLUMN vchr_ifsc VARCHAR(150);
+ALTER TABLE userdetails ADD COLUMN fk_brand_id BIGINT REFERENCES brand (pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN json_function JSONB;
+ALTER TABLE userdetails ADD COLUMN vchr_file_no VARCHAR(150);
+ALTER TABLE userdetails ADD COLUMN vchr_physical_loc VARCHAR(200);
+ALTER TABLE userdetails DROP COLUMN fk_group_id;
+ALTER TABLE userdetails ADD COLUMN vchr_address TEXT;
+ALTER TABLE userdetails ADD COLUMN int_weekoff_type INT;
+ALTER TABLE userdetails DROP COLUMN vchr_physical_loc;
+ALTER TABLE userdetails ADD COLUMN json_physical_loc JSONB;
+ALTER TABLE userdetails ADD COLUMN dat_resignation DATE;
+ALTER TABLE userdetails ADD COLUMN txt_resignation_reason TEXT;
+ALTER TABLE userdetails ALTER COLUMN vchr_address TYPE VARCHAR(100);
+ALTER TABLE userdetails ADD COLUMN vchr_po VARCHAR(75);
+ALTER TABLE userdetails ADD COLUMN vchr_land_mark VARCHAR(150);
+ALTER TABLE userdetails ADD COLUMN vchr_place VARCHAR(100);
+ALTER TABLE userdetails ADD COLUMN int_pincode INTEGER;
+ALTER TABLE userdetails ADD COLUMN fk_dist_id BIGINT REFERENCES district(pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN vchr_esi_no VARCHAR(100);
+ALTER TABLE userdetails ADD COLUMN vchr_uan_no VARCHAR(100);
+ALTER TABLE userdetails ADD COLUMN vchr_wwf_no VARCHAR(100);
+ALTER TABLE userdetails ADD COLUMN int_act_status INTEGER DEFAULT 1;
+ALTER TABLE userdetails ADD COLUMN fk_wps_id BIGINT REFERENCES wps(pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN vchr_disease VARCHAR(400);
 
 
 
@@ -253,16 +253,16 @@ update states set fk_country_id = 1;
 alter table district add vchr_code varchar(10);
 
 
-ALTER TABLE user_details ADD COLUMN vchr_weekoff_day VARCHAR(10);
-ALTER TABLE user_details ADD COLUMN fk_religion_id BIGINT REFERENCES religion_caste(pk_bint_id);
-ALTER TABLE user_details ADD COLUMN fk_desig_id  BIGINT REFERENCES job_position (pk_bint_id);
-ALTER TABLE user_details ADD COLUMN fk_brand_id BIGINT REFERENCES brands (pk_bint_id);
-ALTER TABLE user_details ADD COLUMN fk_wps_id BIGINT REFERENCES wps(pk_bint_id);
-ALTER TABLE user_details ADD COLUMN json_documents JSONB;
-alter table user_details add column fk_dist_id bigint REFERENCES district(pk_bint_id);
-alter table user_details ADD COLUMN vchr_emp_remark TEXT;
-alter table user_details ADD COLUMN int_official_num BIGINT;
-alter table user_details ADD COLUMN json_weekoff JSONB;
+ALTER TABLE userdetails ADD COLUMN vchr_weekoff_day VARCHAR(10);
+ALTER TABLE userdetails ADD COLUMN fk_religion_id BIGINT REFERENCES religion_caste(pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN fk_desig_id  BIGINT REFERENCES job_position (pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN fk_brand_id BIGINT REFERENCES brands (pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN fk_wps_id BIGINT REFERENCES wps(pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN json_documents JSONB;
+alter table userdetails add column fk_dist_id bigint REFERENCES district(pk_bint_id);
+alter table userdetails ADD COLUMN vchr_emp_remark TEXT;
+alter table userdetails ADD COLUMN int_official_num BIGINT;
+alter table userdetails ADD COLUMN json_weekoff JSONB;
 
 
 CREATE TABLE document_hrms(
@@ -276,7 +276,7 @@ ALTER TABLE document_hrms ADD COLUMN chr_num_separate VARCHAR(2);
 ALTER TABLE document_hrms ADD COLUMN int_num_length INTEGER DEFAULT 1;
 
 CREATE TABLE emp_references(pk_bint_id BIGSERIAL PRIMARY KEY,
-  fk_employee_id BIGINT REFERENCES user_details(user_ptr_id),
+  fk_employee_id BIGINT REFERENCES userdetails(user_ptr_id),
   vchr_name VARCHAR(150),
   vchr_company_name VARCHAR(400),
   vchr_desig VARCHAR(200),
@@ -290,12 +290,12 @@ CREATE TABLE emp_family(
   vchr_name VARCHAR(150), vchr_realation VARCHAR(150),
   dat_dob DATE, vchr_occupation VARCHAR(200),
   vchr_alive VARCHAR(50),
-  fk_employee_id BIGINT REFERENCES user_details(user_ptr_id),
+  fk_employee_id BIGINT REFERENCES userdetails(user_ptr_id),
   int_status INT
 );
 
 CREATE TABLE emp_edu_details(  pk_bint_id BIGSERIAL PRIMARY KEY,
-  fk_employee_id BIGINT REFERENCES user_details(user_ptr_id),
+  fk_employee_id BIGINT REFERENCES userdetails(user_ptr_id),
   bln_highest_qualif BOOLEAN,
   vchr_course VARCHAR(200),
   vchr_institution VARCHAR(300),
@@ -309,7 +309,7 @@ CREATE TABLE emp_edu_details(  pk_bint_id BIGSERIAL PRIMARY KEY,
 );
 
 CREATE TABLE emp_exp_details(  pk_bint_id BIGSERIAL PRIMARY KEY,
-  	fk_employee_id BIGINT REFERENCES user_details(user_ptr_id),
+  	fk_employee_id BIGINT REFERENCES userdetails(user_ptr_id),
   	vchr_employer VARCHAR (300),
   	vchr_designation VARCHAR (200),
   	txt_exp_details TEXT,
@@ -349,7 +349,7 @@ ALTER TABLE shift_schedule ADD COLUMN int_shift_type INTEGER DEFAULT 0;
 
 CREATE TABLE employee_shift(
   pk_bint_id  BIGSERIAL PRIMARY KEY,
-  fk_employee_id BIGINT REFERENCES user_details(user_ptr_id),
+  fk_employee_id BIGINT REFERENCES userdetails(user_ptr_id),
   int_shift_type INT,
   json_shift JSONB,
   bln_active BOOLEAN,
@@ -361,7 +361,7 @@ CREATE TABLE employee_shift(
 
 CREATE TABLE user_history(
   pk_bint_id BIGSERIAL PRIMARY KEY,
-  fk_user_id BIGINT REFERENCES user_details(user_ptr_id),
+  fk_user_id BIGINT REFERENCES userdetails(user_ptr_id),
   json_details JSONB,
   int_type INTEGER,
   bln_changed BOOLEAN DEFAULT FALSE,
@@ -373,15 +373,15 @@ CREATE TABLE user_history(
 );
 
 alter table group_permissions add column fk_desig_id BIGINT REFERENCES job_position(pk_bint_id);
-alter table user_details add fk_hierarchy_data_id bigint REFERENCES hierarchy_data(pk_bint_id);
+alter table userdetails add fk_hierarchy_data_id bigint REFERENCES hierarchy_data(pk_bint_id);
 
 
 CREATE TABLE hierarchy_groups (pk_bint_id BIGSERIAL PRIMARY KEY,fk_hierarchy_id BIGINT REFERENCES hierarchy(pk_bint_id),vchr_name VARCHAR(50),int_status SMALLINT);
 alter table hierarchy_groups add column fk_department_id bigint REFERENCES department(pk_bint_id);
 alter table hierarchy add fk_department_id bigint REFERENCES department(pk_bint_id);
 
-alter table user_details add fk_group_id bigint REFERENCES groups(pk_bint_id);
-alter table user_details add column fk_hierarchy_group_id bigint REFERENCES hierarchy_groups(pk_bint_id);
+alter table userdetails add fk_group_id bigint REFERENCES groups(pk_bint_id);
+alter table userdetails add column fk_hierarchy_group_id bigint REFERENCES hierarchy_groups(pk_bint_id);
 
 alter table customer_details add column vchr_gender varchar(10) ;
 alter table customer_details add COLUMN cust_smsaccess BOOLEAN;
@@ -432,7 +432,7 @@ CREATE TABLE physical_location(
 
 CREATE TABLE salary_details(
   pk_bint_id BIGSERIAL PRIMARY KEY,
-  fk_user_id BIGINT REFERENCES user_details(user_ptr_id),
+  fk_user_id BIGINT REFERENCES userdetails(user_ptr_id),
   dbl_bp DOUBLE PRECISION,
   dbl_da DOUBLE PRECISION,
   dbl_hra DOUBLE PRECISION,
@@ -445,7 +445,7 @@ CREATE TABLE salary_details(
 
 alter table salary_details rename column fk_user_id to fk_employee_id;
 
-ALTER TABLE salary_details ADD COLUMN fk_updated_id BIGINT REFERENCES user_details(user_ptr_id);
+ALTER TABLE salary_details ADD COLUMN fk_updated_id BIGINT REFERENCES userdetails(user_ptr_id);
 ALTER TABLE salary_details ADD COLUMN dat_updated TIMESTAMP;
 ALTER TABLE salary_details ADD COLUMN dbl_gross DOUBLE PRECISION DEFAULT 0.0;
 ALTER TABLE salary_details ADD COLUMN fk_created_id BIGINT REFERENCES auth_user(id);
