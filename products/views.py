@@ -23,6 +23,7 @@ class AddProduct(APIView):
             # import pdb; pdb.set_trace()
             vchr_name = request.data.get('vchr_name')
             fk_category_id = request.data.get('fk_category_id')
+            
             # bln_sales = request.data.get('bln_sales')
             json_sales = request.data.get('json_sales')
             if not json_sales:
@@ -38,8 +39,8 @@ class AddProduct(APIView):
             if ins_product_name:
                     return Response({'status':0 , 'reason' : "product already exists"})
 
-            ins_product_add = Products.objects.create(vchr_name = vchr_name,fk_category_id =  fk_category_id, int_sales = json_sales,fk_created_id=request.user.id,dat_created = datetime.now())
-
+            ins_product_add = Products(vchr_name = vchr_name,fk_category_id =  fk_category_id, int_sales = json_sales,fk_created_id=request.user.id,dat_created = datetime.now())
+            ins_product_add.save()
             return Response({'status':1})
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()

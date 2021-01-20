@@ -226,7 +226,7 @@ if DEBUG:
     DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'oxygen2',
+                'NAME': 'oxygen_db',
                 'USER': 'admin',
                 'PASSWORD':'tms@123',
                 'HOST': '127.0.0.1',
