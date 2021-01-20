@@ -19,7 +19,8 @@ class AddBrands(APIView):
     def post(self,request):
         '''add brands'''
         try:
-            str_name = request.data.get('strName')
+            # import pdb; pdb.set_trace()
+            str_name = request.data.get('strBrand')
             str_code = request.data.get('strCode')
             if Brands.objects.filter(vchr_name=str_name,vchr_code=str_code,int_status=0):
                 return Response({'status':0,'reason':'already exists'})

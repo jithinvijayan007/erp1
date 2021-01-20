@@ -4,6 +4,7 @@ from category.models import Category
 from django.utils import timezone
 # from userdetails.models import UserDetails as Userdetails
 from company.models import Company
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Specifications(models.Model):
@@ -24,15 +25,15 @@ class Products(models.Model):
     # bln_sales = models.NullBooleanField() #true if sales,false if service
     int_status = models.IntegerField(default = 0)# 0. Active -1. delete,
     dat_created = models.DateTimeField()
-    # fk_created = models.ForeignKey(UserDetails, models.DO_NOTHING ,blank=True, null=True,related_name = 'product_created_id')
-    # fk_updated = models.ForeignKey(UserDetails, models.DO_NOTHING , blank=True, null=True,related_name = 'product_updated_id')
+    fk_created = models.ForeignKey('userdetails.UserDetails', models.DO_NOTHING ,blank=True, null=True,related_name = 'product_created_id')
+    fk_updated = models.ForeignKey('userdetails.UserDetails', models.DO_NOTHING , blank=True, null=True,related_name = 'product_updated_id')
     # json_sales = JSONField(blank=True, null=True)  # This field type is a guess.22222
     int_sales = models.IntegerField(blank=True, null=True) #1 sales 2 service 3 sales and service
     int_type = models.IntegerField(blank=True, null=True,default=0)
-    fk_company = models.ForeignKey(Company, models.DO_NOTHING, blank=True, null=True)
-    bln_visible = models.NullBooleanField()
-    dct_product_spec = models.TextField(blank=True, null=True)  # This field type is a guess.
-    vchr_product_img = models.ImageField();
+    # fk_company = models.ForeignKey(Company, models.DO_NOTHING, blank=True, null=True)
+    # bln_visible = models.NullBooleanField()
+    # dct_product_spec = models.TextField(blank=True, null=True)  # This field type is a guess.
+    # vchr_product_img = models.ImageField();
     class Meta:
         managed = False
         db_table = 'products'

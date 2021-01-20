@@ -150,3 +150,14 @@ CREATE TABLE buy_back(
   dbl_amount DOUBLE PRECISION,
   int_status INTEGER DEFAULT 1
 );
+
+ALTER TABLE products drop column fk_created_id;
+ALTER TABLE products drop column fk_updated_id;
+-- ALTER TABLE products add column fk_created_id bigint REFERENCES user_details(user_ptr_id);
+-- ALTER TABLE products add column fk_updated_id bigint REFERENCES user_details(user_ptr_id);
+
+ALTER TABLE brands add column fk_company_id bigint REFERENCES company(pk_bint_id);
+ALTER TABLE item_category  drop column fk_created_id;
+-- ALTER TABLE item_category add column fk_created_id bigint REFERENCES user_details(user_ptr_id);
+ALTER TABLE item_category  drop column fk_updated_id;
+-- ALTER TABLE item_category add column fk_updated_id bigint REFERENCES user_details(user_ptr_id);
