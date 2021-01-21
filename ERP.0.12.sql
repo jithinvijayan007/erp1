@@ -162,3 +162,22 @@ ALTER TABLE brands add column fk_company_id bigint REFERENCES company(pk_bint_id
 -- ALTER TABLE item_category  drop column fk_updated_id;
 -- ALTER TABLE item_category add column fk_updated_id bigint REFERENCES user_details(user_ptr_id);
 alter TABLE customer_details add cust_activestate boolean;
+
+alter TABLE customer_details add cust_salutation varchar(10);
+CREATE TABLE item_followup (
+    pk_bint_id BIGSERIAL PRIMARY KEY,
+    fk_item_enquiry_id BIGINT REFERENCES item_enquiry(pk_bint_id) NOT NULL,
+    dat_followup TIMESTAMP DEFAULT NOW(),
+    fk_user_id BIGINT REFERENCES userdetails(user_ptr_id),
+    vchr_notes VARCHAR(250),
+    vchr_enquiry_status VARCHAR(50) NOT NULL,
+    int_status INTEGER,
+    dbl_amount DOUBLE PRECISION,
+    fk_updated_id BIGINT REFERENCES userdetails(user_ptr_id) NULL,
+    dat_updated TIMESTAMP NULL,
+    int_quantity INTEGER
+);
+
+ALTER TABLE customer_details add fk_created_id bigint REFERENCES auth_user(id);
+ALTER TABLE customer_details add dat_created date;
+ALTER TABLE customer_details add alternate_mobile bigint;

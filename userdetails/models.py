@@ -142,7 +142,7 @@ class UserDetails(User,models.Model):
 
     class Meta:
         managed = False
-        db_table = 'user_details'
+        db_table = 'userdetails'
     def __str__(self):
         return self.username
 

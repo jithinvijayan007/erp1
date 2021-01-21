@@ -8,29 +8,50 @@ CREATE TABLE salary_structure(
   bln_active BOOLEAN DEFAULT TRUE
 );
 
+alter table userdetails drop column bint_phone;
+alter table userdetails drop column vchr_pssrsttkn;
+alter table userdetails drop column bint_passrstflg;
+alter table userdetails drop column dat_passrsttime;
+alter table userdetails drop column fk_group_id;
+alter table userdetails drop column fk_company_id;
+alter table userdetails drop column fk_branch_id;
+alter table userdetails drop column fk_brand_id;
+alter table userdetails drop column bint_usercode;
+alter table userdetails drop column vchr_profpic;
+alter table userdetails drop column dat_resapp;
+alter table userdetails drop column int_areaid;
+alter table userdetails drop column dat_created;
+alter table userdetails drop column dat_updated;
+alter table userdetails drop column fk_created_id;
+alter table userdetails drop column fk_updated_id;
+alter table userdetails drop column json_product;
+alter table userdetails drop column int_guest_user;
+alter table userdetails drop column fk_department_id;
+alter table userdetails drop column fk_department_id;
 
-CREATE TABLE  userdetails(
-  user_ptr_id BIGINT REFERENCES auth_user PRIMARY KEY,
-  vchr_employee_code VARCHAR(50),
-  fk_category_id BIGINT REFERENCES category(pk_bint_id),
-  bint_phone BIGINT,
-  vchr_email VARCHAR(50),
-  dat_dob DATE,
-  dat_doj TIMESTAMP,
-  vchr_gender VARCHAR(15),
-  vchr_desig VARCHAR(50),
-  vchr_level VARCHAR(50),
-  vchr_grade VARCHAR(50),
-  fk_salary_struct_id BIGINT REFERENCES salary_structure(pk_bint_id),
-  fk_branch_id BIGINT REFERENCES branch(pk_bint_id),
-  fk_department_id BIGINT REFERENCES department(pk_bint_id),
-  fk_company_id BIGINT REFERENCES company(pk_bint_id),
-  fk_group_id BIGINT REFERENCES groups(pk_bint_id),
-  fk_created_id BIGINT REFERENCES auth_user(id),
-  fk_updated_id BIGINT REFERENCES auth_user(id),
-  dat_created TIMESTAMP ,
-  dat_updated TIMESTAMP,
-  json_allowance JSONB);
+
+
+alter TABLE  userdetails add column
+  vchr_employee_code VARCHAR(50), add column
+  fk_category_id BIGINT REFERENCES category(pk_bint_id), add column
+  bint_phone BIGINT, add column
+  vchr_email VARCHAR(50), add column
+  dat_dob DATE, add column
+  dat_doj TIMESTAMP, add column
+  vchr_gender VARCHAR(15), add column
+  vchr_desig VARCHAR(50), add column
+  vchr_level VARCHAR(50), add column
+  vchr_grade VARCHAR(50), add column
+  fk_salary_struct_id BIGINT REFERENCES salary_structure(pk_bint_id), add column
+  fk_branch_id BIGINT REFERENCES branch(pk_bint_id), add column
+  fk_department_id BIGINT REFERENCES department(pk_bint_id), add column
+  fk_company_id BIGINT REFERENCES company(pk_bint_id), add column
+  fk_group_id BIGINT REFERENCES groups(pk_bint_id), add column
+  fk_created_id BIGINT REFERENCES auth_user(id), add column
+  fk_updated_id BIGINT REFERENCES auth_user(id), add column
+  dat_created TIMESTAMP,  add column
+  dat_updated TIMESTAMP, add column
+  json_allowance JSONB;
 
 
 ALTER TABLE userdetails ADD COLUMN vchr_weekoff_day VARCHAR(10);
@@ -83,6 +104,17 @@ ALTER TABLE userdetails ADD COLUMN vchr_wwf_no VARCHAR(100);
 ALTER TABLE userdetails ADD COLUMN int_act_status INTEGER DEFAULT 1;
 ALTER TABLE userdetails ADD COLUMN fk_wps_id BIGINT REFERENCES wps(pk_bint_id);
 ALTER TABLE userdetails ADD COLUMN vchr_disease VARCHAR(400);
+
+
+ALTER TABLE userdetails ADD COLUMN bint_phone BIGINT;
+ALTER TABLE userdetails ADD COLUMN fk_branch_id BIGINT REFERENCES branch(pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN fk_department_id BIGINT REFERENCES department(pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN fk_company_id BIGINT REFERENCES company(pk_bint_id);
+ALTER TABLE userdetails ADD COLUMN fk_created_id BIGINT REFERENCES auth_user(id);
+ALTER TABLE userdetails ADD COLUMN fk_updated_id BIGINT REFERENCES auth_user(id);
+ALTER TABLE userdetails ADD COLUMN dat_created DATE;
+ALTER TABLE userdetails ADD COLUMN dat_updated DATE;
+
 
 
 
@@ -452,7 +484,27 @@ ALTER TABLE salary_details ADD COLUMN fk_created_id BIGINT REFERENCES auth_user(
 ALTER TABLE salary_details ADD COLUMN dat_created TIMESTAMP DEFAULT NOW();
 
 
+alter table company add vchr_code varchar(50);
+alter table company add vchr_plan varchar(50);
+alter table company add dat_created_at DATE;
+alter table company add dat_updated_at DATE;
+alter table company add time_from INTEGER;
+alter table company add time_to INTEGER;
+alter table company add int_user_count INTEGER;
+alter table company add fk_company_type_id BIGINT;
+alter table branch add fk_hierarchy_data_id BIGINT REFERENCES hierarchy_data(pk_bint_id);
+alter table branch add fk_territory_id BIGINT;
+
+alter table customer_details add fk_company_id BIGINT REFERENCES company(pk_bint_id);
 
 
+create table source(
+  pk_bint_id BIGSERIAL PRIMARY KEY,
+  vchr_source_name varchar(15),
+  bln_status boolean,
+  bln_is_campaign boolean,
+  fk_company_id bigint REFERENCES company(pk_bint_id),
+  fk_category_id bigint REFERENCES category(pk_bint_id)
+);
 
 

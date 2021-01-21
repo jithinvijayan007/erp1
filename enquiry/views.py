@@ -271,7 +271,11 @@ class ItemAgingCheck(APIView):
                                 dct_imei['day'] = (dat_today - ins_data['fk_master__dat_stock']).days
                                 dct_imei['count']=ins_data['int_qty']
                                 lst_imei_data.append(dct_imei)
-
+                    # lst_item = [{
+                    #     'imei':'54654654684',
+                    #     'day':4,
+                    #     'count':1
+                    # }]
 
                     # import pdb; pdb.set_trace()
                     lst_imei =sorted(lst_imei_data, key = lambda i: i['day'],reverse=True)
