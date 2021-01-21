@@ -1441,7 +1441,7 @@ class loginCheck(APIView):
                     email = user.email or ''
                     if request.user.userdetails.bln_pass_reset:
                         UserDetails.objects.filter(user_ptr_id=request.user.id).update(bln_pass_reset=False)
-                    rst_user = UserDetails.objects.filter(user_ptr_id=request.user.id).values('user_ptr_id','first_name','last_name','vchr_middle_name','fk_branch_id','fk_branch_id__vchr_name','fk_company_id','fk_department_id','fk_department_id__vchr_name','fk_desig_id','fk_desig__vchr_name','vchr_img')
+                    rst_user = UserDetails.objects.filter(user_ptr_id=request.user.id).values('user_ptr_id','first_name','last_name','vchr_middle_name','fk_branch_id','fk_branch_id__vchr_name','fk_company_id','fk_department_id','fk_department_id__vchr_name','fk_desig_id','fk_desig__vchr_name','vchr_img','fk_group__vchr_name','fk_branch__int_type')
 
                     str_name = rst_user[0]['first_name'] +" "+rst_user[0]['last_name']
 
@@ -1455,10 +1455,12 @@ class loginCheck(APIView):
                     int_department = rst_user[0]['fk_department_id']
                     str_designation = rst_user[0]['fk_desig__vchr_name']
                     int_designation = rst_user[0]['fk_desig_id']
+                    group_name = rst_user[0]['fk_group__vchr_name']
+                    branch_type = rst_user[0]['fk_branch__int_type']
                     str_img = None
                     if path.exists(settings.MEDIA_ROOT.rstrip('/media')+rst_user[0]['vchr_img']):
                         str_img = request.scheme+'://'+request.get_host()+rst_user[0]['vchr_img']
-                    userdetails={'Name':str_name.title(),'int_user_id':rst_user[0]['user_ptr_id'],'email':email,'branch_id':branch_id,'branch_name':branch_name,'company_id':company_id,'str_department':str_department,'int_department':int_department,'str_designation':str_designation,'int_designation':int_designation, 'str_user_img':str_img}
+                    userdetails={'Name':str_name.title(),'int_user_id':rst_user[0]['user_ptr_id'],'email':email,'branch_id':branch_id,'branch_name':branch_name,'company_id':company_id,'str_department':str_department,'int_department':int_department,'str_designation':str_designation,'int_designation':int_designation, 'str_user_img':str_img,'group_name':group_name,'bln_indirect_discount':"",'bln_direct_discount':"",'branch_type':branch_type}
                     SessionHandler.objects.filter(fk_user_id = user.id).delete()
                     SessionHandler.objects.create(vchr_session_key = request.session.session_key,fk_user_id = user.id)
 
