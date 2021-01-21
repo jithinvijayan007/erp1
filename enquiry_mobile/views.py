@@ -31,6 +31,7 @@ from enquiry_print.views import enquiry_print
 from enquiry_mobile.models import MobileEnquiry,TabletEnquiry,ComputersEnquiry,AccessoriesEnquiry
 from branch.models import Branch
 from stock_app.models import Stockmaster,Stockdetails
+from invoice.views import AddSalesAPI
 '''for alchemy'''
 from sqlalchemy.orm import sessionmaker
 import aldjemy
@@ -2045,7 +2046,7 @@ class AddEnquiry(APIView):
     permission_classes=[IsAuthenticated]
     def post(self,request):
         try:
-            # import pdb; pdb.set_trace()
+            import pdb; pdb.set_trace()
             with transaction.atomic():
                 dct_data = request.data.get('product')
                 dct_customer_data = request.data.get('customer_data')
@@ -2164,8 +2165,8 @@ class AddEnquiry(APIView):
                                 if dct_enquiry.get('vchr_enquiry_status','') == 'BOOKED':
                                     ins_item_enq = ItemEnquiry(fk_enquiry_master = ins_master,
                                                                 fk_product_id=int_product_id,
-                                                                fk_brand = Brands.objects.get(id = dct_enquiry['fk_brand_id']),
-                                                                fk_item = Items.objects.get(id = dct_enquiry['fk_item_id']),
+                                                                fk_brand = Brands.objects.get(pk_bint_id = dct_enquiry['fk_brand_id']),
+                                                                fk_item = Items.objects.get(pk_bint_id = dct_enquiry['fk_item_id']),
                                                                 int_quantity = dct_enquiry['intQty'],
                                                                 dbl_amount = dct_enquiry['dbl_estimated_amount'],
                                                                 vchr_enquiry_status = dct_enquiry['vchr_enquiry_status'],
@@ -2263,7 +2264,7 @@ class AddEnquiry(APIView):
 
                                 ins_item_enq.save()
                                 if ins_item_enq and dct_enquiry.get('vchr_enquiry_status','') == 'BOOKED':
-                                    ins_item_enq_exist = ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer = ins_customer.id,fk_enquiry_master__fk_company = ins_user.fk_company,fk_product_id=int_product_id).exclude(vchr_enquiry_status__in =['BOOKED','INVOICED']).exclude(fk_enquiry_master = ins_master)
+                                    ins_item_enq_exist = ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer = ins_customer.pk_bint_id,fk_enquiry_master__fk_company = ins_user.fk_company,fk_product_id=int_product_id).exclude(vchr_enquiry_status__in =['BOOKED','INVOICED']).exclude(fk_enquiry_master = ins_master)
                                     # if ins_item_enq_exist:
                                     #     ins_item_enq_exist.update(vchr_enquiry_status = 'LOST')
                                     #     lst_query_set = []
@@ -2331,7 +2332,7 @@ class AddEnquiry(APIView):
                                     dct_pos_data['dbl_discount'] += float(dct_enquiry['dbl_discount_amount'])
                                     dct_item = {}
                                     dct_item['item_enquiry_id'] = ins_item_enq.pk_bint_id
-                                    dct_item['vchr_item_name'] = ins_item.vchr_item_name
+                                    dct_item['vchr_item_name'] = ins_item.vchr_name
                                     dct_item['vchr_item_code'] = ins_item.vchr_item_code
                                     dct_item['json_imei'] = {"imei" : imei_list}
                                     dct_item['int_quantity'] = int(dct_enquiry['intQty'])
@@ -2342,9 +2343,14 @@ class AddEnquiry(APIView):
                                     dct_pos_data['lst_item'].append(dct_item)
                                     dct_pos_data['lst_item'].extend(lst_item_pos)
                     if bln_post_rqst:
-                        url = settings.POS_HOSTNAME+"/invoice/add_sales_api/"
+                        # import pdb; pdb.set_trace()
+
+                        # url = settings.POS_HOSTNAME+"/invoice/add_sales_api/"
                         try:
-                            res_data = requests.post(url,json=dct_pos_data)
+                            request['data'] = dct_pos_data
+                            
+                            AddSalesAPI.post(dct_pos_data)
+                            # res_data = requests.post(url,json=dct_pos_data)
                             if res_data.json().get('status')=='1':
                                 pass
                             else:
@@ -2437,7 +2443,7 @@ class AddEnquiry(APIView):
 class GetDetailsForAddMobileLead(APIView):
     def post(self,request):
         try:
-            
+            # import pdb; pdb.set_trace()
             dct_for_enquiry = {}
             int_user = User.objects.get(id = int(request.data.get('user_id',0)))
             int_companyId = request.GET.get('company_id',request.user.userdetails.fk_company_id)
