@@ -2045,6 +2045,7 @@ class AddEnquiry(APIView):
     permission_classes=[IsAuthenticated]
     def post(self,request):
         try:
+            # import pdb; pdb.set_trace()
             with transaction.atomic():
                 dct_data = request.data.get('product')
                 dct_customer_data = request.data.get('customer_data')
@@ -2064,7 +2065,7 @@ class AddEnquiry(APIView):
                     ins_user_branch = ins_assigned_user.fk_branch
                 else:
                     ins_assigned_user = ins_user
-                ins_customer = CustomerModel.objects.get(id = dct_customer_data.get('fk_customer_id'))
+                ins_customer = CustomerModel.objects.get(pk_bint_id = dct_customer_data.get('fk_customer_id'))
                 if dct_enquirystatus['enquiry']:
                     ins_document = Document.objects.select_for_update().filter(vchr_module_name = 'ENQUIRY',fk_company = ins_user.fk_company)
                     str_code = ins_document[0].vchr_short_code
@@ -2072,9 +2073,9 @@ class AddEnquiry(APIView):
                     ins_document.update(int_number = int_doc_num)
                     str_number = str(int_doc_num).zfill(4)
                     str_enquiry_no = str_code + '-' + str_number
-                    ins_master = EnquiryMaster.objects.create_enquiry_num(str_enquiry_no)
-                    EnquiryMaster.objects.filter(pk_bint_id = ins_master.pk_bint_id).update(
-                            # vchr_enquiry_num = str_enquiry_no
+                    # ins_master = EnquiryMaster.objects.create_enquiry_num(str_enquiry_no)
+                    ins_master =EnquiryMaster(
+                            vchr_enquiry_num = str_enquiry_no,
                             fk_customer = ins_customer
                             ,fk_source = Source.objects.get(pk_bint_id=dct_customer_data.get('fk_enquiry_source'))
                             # ,fk_priority = Priority.objects.get(pk_bint_id=dct_customer_data.get('fk_enquiry_priority'))
@@ -2088,17 +2089,19 @@ class AddEnquiry(APIView):
                             ,vchr_remarks=request.data.get('remarks','')
                         )
                     ins_master.save()
+                    
 
-
-                    ins_gp_item=Items.objects.filter(vchr_item_name__in=['GDP','GDEW (EXTENDED WARRANTY)']).values()
+                    ins_gp_item=Items.objects.filter(vchr_name__in=['GDP','GDEW (EXTENDED WARRANTY)']).values()
                     dct_gdp_data={data_gdp['vchr_item_name']:{'product_id':data_gdp['fk_product_id'],'brand_id':data_gdp['fk_brand_id'],'pk_bint_id':data_gdp['id'],'item_code':data_gdp['vchr_item_code']} for data_gdp in ins_gp_item}
 
                     # ---------------POS API--------------
                     # 
+                    
+
                     dct_pos_data = {}
-                    dct_pos_data['vchr_cust_name'] = ins_customer.cust_fname+' '+ins_customer.cust_lname
-                    dct_pos_data['vchr_cust_email'] = ins_customer.cust_email
-                    dct_pos_data['int_cust_mob'] = ins_customer.cust_mobile
+                    dct_pos_data['vchr_cust_name'] = ins_customer.vchr_name
+                    dct_pos_data['vchr_cust_email'] = ins_customer.vchr_email
+                    dct_pos_data['int_cust_mob'] = ins_customer.int_mobile
                     dct_pos_data['vchr_gst_no'] = ins_customer.vchr_gst_no
                     dct_pos_data['int_enq_master_id'] = ins_master.pk_bint_id
                     dct_pos_data['vchr_enquiry_num'] = ins_master.vchr_enquiry_num
@@ -2129,9 +2132,9 @@ class AddEnquiry(APIView):
                         for dct_enquiry in dct_data[dct_sub]:
                             if not dct_enquiry['mobileNa']:
                                 # 
-                                int_product_id=Products.objects.filter(vchr_product_name__iexact = dct_enquiry['str_product'],fk_company=ins_user.fk_company).values_list('id',flat=True).first()
-                                ins_brand = Brands.objects.get(id = int(dct_enquiry['fk_brand_id']))
-                                ins_item = Items.objects.get(id = int(dct_enquiry['fk_item_id']))
+                                int_product_id=Products.objects.filter(vchr_name__iexact = dct_enquiry['str_product'],fk_company=ins_user.fk_company).values_list('pk_bint_id',flat=True).first()
+                                ins_brand = Brands.objects.get(pk_bint_id = int(dct_enquiry['fk_brand_id']))
+                                ins_item = Items.objects.get(pk_bint_id = int(dct_enquiry['fk_item_id']))
 
                                 if not dct_enquiry['dbl_estimated_amount']:
                                     dct_enquiry['dbl_estimated_amount'] = '0.0'
@@ -2242,8 +2245,8 @@ class AddEnquiry(APIView):
                                 else:
                                     ins_item_enq = ItemEnquiry(fk_enquiry_master = ins_master,
                                                                 fk_product_id=int_product_id,
-                                                                fk_brand = Brands.objects.get(id = dct_enquiry['fk_brand_id']),
-                                                                fk_item = Items.objects.get(id = dct_enquiry['fk_item_id']),
+                                                                fk_brand = Brands.objects.get(pk_bint_id = dct_enquiry['fk_brand_id']),
+                                                                fk_item = Items.objects.get(pk_bint_id = dct_enquiry['fk_item_id']),
                                                                 int_quantity = dct_enquiry['intQty'],
                                                                 dbl_amount = dct_enquiry['dbl_estimated_amount'],
                                                                 vchr_enquiry_status = dct_enquiry['vchr_enquiry_status'],
@@ -2417,9 +2420,9 @@ class AddEnquiry(APIView):
                 # EnquiryMaster.objects.filter(chr_doc_status='N',pk_bint_id = ins_master.pk_bint_id).update(vchr_hash = str_hash)
                 # enquiry_print(str_enquiry_no,request,ins_user)
 
-                return JsonResponse({'status': 'Success','data':str_enquiry_no,'enqId':ins_master.pk_bint_id})
+                return JsonResponse({'status': 1,'data':str_enquiry_no,'enqId':ins_master.pk_bint_id})
             elif dct_enquirystatus['naEnquiry']:
-                return JsonResponse({'status': 'Success','data':str_naenquiry_no,'enqId':ins_enquiry.pk_bint_id})
+                return JsonResponse({'status': 1,'data':str_naenquiry_no,'enqId':ins_enquiry.pk_bint_id})
 
         except Exception as e:
             if 'ins_master' in locals():
@@ -2429,7 +2432,7 @@ class AddEnquiry(APIView):
             if 'ins_enquiry' in locals():
                 NaEnquiryDetails.objects.filter(fk_na_enquiry_master = ins_enquiry.pk_bint_id).delete()
                 NaEnquiryMaster.objects.filter(pk_bint_id = ins_enquiry.pk_bint_id).delete()
-            return JsonResponse({'status': 'Failed','data':str(e)})
+            return JsonResponse({'status': 0,'data':str(e)})
 
 class GetDetailsForAddMobileLead(APIView):
     def post(self,request):
