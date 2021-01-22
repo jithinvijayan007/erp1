@@ -225,6 +225,7 @@ class UpdateCustomer(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
+            # import pdb; pdb.set_trace()
             # if request.data.get('intCustId'):
                 # CustomerDetails.objects.filter(pk_bint_id=request.data.get('intCustId')).update(vchr_email = request.data.get('strEmail',None),
                 #                                                 txt_address = request.data.get('strAddress',None),
@@ -299,15 +300,16 @@ class UpdateCustomer(APIView):
                     print("location ",dct_data['intLocation'])
                     if dct_data['intLocation']:
                         dct_pos=dict(Location.objects.filter(pk_bint_id=dct_data['intLocation']).values('fk_state__vchr_name','fk_state__vchr_code','vchr_district','vchr_pin_code','vchr_name').first())
-                    url =settings.BI_HOSTNAME + "/customer/customer_update/"
+                    # url =settings.BI_HOSTNAME + "/customer/customer_update/"
+                    #commened for o2force
                     dct_pos.update(dct_data)
                     dct_pos['user_name'] = request.user.username
 
-                    res_data = requests.post(url,json=dct_pos)
-                    if res_data.json().get('status')=='1':
-                        pass
-                    else:
-                        raise ValueError('Something happened in BI')
+                    # res_data = requests.post(url,json=dct_pos)
+                    # if res_data.json().get('status')=='1':
+                    #     pass
+                    # else:
+                    #     raise ValueError('Something happened in BI')
 
                     dct_data['blnIGST']=False
 

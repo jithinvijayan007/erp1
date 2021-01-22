@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -25,7 +26,7 @@ from POS import ins_logger
 import sys, os
 from django.db.models import Q
 import json
-
+from django.conf import settings
 # ============================================
 from branch.models import Branch
 # ============================================
@@ -537,6 +538,10 @@ class GetPriceForItemAPI(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
+            # import pdb; pdb.set_trace()
+            """ if parallel run is true fetch data using apis insted of database """
+            if settings.PARALLEL_RUN:
+                url = "dfa"
             conn = engine.connect()
             int_id = request.data.get('pk_bint_id')
             str_imei = request.data.get('strImei')

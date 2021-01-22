@@ -95,6 +95,14 @@ import pyqrcode
 import png
 from pyqrcode import QRCode
 
+
+from enquiry.models import EnquiryMaster
+from enquiry_mobile.models import ItemEnquiry, ItemFollowup
+from staff_rewards.models import RewardsAvailable
+from invoice.models import GDPRange
+from reminder.models import Reminder
+
+
 PartialInvoiceSA = PartialInvoice.sa
 SalesMasterSA = SalesMaster.sa
 SalesDetailsSA = SalesDetails.sa
@@ -157,7 +165,7 @@ class SalesList(APIView):
             dat_to = (datetime.strptime(request.data.get("datTo")[:10],'%Y-%m-%d')).date()
             dat_from = (datetime.strptime(request.data.get("datFrom")[:10],'%Y-%m-%d')).date()
 
-            # import pdb; pdb.set_trace()
+            
             if request.data.get('blnService'):
                 if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN':
                     ins_partial_inv = PartialInvoice.objects.filter(int_status__in=(3,5,6,10),int_active=0,int_approve__in=(0,2,4),dat_created__date__gte = dat_from,dat_created__date__lte = dat_to).values('pk_bint_id','dat_created','json_data','int_status').order_by('-pk_bint_id')
@@ -244,6 +252,7 @@ class SalesList(APIView):
 
     def post(self,request):
         try:
+            
             int_id = request.data.get('intId')
             ins_partial_inv = PartialInvoice.objects.filter(pk_bint_id = int_id,int_active = 0).exclude(int_approve__in=[5]).values('dat_created','json_data','int_status','int_approve','json_updated_data').first()
             if not ins_partial_inv:
@@ -284,7 +293,7 @@ class SalesList(APIView):
             dct_data['int_status'] = ins_partial_inv['int_status']
             dct_data['int_approve'] = ins_partial_inv['int_approve']
             # LG
-            # import pdb; pdb.set_trace()
+            
             if request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER'] and ins_partial_inv['int_approve'] in [3]:
                 dct_data['bln_approve'] = True
             elif request.data.get('int_approve') in [2,4]:
@@ -304,7 +313,7 @@ class SalesList(APIView):
             bln_kfc = False
             if ins_customer['fk_state_id'] == request.user.userdetails.fk_branch.fk_states_id and not ins_customer['vchr_gst_no']:
                 bln_kfc = True
-            # import pdb; pdb.set_trace()
+            
             if ins_partial_inv['json_data'].get('offerName'):
                 dct_data['offerName'] = ins_partial_inv['json_data'].get('offerName')
             if ins_partial_inv['json_data'].get('partial_amt'):
@@ -342,14 +351,14 @@ class SalesList(APIView):
             dct_data['intAmtPerPoints'] = 1/settings.LOYALTY_POINT
             dct_data['lstItems'] = []
             dct_data['blnIGST'] = False
-            # import pdb; pdb.set_trace()
+            
             rst_branch_state_code=Branch.objects.get(pk_bint_id=ins_partial_inv['json_data']['int_branch_id']).fk_states_id
             if rst_branch_state_code != ins_customer['fk_state_id']:
             # if request.user.userdetails.fk_branch.fk_states_id != ins_customer['fk_state_id']:
                 dct_data['blnIGST'] = True
             dct_tax_master = {}
             dct_data['dbl_kfc_amount'] = 0.0
-            # import pdb; pdb.set_trace()
+            
             dct_data['dblBalanceAmount'] = int(ins_partial_inv['json_data'].get('dbl_balance_amt') if  ins_partial_inv['json_data'].get('dbl_balance_amt') else 0)
             dct_data['dblPartialAmount'] = int(str(ins_partial_inv['json_data'].get('dbl_partial_amt')).replace(',','') if ins_partial_inv['json_data'].get('dbl_partial_amt') else 0 )
 
@@ -463,7 +472,7 @@ class SalesList(APIView):
 
                             dct_item['dctImages'] = ins_items_data.get('dct_images')
                             dct_item['blnVerified'] = False
-                        # import pdb;pdb.set_trace()
+                        
                         if len(ins_items_data['json_imei']['imei'])>0:
                             dct_item['strImei'] = ins_items_data['json_imei']['imei'][row]
                             ins_grn_details = GrnDetails.objects.filter(fk_item_id=ins_items['pk_bint_id'],jsn_imei_avail__contains={'imei_avail':[dct_item['strImei']]}).values('jsn_tax').last()
@@ -481,6 +490,7 @@ class SalesList(APIView):
                             dbl_amt = (dbl_rate-dbl_discount)/((100+ins_items['fk_item_category__json_tax_master'].get(dct_tax_master['IGST'],0))/100)
                             dct_item['dblIGSTPer'] = round(float(ins_items['fk_item_category__json_tax_master'].get(dct_tax_master['IGST'],0)),2)
                             dct_item['dblIGST'] = round(dbl_amt*(ins_items['fk_item_category__json_tax_master'].get(dct_tax_master['IGST'],0)/100),2)
+                        
                         if ins_items['fk_item_category__json_tax_master'] and bln_kfc:
                             dbl_amt = (dbl_rate-dbl_discount)/((100+ins_items['fk_item_category__json_tax_master'].get(dct_tax_master['CGST'],0)+ins_items['fk_item_category__json_tax_master'].get(dct_tax_master['SGST'],0)+ins_items['fk_item_category__json_tax_master'].get(dct_tax_master['KFC'],0))/100)
                             dct_data['dbl_kfc_amount'] += dbl_amt*(ins_items['fk_item_category__json_tax_master'].get(dct_tax_master['KFC'],0)/100)
@@ -623,7 +633,7 @@ class SalesList(APIView):
                 dct_data = {}
                 dct_item = {}
                 dct_data['lstItems'] = []
-                # import pdb; pdb.set_trace()
+                
 
                 return_master_check = list(SalesDetails.objects.filter(pk_bint_id__in = request.data.get("int_id")).values_list('fk_master_id',flat = True))
                 rst_data = SalesDetails.objects.filter(Q(json_imei__has_any_keys = request.data.get('imei',[]),),int_sales_status = 1,fk_item_id__vchr_item_code__in = ['GDC00001','GDC00002']).values('json_imei','pk_bint_id','fk_master_id')
@@ -640,7 +650,7 @@ class SalesList(APIView):
                 for data in request.data.get('lst_return'):
                     int_id = data.get('id')
                     str_imei = data.get('imei')
-                    # import pdb; pdb.set_trace()
+                    
                     dct_sales = SalesDetails.objects.filter(pk_bint_id = int_id).values('pk_bint_id','fk_master_id','fk_master_id__fk_customer_id','fk_master_id__fk_staff_id','fk_item_id','fk_item_id__vchr_item_code','dbl_selling_price','json_imei','json_tax','dbl_tax','dbl_amount','dbl_discount','dbl_buyback','int_qty','dbl_indirect_discount','fk_master_id__jsn_addition','fk_master_id__jsn_deduction').first()
                     int_master_id = dct_sales['fk_master_id']
                     if not dct_sales:
@@ -688,7 +698,7 @@ class SalesList(APIView):
                                 dct_item['GDP'] = ins_gdot['dbl_selling_price']/ins_gdot['int_qty'] or 0
                             elif ins_gdot['fk_item_id__vchr_name'] == 'GDEW (EXTENDED WARRANTY)':
                                 dct_item['GDEW'] = ins_gdot['dbl_selling_price']/ins_gdot['int_qty'] or 0
-                    # import pdb; pdb.set_trace()
+                    
                     dct_item['strItemCode'] = ins_items['vchr_item_code']
                     dct_item['intItemId'] = ins_items['pk_bint_id']
                     dct_item['strItemName'] = ins_items['vchr_name']
@@ -705,7 +715,7 @@ class SalesList(APIView):
 
                     # dct_item['dblRate'] = dct_item['dblAmount'] - (dct_item['dblBuyBack'] + dct_item['dblDiscount'] + (dct_sales['dbl_tax']/dct_sales['int_qty']))
                     # LG
-                    # import pdb; pdb.set_trace()
+                    
                     dct_item['dblRate'] = dct_item['dblAmount'] - (dct_sales['dbl_tax']/dct_sales['int_qty'])
 
                     dct_item['dblIGST'] = dct_sales['json_tax']['dblIGST']/dct_sales['int_qty']
@@ -731,7 +741,7 @@ class SalesList(APIView):
                 if dct_master['jsn_deduction']:
                     for item in dct_master['jsn_deduction'].values():
                         dbl_deduction += float(item)
-            # import pdb; pdb.set_trace()
+            
             return Response({'status':1,'data':dct_data,'dbl_addition':dbl_addition,'dbl_deduction':dbl_deduction})
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -744,6 +754,7 @@ class AddInvoice(APIView):
     def patch(self,request):
         try:
             with transaction.atomic():
+                
                 if request.data.get('approveId'):
                     if request.data.get('intCreditSale'):
                         """int_credit_sale - 1 - Credit Sale ticked and when total Amount > 200,000 2- Credit Sale approved when amount >200000
@@ -793,7 +804,7 @@ class AddInvoice(APIView):
                         for ins_item in lst_items:
 
                             if ins_item.get('itemEnqId') and ins_item['strItemCode']+"-"+str(ins_item['itemEnqId']) in  dct_item:
-                                # import pdb; pdb.set_trace()
+                                
                                 # dct_item[ins_item['strItemCode'] +"-"+str(ins_item['itemEnqId'])]['int_quantity']=dct_item[ins_item['strItemCode'] +"-"+str(ins_item['itemEnqId'])]['int_quantity']+1
                                 dct_item[ins_item['strItemCode'] +"-"+str(ins_item['itemEnqId'])]['json_imei']['imei'].append(ins_item.get('strImei'))
                                 # dct_item[ins_item['strItemCode'] +"-"+str(ins_item['itemEnqId'])]['dbl_amount'] += ins_item['dblAmount']
@@ -870,7 +881,7 @@ class AddInvoice(APIView):
                     #     else:
                     #         ins_partial_inv = PartialInvoice.objects.filter(int_status=11,int_active = 0,int_approve=1,json_data__contains={'int_branch_id':request.user.userdetails.fk_branch_id},dat_created__date__gte = dat_from,dat_created__date__lte = dat_to).values('pk_bint_id','dat_created','json_data','int_status').order_by('-dat_created')
                     # else:
-                    # import pdb; pdb.set_trace()
+                    
                     if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN']:
                         ins_partial_inv = PartialInvoice.objects.filter(int_active = 0,int_approve=1,dat_created__date__gte = dat_from,dat_created__date__lte = dat_to).exclude(int_status__in=(3,6,5,10,11)).values('pk_bint_id','dat_created','json_data','int_status').order_by('-dat_created')
                     else:
@@ -928,20 +939,20 @@ class AddInvoice(APIView):
                         lst_data.append(dct_data)
                     return Response({'status':1,'data':lst_data})
         except Exception as e:
-            # import pdb; pdb.set_trace()
+            
 
             exc_type, exc_obj, exc_tb = sys.exc_info()
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id),'details':'line no: ' + str(exc_tb.tb_lineno)})
             return Response({'status':'0','message':str(e)})
     def post(self,request):
         try:
-
+            # import pdb; pdb.set_trace()
             if request.data.get('salesRowId'):
                     if PartialInvoice.objects.filter(pk_bint_id = request.data.get('salesRowId'),fk_invoice_id__isnull=False).exists():
                         return Response({'status':0,'message':'Already sold'})
             inst_partial_validation=None
             if request.data.get('salesRowId'):
-              inst_partial_validation=PartialInvoice.objects.filter(pk_bint_id = request.data.get('salesRowId'))
+              inst_partial_validation = PartialInvoice.objects.filter(pk_bint_id = request.data.get('salesRowId'))
             if inst_partial_validation:
                inst_partial_validation.update(fk_invoice_id=1)
             with transaction.atomic():
@@ -966,52 +977,53 @@ class AddInvoice(APIView):
                 lst_for_comparison = []
                 lst_imei_data_exists = []
                 lst_batch_data_exists = []
-                for data in dct_item_data:
-                    """~~~~~~~~~~~~~~~~~~~~To avoid smart choice and return from imei available check~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
-                    if not data['intStatus'] in [0,2,3] and (data.get('vchr_product_name') not in ['RECHARGE','SIM','SERVICE','SERVICES']):
-                        if data.get('strImei'):
-                            if data["imeiStatus"]:
-                                lst_imei_data_exists.append(data['strImei'][0] if type(data['strImei']) == list else data['strImei'] )
-                            else:
-                                lst_batch_data_exists.append(data['strImei'][0] if type(data['strImei']) == list else data['strImei'] )
-                    """~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
+                #commented for o2force
+                # for data in dct_item_data:
+                #     """~~~~~~~~~~~~~~~~~~~~To avoid smart choice and return from imei available check~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
+                #     if not data['intStatus'] in [0,2,3] and (data.get('vchr_product_name') not in ['RECHARGE','SIM','SERVICE','SERVICES']):
+                #         if data.get('strImei'):
+                #             if data["imeiStatus"]:
+                #                 lst_imei_data_exists.append(data['strImei'][0] if type(data['strImei']) == list else data['strImei'] )
+                #             else:
+                #                 lst_batch_data_exists.append(data['strImei'][0] if type(data['strImei']) == list else data['strImei'] )
+                #     """~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
 
-                if lst_imei_data_exists or lst_batch_data_exists:
-                    rst_imei_exist_data = BranchStockDetails.objects.filter(jsn_imei_avail__imei__has_any_keys = lst_imei_data_exists, fk_master_id__fk_branch_id=request.user.userdetails.fk_branch_id).values('jsn_imei_avail','int_qty')
-                    rst_imei_exchange_data = ExchangeStock.objects.filter(jsn_avail__has_any_keys = lst_imei_data_exists, fk_branch_id=request.user.userdetails.fk_branch_id).annotate(jsn_imei_avail=F('jsn_avail'),int_qty=F('int_avail')).values('jsn_imei_avail','int_qty')
+                # if lst_imei_data_exists or lst_batch_data_exists:
+                #     rst_imei_exist_data = BranchStockDetails.objects.filter(jsn_imei_avail__imei__has_any_keys = lst_imei_data_exists, fk_master_id__fk_branch_id=request.user.userdetails.fk_branch_id).values('jsn_imei_avail','int_qty')
+                #     rst_imei_exchange_data = ExchangeStock.objects.filter(jsn_avail__has_any_keys = lst_imei_data_exists, fk_branch_id=request.user.userdetails.fk_branch_id).annotate(jsn_imei_avail=F('jsn_avail'),int_qty=F('int_avail')).values('jsn_imei_avail','int_qty')
 
-                    # rst_exist_data = BranchStockDetails.objects.filter(Q(jsn_imei_avail__imei__has_any_keys = lst_data_exists) | Q(jsn_batch_no__batch__has_any_keys = lst_data_exists ), fk_master_id__fk_branch_id=request.user.userdetails.fk_branch_id).values('jsn_imei_avail','jsn_batch_no','int_qty')
-                    rst_batch_no_exist_data = BranchStockDetails.objects.filter(jsn_batch_no__batch__has_any_keys = lst_batch_data_exists , fk_master_id__fk_branch_id=request.user.userdetails.fk_branch_id).values('jsn_batch_no').annotate(sum_qty = Sum('int_qty'))
-                    for data in rst_imei_exist_data:
-                        for imei in data['jsn_imei_avail']['imei']:
-                            if imei in lst_imei_data_exists:
-                                lst_for_comparison.append(imei)
+                #     # rst_exist_data = BranchStockDetails.objects.filter(Q(jsn_imei_avail__imei__has_any_keys = lst_data_exists) | Q(jsn_batch_no__batch__has_any_keys = lst_data_exists ), fk_master_id__fk_branch_id=request.user.userdetails.fk_branch_id).values('jsn_imei_avail','jsn_batch_no','int_qty')
+                #     rst_batch_no_exist_data = BranchStockDetails.objects.filter(jsn_batch_no__batch__has_any_keys = lst_batch_data_exists , fk_master_id__fk_branch_id=request.user.userdetails.fk_branch_id).values('jsn_batch_no').annotate(sum_qty = Sum('int_qty'))
+                #     for data in rst_imei_exist_data:
+                #         for imei in data['jsn_imei_avail']['imei']:
+                #             if imei in lst_imei_data_exists:
+                #                 lst_for_comparison.append(imei)
 
 
-                    for data in rst_imei_exchange_data:
-                        if data['jsn_imei_avail'][0] in lst_imei_data_exists:
-                            lst_for_comparison.append(data['jsn_imei_avail'][0])
+                #     for data in rst_imei_exchange_data:
+                #         if data['jsn_imei_avail'][0] in lst_imei_data_exists:
+                #             lst_for_comparison.append(data['jsn_imei_avail'][0])
 
-                    for data in rst_batch_no_exist_data:
-                        for batch in data['jsn_batch_no']['batch']:
-                            if batch in lst_batch_data_exists:
-                                if  lst_batch_data_exists.count(batch) <= data['sum_qty']:
-                                    lst_for_comparison.append(batch)
-                                else:
-                                    if inst_partial_validation:
-                                        inst_partial_validation.update(fk_invoice_id=None)
+                #     for data in rst_batch_no_exist_data:
+                #         for batch in data['jsn_batch_no']['batch']:
+                #             if batch in lst_batch_data_exists:
+                #                 if  lst_batch_data_exists.count(batch) <= data['sum_qty']:
+                #                     lst_for_comparison.append(batch)
+                #                 else:
+                #                     if inst_partial_validation:
+                #                         inst_partial_validation.update(fk_invoice_id=None)
 
-                                    return Response({'status':0,'message':'The Item Batch No '+str(batch)+' is Not Available for this quantity'})
+                #                     return Response({'status':0,'message':'The Item Batch No '+str(batch)+' is Not Available for this quantity'})
 
-                    imei_notfound = set(lst_imei_data_exists+lst_batch_data_exists).difference(set(lst_for_comparison))
-                    # import pdb;pdb.set_trace()
-                    if imei_notfound:
-                        if inst_partial_validation:
-                            inst_partial_validation.update(fk_invoice_id=None)
+                #     imei_notfound = set(lst_imei_data_exists+lst_batch_data_exists).difference(set(lst_for_comparison))
+                #     
+                #     if imei_notfound:
+                #         if inst_partial_validation:
+                #             inst_partial_validation.update(fk_invoice_id=None)
 
-                        return Response({'status':0,'message':'The Item IMEI/Batch No ('+','.join(imei_notfound)+') is Not Available Now'})
-                """~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
-
+                #         return Response({'status':0,'message':'The Item IMEI/Batch No ('+','.join(imei_notfound)+') is Not Available Now'})
+                # """~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"""
+#end comment for o2force
                 if json_addition:
                     json_addition = json.loads(request.data.get('json_additions'))
 
@@ -1129,7 +1141,7 @@ class AddInvoice(APIView):
                 dct_item_myg_amnt =  dict(PriceList.objects.filter(fk_item_id__in = lst_item_id).values_list('fk_item_id','int_myg_amt'))
                 dct_item_dealer_amnt =  dict(PriceList.objects.filter(fk_item_id__in = lst_item_id).values_list('fk_item_id','dbl_dealer_amt'))
 
-                # import pdb; pdb.set_trace()
+                
                 for dct_item in dct_item_data:
 
                     '''Converting null from front end values to 0'''
@@ -1153,6 +1165,7 @@ class AddInvoice(APIView):
                     if 'dblSGSTPer' in dct_item:
                         dct_item['dblSGSTPer'] = dct_item['dblSGSTPer'] or 0
                     if not ins_sales_master:
+                        # import pdb; pdb.set_trace()
                         # ins_sales_master = SalesMaster.objects.create_inv_num(str_inv_num)
                         ins_sales_master = SalesMaster.objects.create(
                                             fk_customer = ins_sales_customer,
@@ -1186,7 +1199,7 @@ class AddInvoice(APIView):
                                             )
 
                         ins_sales_master.save()
-                    # import pdb; pdb.set_trace()
+                    
                     if dct_item.get('dblIndirectDis') and not vchr_journal_num:
                         # ins_branch_code = Branch.objects.filter(pk_bint_id = ins_partial_inv['json_data']['int_branch_id']).values('vchr_code').first()['vchr_code']
                         # ins_document = Document.objects.select_for_update().filter(vchr_module_name = "INDIRECT DISCOUNT",vchr_short_code = ins_branch_code).first()
@@ -1273,7 +1286,7 @@ class AddInvoice(APIView):
                     if item_total_tax_percent == 0:
                         item_total_tax_percent = json_item_tax.get('dblCGST%',0) +json_item_tax.get('dblSGST%',0) + json_item_tax.get('dblKFC%',0)
 
-                    # import pdb;pdb.set_trace()
+                    
 
                     ins_sales_details=SalesDetails.objects.create(fk_master = ins_sales_master,
                                         fk_item_id = dct_item['intItemId'],
@@ -1355,7 +1368,7 @@ class AddInvoice(APIView):
                              #            ins_exchange.int_status=1
                              #
                              #     ins_exchange.save()
-                    # import pdb;pdb.set_trace()
+                    
 
                     if dct_item['intStatus'] == 0:
                         ins_sales_returned = SalesDetails.objects.filter(fk_item__pk_bint_id = dct_item['intItemId'],fk_master__fk_customer = ins_sales_customer).values('fk_master__pk_bint_id')
@@ -1501,7 +1514,7 @@ class AddInvoice(APIView):
                     int_total_amt = dbl_credit_balance-int(request.data.get('intGrandTot'))
                     ins_customer.dbl_credit_balance = int_total_amt
                     ins_customer.save()
-                # import pdb; pdb.set_trace()
+                
                 dct_delivery_data =  json.loads(request.data.get('dctDeliveryData'))
                 if dct_delivery_data.get('strCustName') and dct_delivery_data.get('intCustContactNo'):
                     CustServiceDelivery.objects.create(fk_sales_master = ins_sales_master,
@@ -1515,7 +1528,7 @@ class AddInvoice(APIView):
                                                     fk_state_id = dct_delivery_data.get('intCustStateId',None))
                 dct_payment_data = json.loads(request.data.get('lstPaymentData'))
                 # LG
-                # import pdb; pdb.set_trace()
+                
                 bln_payment_check=False
                 lst_bi_payment_details = []
 
@@ -1582,7 +1595,7 @@ class AddInvoice(APIView):
                             else:
                                 str_name=dct_payment_data[ins_mode].get('strName',None)
 
-                            # import pdb; pdb.set_trace()
+                            
                             ins_payment = PaymentDetails(fk_sales_master = ins_sales_master,
                                                         int_fop = int(ins_mode),
                                                         vchr_card_number = dct_payment_data[ins_mode].get('strCardNo',None),
@@ -1606,7 +1619,7 @@ class AddInvoice(APIView):
                                                           dbl_service_amt = dct_payment_data[ins_mode].get('dblServiceAmount',None),
                                                           dbl_dbd_amt  = dct_payment_data[ins_mode].get('dblDbdAmount',None))
 
-                # import pdb;pdb.set_trace()
+                
                 if not bln_payment_check and rst_payment_customer['int_cust_type'] not in [1,2] and ins_sales_master.int_sale_type not in ['2','3'] and not ins_sales_master.dbl_cust_outstanding:
                     file_object = open('payment_issue.txt', 'a')
                     data_payment_to_write = json.dumps({'Date':request.data})
@@ -1657,6 +1670,7 @@ class AddInvoice(APIView):
                 if not request.data.get('blnExchange'):
                     loyalty_card(dbl_total_amt,ins_customer,ins_sales_master,request.user)
                 # -------------------------------------------------
+                # import pdb; pdb.set_trace()
                 if create_invoice_posting_data(request,ins_sales_master.pk_bint_id):
                     if ins_sales_master.pk_bint_id:
                         ins_sap_api = SapApiTrack.objects.create(int_document_id = ins_sales_master.pk_bint_id,
@@ -1677,14 +1691,15 @@ class AddInvoice(APIView):
 
                     raise ValueError('Something happened in Transaction')
                 # ------------------------- BI API ------------------------
-                # import pdb; pdb.set_trace()
+                
                 bln_allow = True
                 if not request.data.get('blnExchange'):
                     PartialInvoice.objects.filter(pk_bint_id = int(request.data.get('salesRowId'))).update(dat_invoice = datetime.now(),fk_invoice = ins_sales_master,int_active = 1)
 
                 #==============================================================================================================================================================================
                 try:
-                    url =settings.BI_HOSTNAME + "/mobile/enquiry_invoice_update/"
+                    # url =settings.BI_HOSTNAME + "/mobile/enquiry_invoice_update/"
+                    # import pdb; pdb.set_trace()
                     if not request.data.get('blnExchange'): #exchanged item doesnt have partial invoice
                         ins_partial_inv = PartialInvoice.objects.get(pk_bint_id = int(request.data.get('salesRowId')))
                         int_enq_master_id = PartialInvoice.objects.filter(pk_bint_id = int(request.data.get('salesRowId'))).values().first()['json_data']['int_enq_master_id']
@@ -1701,7 +1716,7 @@ class AddInvoice(APIView):
 
                             raise ValueError('Something happened in BI')
                             return JsonResponse({'status': 'Failed','data':res_data.json().get('message',res_data.json())})
-                    # import pdb;pdb.set_trace()
+                    
                     for ins in odct_item_data:
                         if odct_item_data[ins]['status'] == 3:
                             bln_allow = True
@@ -1717,12 +1732,13 @@ class AddInvoice(APIView):
                             url =settings.BI_HOSTNAME + "/service/service_invoice_update/"
 
                     if bln_allow:
-                        # import pdb; pdb.set_trace()
+                        
                         credit_sale = False
                         if ins_partial_inv.int_approve in [2, 4]:#test with partial invoice inst status field that credit aproved
                             credit_sale = True
-                        res_data = requests.post(url,json={'dct_item_data':odct_item_data,"int_enq_master_id":int_enq_master_id,"str_remarks":str_remarks,'bi_payment_details':lst_bi_payment_details,"credit_sale":credit_sale})
-                        if res_data.json().get('status')=='success':
+                        # res_data = requests.post(url,json={'dct_item_data':odct_item_data,"int_enq_master_id":int_enq_master_id,"str_remarks":str_remarks,'bi_payment_details':lst_bi_payment_details,"credit_sale":credit_sale})
+                        res_data = EnquiryInvoiceUpdate({'dct_item_data':odct_item_data,"int_enq_master_id":int_enq_master_id,"str_remarks":str_remarks,'bi_payment_details':lst_bi_payment_details,"credit_sale":credit_sale})
+                        if res_data.get('status')=='success':
                             pass
                         else:
                             if inst_partial_validation:
@@ -1895,7 +1911,7 @@ class AddFollowUpAPI(APIView):
                 dct_data['vchr_item_name']=item['vchr_item_name']
                 dct_data['vchr_item_code'] = item['vchr_item_code']
                 dct_data['vchr_imei'] = item['vchr_imei']
-                # import pdb;pdb.set_trace()
+                
                 dct_data['str_remarks'] = item.get('str_remarks') or ''
                 dct_data['vchr_digital_signature']=settings.EQT_HOSTNAME+'/'+str(item['vchr_digital_signature']) if item.get('vchr_digital_signature') else None
                 # checking screen lock picture and pin lock is in json file
@@ -2092,7 +2108,7 @@ class AddSalesAPI(APIView):
     permission_classes = [AllowAny]
     def post(self,request):
         try:
-            # import pdb; pdb.set_trace()
+            
             dct_data = {}
             str_cust_name = request.data.get('vchr_cust_name')
             str_cust_email = request.data.get('vchr_cust_email',None)
@@ -2142,7 +2158,7 @@ class AddSalesAPI(APIView):
 
             bln_ecom_sale =  request.data.get('bln_ecom_sale',False)
             dct_data['bln_ecom_sale'] = bln_ecom_sale
-            # import pdb; pdb.set_trace()
+            
 
 
 
@@ -2337,7 +2353,7 @@ class AddSalesAPI(APIView):
 
             # -------- Followup ----------
             if  request.data.get('bln_service'):
-                # import pdb; pdb.set_trace()
+                
                 # ins_par_inv = PartialInvoice.objects.filter(int_status=6,int_enq_master_id = int(request.data.get('int_enq_master_id')), int_active__in = [0,3], dat_created__date = request.data.get('dat_enquiry'))
                 # LG
                 ins_par_inv = PartialInvoice.objects.filter(int_status__in=[5,6],int_enq_master_id = int(request.data.get('int_enq_master_id')), int_active__in = [0,3])
@@ -2547,7 +2563,7 @@ class ApplyCoupon(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-            # import pdb; pdb.set_trace()
+            
             str_coupon_code = request.data.get('strCode')
             lst_item_details = request.data.get('lstItemDetails')
             flt_total = request.data.get('intTotal')
@@ -2598,7 +2614,7 @@ class InvoicePrintApi(APIView):
     permission_classes = [AllowAny]
     def post(self,request):
         try:
-            # import pdb; pdb.set_trace()
+            
             session = Connection()
             p = inflect.engine()
             vchr_invoice_num = request.data.get('invoiceId')
@@ -2696,7 +2712,7 @@ class InvoicePrintApi(APIView):
             dct_invoice['service_charge'] = 0
             bln_service_customer_print=False
             bln_exchange_print = False
-            # import pdb; pdb.set_trace()
+            
             #if finance ,have to  add dbl_processing_fee dbl_margin_fee,dbl_service_amt from financedetails
             # if  ins_finance_details:
             #     lst_finance_extra_charge =  [ins_finance_details['dbl_processing_fee'],  ins_finance_details['dbl_service_amt'],  ins_finance_details['dbl_dbd_amt'] ]
@@ -2816,7 +2832,7 @@ class InvoicePrintApi(APIView):
                     ins_return_details = rst_return.all()[0] if rst_return.all() else None
                     if rst_return.all() :
                         int_return_invoice_id = ins_return_details.return_invoice_id if rst_return.all() else ''
-                        # import pdb;pdb.set_trace()
+                        
                         inst_json=SalesMaster.objects.filter(pk_bint_id=vchr_invoice_num).values('jsn_addition','jsn_deduction').first()
                         dct_invoice['total_addition'] =0
                         dct_invoice['total_deduction'] =0
@@ -3062,7 +3078,7 @@ class InvoicePrintApi(APIView):
                     dct_invoice['terms'][ins_term['fk_type__vchr_name']] = ins_term['jsn_terms']
             dct_voucher['total_amount_in_words']= p.number_to_words(round(dct_voucher['total_amount'])).title() +" Rupees Only"
             # data = print_invoice(dct_invoice,dct_voucher)
-            # import pdb; pdb.set_trace()
+            
             dct_invoice['int_cust_type'] = rst_state[0]['fk_customer__fk_customer__int_cust_type']
             html_voucher = ""
             html_data = ""
@@ -3071,7 +3087,7 @@ class InvoicePrintApi(APIView):
             html_credit_note = ""
             html_service_customer = ""
             html_exchange = ""
-            # import pdb;pdb.set_trace()
+            
             dct_invoice['lst_item']=sorted(dct_invoice['lst_item'], key = lambda i: i['int_status'],reverse=False)
             html_voucher = print_voucher(dct_invoice,dct_voucher)
             if dct_invoice['lst_insurance']:
@@ -3182,7 +3198,7 @@ class InvoicePrintApi(APIView):
 def print_voucher(dct_invoice,dct_voucher):
     try:
         str_mygcare_num = dct_invoice['mygcare_no'] if  dct_invoice['mygcare_no'] else ''
-        # import pdb; pdb.set_trace()
+        
         str_style = """   	<style>
 
             		table#voucher {
@@ -3794,7 +3810,7 @@ ul li::before {
     <div style="margin-top: 20px">
         <p style="font-weight: 600;color: #118b98;"><span style="border-bottom: 2px solid #118b98;">Te</span>rms & Condition</p>
         <ul>'''
-                # import pdb; pdb.set_trace()
+                
                 for index in range(1,len(dct_invoice[terms])+1):
                     html_insurance+='''<li>'''+dct_invoice[terms][str(index)]+'''</li>'''
                     html_insurance+='''<br>'''
@@ -3925,7 +3941,7 @@ ul li::before {
 </body>
 </html>'''
 
-                # import pdb; pdb.set_trace()
+                
                 lst_html_insurance.append(html_insurance)
         return lst_html_insurance
     except Exception as e:
@@ -4330,7 +4346,7 @@ def print_return_and_credit_note(dct_invoice,dct_voucher):
         count=1
         for data in dct_invoice['lst_returned']:
 
-            #import pdb;pdb.set_trace()
+            #
             if 1 or data['str_imei']  not in lst_already:
                 lst_already.append(data['str_imei'])
                 int_count += 1
@@ -4343,7 +4359,7 @@ def print_return_and_credit_note(dct_invoice,dct_voucher):
                 bln_last_row=count==len(dct_invoice['lst_returned'])
                 count+=1
 
-                #import pdb;pdb.set_trace()
+                #
                 if not data['igstp']:
                     html_returned += """       						   <tr>
                                                                        <td>"""+str(int_count)+"""</td>
@@ -4670,7 +4686,7 @@ def print_return_and_credit_note(dct_invoice,dct_voucher):
         raise
 def print_invoices(dct_invoice,dct_voucher):
     try:
-        # import pdb; pdb.set_trace()
+        
         str_mygcare_num = dct_invoice['mygcare_no'] if  dct_invoice['mygcare_no'] else ''
         html_data = ""
         html_data2 = ""
@@ -5195,7 +5211,7 @@ def print_invoices(dct_invoice,dct_voucher):
     						   <p style="font-weight: 600;">TERMS / CONDITIONS:</p>
     							<ul style="list-style-type:disc;"> """
 
-            # import pdb; pdb.set_trace()
+            
             if dct_invoice['terms']:
                 for dct_terms in ['invoice-A','invoice-B','invoice-C']:
                     for index in range(1,len(dct_invoice['terms'][dct_terms])+1):
@@ -5694,7 +5710,7 @@ def print_invoices(dct_invoice,dct_voucher):
     	     </div>
     </body>
     </html> """
-        # import pdb; pdb.set_trace()
+        
         if html_data2:
             return html_data2
         else:
@@ -6521,7 +6537,7 @@ def print_exchange(int_sm_id):
 # 		<div style="margin-top: 20px">
 # 			<p style="font-weight: 600;color: #118b98;"><span style="border-bottom: 2px solid #118b98;">Te</span>rms & Condition</p>
 #             <ul>'''
-#                     # import pdb; pdb.set_trace()
+#                     
 #                     for index in range(1,len(dct_invoice[terms])+1):
 #                         html_insurance+='''<li>'''+dct_invoice[terms][str(index)]+'''</li>'''
 #                         html_insurance+='''<br>'''
@@ -6652,7 +6668,7 @@ def print_exchange(int_sm_id):
 # </body>
 # </html>'''
 #
-#                     # import pdb; pdb.set_trace()
+#                     
 #                     lst_html_insurance.append(html_insurance)
 #         if dct_invoice['lst_item']:
 #
@@ -7151,7 +7167,7 @@ def print_exchange(int_sm_id):
 #                             						   <p style="font-weight: 600;">TERMS / CONDITIONS:</p>
 #                             							<ul style="list-style-type:disc;"> """
 #
-#                                     # import pdb; pdb.set_trace()
+#                                     
 #                                     if dct_invoice['terms']:
 #                                         for dct_terms in ['invoice-A','invoice-B','invoice-C']:
 #                                             for index in range(1,len(dct_invoice['terms'][dct_terms])+1):
@@ -7839,7 +7855,7 @@ def print_exchange(int_sm_id):
 #             dbl_igst_tot=0
 #             lst_already=[]
 #             for data in dct_invoice['lst_returned']:
-#                 #import pdb;pdb.set_trace()
+#                 #
 #                 if 1 or data['str_imei']  not in lst_already:
 #                     lst_already.append(data['str_imei'])
 #                     int_count += 1
@@ -8221,7 +8237,7 @@ class InvoiceList(APIView):
     permission_classes=[AllowAny]
     def post(self,request):
         try:
-            # import pdb; pdb.set_trace()
+            
             dat_to = (datetime.strptime(request.data.get("datTo"),'%Y-%m-%d')).date()
             dat_from = (datetime.strptime(request.data.get("datFrom"),'%Y-%m-%d')).date()
             # ins_invoice = None
@@ -8250,7 +8266,7 @@ class InvoiceList(APIView):
             # ins_jio_sales = ins_jio_sales.values('fk_customer__int_mobile','fk_customer__vchr_name','fk_branch__vchr_name','dat_invoice','fk_staff__first_name','fk_staff__last_name','vchr_invoice_num','fk_item__fk_product__vchr_name').order_by("-vchr_invoice_num")
 
             session = Connection()
-            # import pdb; pdb.set_trace()
+            
 
             lst_service_id = list(set(SalesDetails.objects.filter(int_sales_status=3,fk_master__dat_invoice__gte=dat_from,fk_master__dat_invoice__lte=dat_to).values_list('fk_master_id',flat=True)))
             if request.data.get('blnReturn'):
@@ -8387,7 +8403,7 @@ class InvoiceList(APIView):
 
     def put(self,request):
         try:
-            # import pdb;pdb.set_trace()
+            
             if request.data.get('InvoiceNum'):
                 ins_sales=SalesMaster.objects.filter(vchr_invoice_num=request.data.get('InvoiceNum'))
                 if not ins_sales:
@@ -8502,7 +8518,7 @@ class InvoiceList(APIView):
                     dct_data = {}
                     if not ins_data['fk_sales_details_id__dbl_selling_price']:
                         ins_data['fk_sales_details_id__dbl_selling_price']= ins_data.get('dbl_selling_price',0)
-                    # import pdb; pdb.set_trace()
+                    
                     dct_data['intItemId'] = ins_data['fk_item_id']
                     dct_data['jsonTax'] = {"dblCGST": 0, "dblIGST": 0, "dblSGST": 0}
                     dct_data['dblAmount'] = round(abs(ins_data['fk_sales_details_id__dbl_selling_price']),2)*-1
@@ -9648,7 +9664,7 @@ class ReturnItemInvoice(APIView):
     def post(self,request):
         try:
             with transaction.atomic():
-                # import pdb; pdb.set_trace()
+                
 
                 dct_data = request.data
                 #import pdb; pdb.set_trace()
@@ -9656,7 +9672,7 @@ class ReturnItemInvoice(APIView):
                 lst_return_details = json.loads(dct_data.get('dctReturnId'))
                 int_sale_details_id = eval(dct_data['salesReturnId'])[0]
                 # LG
-                # import pdb; pdb.set_trace()
+                
                 ins_sale_detail = SalesDetails.objects.filter(pk_bint_id = int_sale_details_id).values('fk_master_id','fk_master_id__fk_branch_id','fk_master_id__fk_branch_id__vchr_code','fk_master_id__fk_customer_id','fk_master_id__fk_staff_id','fk_master_id__fk_branch_id__fk_states_id','fk_master_id__jsn_addition','fk_master_id__jsn_deduction','fk_master_id__vchr_invoice_num').first()
                 str_old_inv_no = ins_sale_detail["fk_master_id__vchr_invoice_num"]
                 if (request.user.userdetails.fk_branch_id != ins_sale_detail['fk_master_id__fk_branch_id']) and (request.user.userdetails.fk_branch.vchr_code == 'AGY' or ins_sale_detail['fk_master_id__fk_branch_id__vchr_code'] =='AGY'):
@@ -9763,7 +9779,7 @@ class ReturnItemInvoice(APIView):
                         dct_item_filter_bs['fk_details__fk_item_id'] =lst_item_details['intItemId']
                         if check_if_imei_exist(lst_item_details['strImei'],bln_transit=True,dct_filter_bs=dct_item_filter_bs,dct_filter_grn=dct_item_filter_grn,dct_filter_st=dct_item_filter_tr):
                             return Response({'status':0,'blnStock':True,'message':str(lst_item_details['strImei'])+' already exists in stock'})
-                        # import pdb; pdb.set_trace()
+                        
                         item_total_tax_percent = 0
                         if lst_item_details.get('dblIGSTPer') != 0 and lst_item_details.get('dblKFCPer') == 0:
                             item_total_tax_percent = lst_item_details.get('dblIGSTPer')
@@ -9793,7 +9809,7 @@ class ReturnItemInvoice(APIView):
                                                     )
                         ins_sales_details.save()
                         str_img_path=''
-                        # import pdb; pdb.set_trace()
+                        
                         if lst_item_details['strItemCode'] not in ['GDC00001','GDC00002'] :
                         # Check if the return imei in jsn_imei(List of all imei )field branch_stock_details ,then append the return imei to the jsn_imei_avail(list of available imei) field.
                             if request.user.userdetails.fk_branch_id == ins_sale_detail['fk_master_id__fk_branch_id']:
@@ -9838,7 +9854,7 @@ class ReturnItemInvoice(APIView):
                                     str_img_path = fs.url(str_img)
 
                             else:
-                                # import pdb; pdb.set_trace()
+                                
                                 if request.user.userdetails.fk_branch.vchr_code != 'AGY' and ins_sale_detail['fk_master_id__fk_branch_id__vchr_code'] !='AGY':
                                     imei_stock = {'imei':[]}
                                     batch_stock = {'batch':[]}
@@ -9945,7 +9961,7 @@ class ReturnItemInvoice(APIView):
                                 else:
                                     raise ValueError('Return is not possible between Angamali and other branches')
 
-                        # import pdb; pdb.set_trace()
+                        
                         ins_sales_return = SalesReturn(
                                                     fk_returned_id = ins_sale_detail['fk_master_id'],
                                                     fk_sales = ins_sales_master,
@@ -10002,11 +10018,11 @@ class ReturnItemInvoice(APIView):
 
                         dct_enquiry_data["dbl_tax"] = dbl_tax
                         dct_enquiry_data["json_tax"] = dct_tax
-                        # import pdb; pdb.set_trace()
+                        
                         lst_return_data.append(dct_enquiry_data)
 
 
-                # import pdb; pdb.set_trace()
+                
                 ins_sales_master.json_tax = json_total_tax
                 ins_sales_master.dbl_total_tax=total_tax
                 ins_sales_master.dbl_discount =total_discount
@@ -10015,7 +10031,7 @@ class ReturnItemInvoice(APIView):
 
 
                 # ============================To Bi ====================================================================================
-                # import pdb;pdb.set_trace()
+                
                 if ins_sales_master.dbl_total_amt:
                     ins_document = Document.objects.select_for_update().filter(vchr_module_name = "CREDIT NOTE",fk_branch_id = request.user.userdetails.fk_branch_id).first()
                     # if not ins_document:
@@ -10304,7 +10320,7 @@ class BajajOnlineAPI(APIView):
             if request.data.get('partial_id'):
                 ins_part=PartialInvoice.objects.filter(pk_bint_id=request.data['partial_id']).values('json_data','int_enq_master_id').first()
                 lst_item_name=[]
-                # import pdb;pdb.set_trace()
+                
                 for item in ins_part['json_data']['lst_items']:
                     lst_item_name.append(item['vchr_item_code'])
                 item_products={data['vchr_item_code']:(data['fk_product__vchr_name'],data['fk_brand__vchr_name'])  for data in list(Item.objects.filter(vchr_item_code__in=lst_item_name).values('vchr_item_code','fk_product__vchr_name','fk_brand__vchr_name'))}
@@ -10419,7 +10435,7 @@ class BajajApproveRejectAPI(APIView):
     permission_classes = [AllowAny]
     def post(self,request):
         try:
-            # import pdb;pdb.set_trace()
+            
             dct_data = request.data
             rst_par_inv = PartialInvoice.objects.filter(int_enq_master_id = dct_data['int_enquiry_master_id']).first()
             dct_jsn_data = rst_par_inv.json_data
@@ -10461,7 +10477,7 @@ class SaveReturnedSales(APIView):
     def post(self,request):
         try:
             with transaction.atomic():
-                # import pdb; pdb.set_trace()
+                
                 dct_data = request.data
                 ins_customer = CustomerDetails.objects.get(pk_bint_id = dct_data["intCustId"])
                 ins_sales_cust = SalesCustomerDetails.objects.filter(fk_customer_id = dct_data["intCustId"]).values("pk_bint_id").order_by("-pk_bint_id")
@@ -10708,7 +10724,7 @@ class SaveReturnedSales(APIView):
 
 
                             ins_sales_details.save()
-                            # import pdb; pdb.set_trace()
+                            
                             # SAVES DATA IN SALES RETURN
                             inst_sales_return = SalesReturn(
                                                                 fk_sales = ins_sales_master,
@@ -10810,7 +10826,7 @@ class SaveReturnedSales(APIView):
                         # else:
                         #     raise ValueError('Something happened in BI')
 
-                        # import pdb; pdb.set_trace()
+                        
                         if ins_sales_master.dbl_total_amt:
                             ins_document = Document.objects.filter(vchr_module_name = "CREDIT NOTE",fk_branch_id = request.user.userdetails.fk_branch_id).first()
                             # if not ins_document:
@@ -10898,7 +10914,7 @@ class CreditSaleAPI(APIView):
     def post(self,request):
         try:
             with transaction.atomic():
-                # import pdb; pdb.set_trace()
+                
                 if request.data.get('approveId'):
                     ins_partial_inv=PartialInvoice.objects.filter(pk_bint_id = request.data.get('approveId'),int_active = 0).first()
                     json_updated_data=ins_partial_inv.json_updated_data
@@ -10926,12 +10942,12 @@ class CreditSaleAPI(APIView):
                         json_partial_data['lst_items']=[]
                         dct_item={}
                         int_index=1
-                        # import pdb;pdb.set_trace()
+                        
 
                         for ins_item in lst_items:
 
                             # if ins_item.get('itemEnqId') and ins_item['strItemCode']+"-"+str(ins_item['itemEnqId']) in  dct_item:
-                            #     # import pdb; pdb.set_trace()
+                            #     
                             #     # dct_item[ins_item['strItemCode'] +"-"+str(ins_item['itemEnqId'])]['int_quantity']=dct_item[ins_item['strItemCode'] +"-"+str(ins_item['itemEnqId'])]['int_quantity']+1
                             #     dct_item[ins_item['strItemCode'] +"-"+str(ins_item['itemEnqId'])]['json_imei']['imei'].append(ins_item.get('strImei'))
                             #     dct_item[ins_item['strItemCode'] +"-"+str(ins_item['itemEnqId'])]['dbl_amount'] += ins_item['dblAmount']
@@ -11391,7 +11407,7 @@ def einvoice_generation(int_id,bln_status,bln_host_status):
             "ItemList":lst_item,
             "ValDtls":dct_val_dtls
             }
-        # import pdb; pdb.set_trace()
+        
         json_invoice_data=json.dumps(dct_invoice_data)
         int_request_id=datetime.strftime(datetime.now(),'%d%m%Y%H%M%S%f')+str(int_id)
         headers= { "Content-Type": "application/json", "user_name":'adqgsphpusr1', "password":"Gsp@1234", "gstin": '02AMBPG7773M002', "Authorization":'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzY29wZSI6WyJnc3AiXSwiZXhwIjoxNjAzNDU1MzEyLCJhdXRob3JpdGllcyI6WyJST0xFX1NCX0VfQVBJX0VJIl0sImp0aSI6ImE1YTc5NjdkLWM4ODItNGViMS1hY2MzLTE1NjEwYmRkNGUzMiIsImNsaWVudF9pZCI6IjA1MTQ5NTIyNDAwNTQ4RkM4OTUxRjQ2QzhFMjY4RDlGIn0.Wa5Q2vuyWSjEd5_YtWGVk6bEcZbvDxPxaTZt2RlLsqQ', "requestid":int_request_id }
@@ -11430,7 +11446,7 @@ def einvoice_generation(int_id,bln_status,bln_host_status):
         return data
     except  Exception as e:
         # SalesMaster.objects.filter(pk_bint_id =int_id).update(txt_qr_code = None, vchr_irn_no = None)
-        # import pdb; pdb.set_trace()
+        
         # exc_type, exc_obj, exc_tb = sys.exc_info()
         # ins_logger.logger.error(e, extra={'details':'line no: ' + str(exc_tb.tb_lineno)})
         # data = {"status":0,"reason":str(e)+' '+str_temp,'bln_permitted':True}
@@ -11460,3 +11476,255 @@ class EcomSalesCancelApi(APIView):
             exc_type, exc_obj, exc_tb = sys.exc_info()
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id),'details':'line no: ' + str(exc_tb.tb_lineno)})
             return Response({'status':0,'message':str(e)})
+
+def EnquiryInvoiceUpdate(data):
+        try:
+            """ bi class for adding invoice data for enquiry master """            
+            with transaction.atomic():
+                # import pdb; pdb.set_trace()
+                str_remark = data.get('str_remarks') or ""  
+                dct_item_data = data.get('dct_item_data')
+                int_type=data.get('int_type')
+                lst_item_data = list(dct_item_data.values())
+                int_enq_master_id = data.get('int_enq_master_id')
+                ins_user_id = EnquiryMaster.objects.filter(pk_bint_id=int_enq_master_id).values('fk_assigned_id').first()['fk_assigned_id']
+                lst_item_code_cur_all = ItemEnquiry.objects.filter(fk_enquiry_master_id = int_enq_master_id,vchr_enquiry_status__in=['BOOKED','FINANCED','SPECIAL SALE']).values_list('pk_bint_id',flat=True)
+                if not lst_item_code_cur_all:
+                    return Response({'status':'success'})
+                int_sale_type = EnquiryMaster.objects.get(pk_bint_id=int_enq_master_id).int_customer_type
+                str_status = 'INVOICED'
+                if int_sale_type and int_sale_type == 1:
+                    str_status = 'IMAGE PENDING'
+                lst_old_item = []
+                lst_service_item = []
+                # Structure the old item details with item enquiry id keys to update item enquiry table
+
+                """Data to payment_details"""
+
+                # if data.get('bi_payment_details'):
+                #     lst_payment_details=[]
+                #     for data in data['bi_payment_details']:
+                #         ins_payment_details=PaymentDetails(fk_enquiry_master_id = int_enq_master_id, int_fop = data['int_fop'], dbl_amount = data['dbl_amt'], dat_created = datetime.today())
+                #         lst_payment_details.append(ins_payment_details)
+                #     PaymentDetails.objects.bulk_create(lst_payment_details)
+                # else:
+                #     if data.get("credit_sale"):
+                #         dct_item_data_ = data.get("dct_item_data")
+                #         if dct_item_data_:
+                #             total_amount_ = sum([dct_item_data_[x]['dblAmount'] for x in dct_item_data_])
+                #             ins_payment_details = PaymentDetails.objects.create(fk_enquiry_master_id=int_enq_master_id, int_fop= -1,
+                #             dbl_amount = total_amount_, dat_created = datetime.today()) # -1 for credit sale
+
+
+                # import pdb; pdb.set_trace()
+                for str_data in dct_item_data:
+                    apx_amount = None
+                    if str_data.split('-')[0] == '0' and ItemEnquiry.objects.filter(pk_bint_id =  str_data.split('-')[1]).exclude(vchr_enquiry_status='INVOICED'):
+                        ins_item_enq = ItemEnquiry.objects.filter(pk_bint_id =  str_data.split('-')[1])
+                        ins_product = ins_item_enq.values('fk_product__vchr_name')[0]['fk_product__vchr_name']
+                        if ins_product.upper() != 'SERVICE':
+                            apx_amount = ins_item_enq.values('fk_item__dbl_mop')[0]['fk_item__dbl_mop']
+                        else:
+                            lst_service_item.append(str_data)
+
+                        lst_old_item.append(int(str_data.split('-')[1]))
+                        ins_item_enq.update(dbl_buy_back_amount = dct_item_data[str_data]['dblBuyBack'],
+                                                dbl_discount_amount = dct_item_data[str_data]['dblDiscount'],
+                                                dbl_amount = dct_item_data[str_data]['dblAmount'] +dct_item_data[str_data]['dblBuyBack'] + dct_item_data[str_data]['dblDiscount'],
+                                                dbl_imei_json = {'imei' : dct_item_data[str_data].get('jsonImei')},
+                                                int_sold = dct_item_data[str_data]['intQuantity'],
+                                                dbl_sup_amount = dct_item_data[str_data]['dbl_supp_amnt'],
+                                                vchr_remarks = str_remark,
+                                                vchr_enquiry_status = str_status,
+                                                dat_sale = datetime.now(),
+                                                dbl_indirect_discount_amount=dct_item_data[str_data]['dblIndirectDis'],
+
+                                                # LG
+                                                dbl_cost_price = dct_item_data[str_data]['dbl_cost_amnt'],
+                                                dbl_dealer_price  = dct_item_data[str_data]['dbl_dealer_amnt'],
+                                                dbl_mop_price = dct_item_data[str_data]['dbl_mop_amnt'],
+                                                dbl_myg_price = dct_item_data[str_data]['dbl_myg_amnt'],
+                                                dbl_mrp_price = dct_item_data[str_data]['dbl_mrp_amnt'],
+
+                                                dbl_tax = dct_item_data[str_data]['dbl_tax'],
+                                                json_tax = dct_item_data[str_data]['json_tax']
+                                                )
+
+
+
+                        ins_follow_up = ItemFollowup.objects.create(fk_item_enquiry_id = str_data.split('-')[1],
+                                                            vchr_notes = str_status,
+                                                            vchr_enquiry_status = str_status,
+                                                            int_status = 1,
+                                                            dbl_amount = dct_item_data[str_data]['dblAmount']+dct_item_data[str_data]['dblBuyBack']+dct_item_data[str_data]['dblDiscount'],
+                                                            fk_user_id = ins_user_id,
+                                                            int_quantity = dct_item_data[str_data]['intQuantity'],
+                                                            fk_updated_id = ins_user_id,
+                                                            dat_followup = datetime.now(),
+                                                            dat_updated = datetime.now())
+
+                    else:
+                        ins_item = Item.objects.filter(vchr_item_code= dct_item_data[str_data]['strItemCode'])
+                        ins_product = ins_item.values('fk_product__vchr_product_name')[0]['fk_product__vchr_product_name']
+                        if ins_product.upper() != 'SERVICE':
+                            # ins_item_enq.update(dbl_actual_est_amt = dct_old_item[int_id]['data']['apx_amount'])
+                            apx_amount = ins_item.values('dbl_apx_amount')[0]['dbl_apx_amount']
+                        else:
+                            lst_service_item.append(str_data)
+                        if dct_item_data[str_data]['status']==1:
+                            ins_item_enq = ItemEnquiry(fk_enquiry_master_id = int_enq_master_id,
+                                                        fk_item_id = ins_item.values('id')[0]['id'],
+                                                        dbl_buy_back_amount = dct_item_data[str_data]['dblBuyBack'],
+                                                        dbl_discount_amount = dct_item_data[str_data]['dblDiscount'],
+                                                        dbl_amount = dct_item_data[str_data]['dblAmount']+dct_item_data[str_data]['dblBuyBack'] + dct_item_data[str_data]['dblDiscount'],
+                                                        # dbl_imei_json = dct_item_data[str_data]['jsonImei'],
+                                                        dbl_imei_json = {'imei' : dct_item_data[str_data].get('jsonImei')},
+                                                        int_quantity = dct_item_data[str_data]['intQuantity'],
+                                                        int_sold = dct_item_data[str_data]['intQuantity'],
+                                                        fk_product_id = ins_item.values('fk_product_id')[0]['fk_product_id'],
+                                                        fk_brand_id =  ins_item.values('fk_brand_id')[0]['fk_brand_id'],
+                                                        vchr_enquiry_status = str_status,
+                                                        dbl_actual_est_amt = apx_amount,
+                                                        dbl_sup_amount = dct_item_data[str_data]['dbl_supp_amnt'],
+                                                        dat_sale = datetime.now(),
+                                                        vchr_remarks = str_remark,
+                                                        dbl_indirect_discount_amount=dct_item_data[str_data]['dblIndirectDis'],
+
+                                                        # LG
+                                                        dbl_cost_price = dct_item_data[str_data]['dbl_cost_amnt'],
+                                                        dbl_dealer_price  = dct_item_data[str_data]['dbl_dealer_amnt'],
+                                                        dbl_mop_price = dct_item_data[str_data]['dbl_mop_amnt'],
+                                                        dbl_myg_price = dct_item_data[str_data]['dbl_myg_amnt'],
+                                                        dbl_mrp_price = dct_item_data[str_data]['dbl_mrp_amnt'],
+
+                                                        dbl_tax = dct_item_data[str_data]['dbl_tax'],
+                                                        json_tax = dct_item_data[str_data]['json_tax']
+                                                        )
+                            ins_item_enq.save()
+
+                            ins_follow_up = ItemFollowup.objects.create(fk_item_enquiry_id = ins_item_enq.pk_bint_id,
+                                                                vchr_notes =str_status,
+                                                                vchr_enquiry_status = str_status,
+                                                                int_status = 1,
+                                                                dbl_amount = dct_item_data[str_data]['dblAmount']+dct_item_data[str_data]['dblBuyBack'] + dct_item_data[str_data]['dblDiscount'],
+                                                                fk_user_id = ins_user_id,
+                                                                int_quantity = dct_item_data[str_data]['intQuantity'],
+                                                                fk_updated_id = ins_user_id,
+                                                                dat_followup = datetime.now(),
+                                                                dat_updated = datetime.now())
+                        elif dct_item_data[str_data]['status']==0:
+                            ins_item_enq = ItemEnquiry(fk_enquiry_master_id = int_enq_master_id,
+                                                        fk_item_id = ins_item.values('id')[0]['id'],
+                                                        dbl_buy_back_amount = dct_item_data[str_data]['dblBuyBack'],
+                                                        dbl_discount_amount = dct_item_data[str_data]['dblDiscount'],
+                                                        dbl_amount = dct_item_data[str_data]['dblAmount']+dct_item_data[str_data]['dblBuyBack'] + dct_item_data[str_data]['dblDiscount'],
+                                                        # dbl_imei_json = dct_item_data[str_data]['jsonImei'],
+                                                        dbl_imei_json = {'imei' : dct_item_data[str_data].get('jsonImei')},
+                                                        int_quantity = dct_item_data[str_data]['intQuantity'],
+                                                        int_sold = dct_item_data[str_data]['intQuantity'],
+                                                        fk_product_id = ins_item.values('fk_product_id')[0]['fk_product_id'],
+                                                        fk_brand_id =  ins_item.values('fk_brand_id')[0]['fk_brand_id'],
+                                                        vchr_enquiry_status = 'RETURNED',
+                                                        dbl_actual_est_amt = apx_amount,
+                                                        dbl_sup_amount = dct_item_data[str_data]['dbl_supp_amnt'],
+                                                        dat_sale = datetime.now(),
+                                                        vchr_remarks = str_remark,
+
+                                                        # LG
+                                                        dbl_cost_price = dct_item_data[str_data]['dbl_cost_amnt'],
+                                                        dbl_dealer_price  = dct_item_data[str_data]['dbl_dealer_amnt'],
+                                                        dbl_mop_price = dct_item_data[str_data]['dbl_mop_amnt'],
+                                                        dbl_myg_price = dct_item_data[str_data]['dbl_myg_amnt'],
+                                                        dbl_mrp_price = dct_item_data[str_data]['dbl_mrp_amnt'],
+
+                                                        dbl_tax = dct_item_data[str_data]['dbl_tax'],
+                                                        json_tax = dct_item_data[str_data]['json_tax']
+                                                        )
+                            ins_item_enq.save()
+                            ins_enquiry_master=EnquiryMaster.objects.get(pk_bint_id=int_enq_master_id)
+                            ins_item_enquiry_return=ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer_id=ins_enquiry_master.fk_customer_id,dbl_imei_json__contains={'imei':dct_item_data[str_data]['jsonImei']})
+                            if ins_item_enquiry_return:
+                                ins_avaialble=RewardsAvailable.objects.filter(fk_item_enquiry_id=ins_item_enquiry_return[0].pk_bint_id).values()
+                                if ins_avaialble:
+                                    for data in ins_avaialble:
+                                        RewardsAvailable.objects.create(fk_rewards_master_id=data['fk_rewards_master_id'],fk_rewards_details_id=data['fk_rewards_details_id'],fk_item_enquiry_id=data['fk_item_enquiry_id'],dat_reward=datetime.now(),dbl_mop_amount=data['dbl_mop_amount'],json_staff={dct_rwd_data:-data['json_staff'][dct_rwd_data] for dct_rwd_data in data['json_staff']})
+                            ins_follow_up = ItemFollowup.objects.create(fk_item_enquiry_id = ins_item_enq.pk_bint_id,
+                                                            vchr_notes = 'RETURNED',
+                                                            vchr_enquiry_status = 'RETURNED',
+                                                            int_status = 1,
+                                                            dbl_amount = dct_item_data[str_data]['dblAmount']+dct_item_data[str_data]['dblBuyBack'] + dct_item_data[str_data]['dblDiscount'],
+                                                            fk_user_id = ins_user_id,
+                                                            int_quantity = dct_item_data[str_data]['intQuantity'],
+                                                            fk_updated_id = ins_user_id,
+                                                            dat_followup = datetime.now(),
+                                                            dat_updated = datetime.now())
+                lst_deleted_item = list(set(lst_item_code_cur_all)-set(lst_old_item))
+                # import pdb; pdb.set_trace()
+                # IMAGE PENDING -NOTIFICATION
+                if str_status == 'IMAGE PENDING':
+                    if str_data.split('-')[0] == '0' and ItemEnquiry.objects.filter(pk_bint_id =  str_data.split('-')[1]).exclude(vchr_enquiry_status='INVOICED'):
+                        ins_assigned = EnquiryMaster.objects.filter(pk_bint_id = ins_item_enq[0].fk_enquiry_master_id).values('fk_assigned_id').first()
+                    else:
+                        ins_assigned = EnquiryMaster.objects.filter(pk_bint_id = ins_item_enq.fk_enquiry_master_id).values('fk_assigned_id').first()
+
+                    int_assigned = ins_assigned['fk_assigned_id']
+                    ins_rem = Reminder.objects.filter(fk_user = int_assigned, vchr_description__icontains = '(IMAGE PENDING)')
+                    count_old = ItemEnquiry.objects.filter(fk_enquiry_master_id__fk_assigned_id = int_assigned,vchr_enquiry_status = 'IMAGE PENDING').values('fk_enquiry_master_id__fk_assigned_id').count()
+                    actual_count = count_old
+                    if actual_count > 1:
+                        str_notification = str(actual_count) + ' enquiries need to be updated with proper images(IMAGE PENDING)'
+
+                    elif actual_count == 1:
+                        str_notification = str(actual_count) + ' enquiry needs to be updated with proper images(IMAGE PENDING)'
+
+                    if actual_count != 0:
+                        ins_reminder = Reminder.objects.create(fk_user_id        = int_assigned,
+                                                                dat_created_at   = datetime.now(),
+                                                                dat_updated_at   = datetime.now(),
+                                                                vchr_title       = 'IMAGE PENDING ENQUIRY',
+                                                                vchr_description = str_notification,
+                                                                dat_reminder     = datetime.now()
+                                                                )
+                # NOTIFICATION END
+                for int_enq_id in lst_deleted_item:
+                    ins_item_enq=ItemEnquiry.objects.filter(pk_bint_id =  int_enq_id)
+                    ins_item_enq.update(vchr_enquiry_status = 'PENDING')
+                    ins_follow_up = ItemFollowup.objects.create(fk_item_enquiry_id = int_enq_id,
+                                                        vchr_notes = 'PENDING',
+                                                        vchr_enquiry_status = 'PENDING',
+                                                        int_status = 1,
+                                                        dbl_amount = ins_item_enq[0].dbl_amount,
+                                                        fk_user_id = ins_user_id,
+                                                        int_quantity = ins_item_enq[0].int_quantity,
+                                                        fk_updated_id = ins_user_id,
+                                                        dat_followup = datetime.now(),
+                                                        dat_updated = datetime.now()
+                    )
+                for str_data in lst_service_item:
+                    if dct_item_data[str_data]['int_type']==1 or dct_item_data[str_data]['int_type']==2:
+                        ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei')),fk_enquiry_master_id=int_enq_master_id).values('fk_item__dbl_apx_amount','int_type','int_quantity').exclude(fk_product__vchr_product_name='SERVICE').first()
+                        if not ins_up_item_enq:
+                            ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei'))).values('fk_item__dbl_apx_amount','int_type','int_quantity').exclude(fk_product__vchr_product_name='SERVICE').first()
+                        ins_up_item_enq['fk_item__dbl_apx_amount'] = ins_up_item_enq['fk_item__dbl_apx_amount'] if ins_up_item_enq.get('fk_item__dbl_apx_amount') else 0
+                        gdp_value=GDPRange.objects.filter(dbl_from__lte=(ins_up_item_enq['fk_item__dbl_apx_amount']),dbl_to__gte=(ins_up_item_enq['fk_item__dbl_apx_amount']),int_type=dct_item_data[str_data]['int_type']).values('dbl_amt').first()
+                        if ins_up_item_enq['int_type']!=0:
+                            if ins_up_item_enq['int_type']!=dct_item_data[str_data]['int_type']:
+                                ins_up_item_enq.update(int_type=3)
+                        else:
+                            ins_up_item_enq.update(int_type=dct_item_data[str_data]['int_type'])
+                        gdp_value = gdp_value['dbl_amt'] if gdp_value else 0
+                        if dct_item_data[str_data]['int_type']==1:
+                            ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei')),fk_item__vchr_item_code='GDC00001',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value)
+                        if dct_item_data[str_data]['int_type']==2:
+                            ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei')),fk_item__vchr_item_name='GDC00002',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value)
+                # commented for o2force
+                # special_rewards_script_sudheesh(int_enq_master_id)
+                # custome_enq(int_enq_master_id,
+                # Uncomment When using celery
+                # send_feedback_sms.delay(int_enq_master_id)
+                # send_feedback_sms(int_enq_master_id)
+
+                return {'status':'success'}
+        except Exception as e:
+            ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
+            return {'status':'failed','message':str(e)}

@@ -504,7 +504,5 @@ create table source(
   bln_status boolean,
   bln_is_campaign boolean,
   fk_company_id bigint REFERENCES company(pk_bint_id),
-  fk_category_id bigint REFERENCES category(pk_bint_id)
-);
-
-
+  fk_category_id bigint REFERENCES category(pk_bint_id);
+alter table enquiry_master add column fk_priority_id bigint REFERENCES priority(pk_bint_id);
