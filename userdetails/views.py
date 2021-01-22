@@ -288,7 +288,8 @@ class AddUsers(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-            
+            # import pdb; pdb.set_trace()
+
             with transaction.atomic():
                 username = str(request.data.get('strUserName'))
                 if UserDetails.objects.filter(username = username):
@@ -375,7 +376,7 @@ class AddUsers(APIView):
                                        int_official_num = int(request.data.get('intOfficialNumber')) if request.data.get('intOfficialNumber') else None,
                                        fk_hierarchy_data_id = request.data.get('lstLoc', None),
                                        fk_group_id = request.data.get('groupId', None),
-                                       fk_hierarchy_group_id = request.data.get('hGroup', None))
+                                       fk_hierarchy_group_id = request.data.get('hGroup') if request.data.get('hGroup') !='null' else None)
                                     #    )
                                     #    fk_hierarchy_group_id = request.data.get('hGroup', None))
                                     #    fk_group_id = request.data.get('groupId', None),
