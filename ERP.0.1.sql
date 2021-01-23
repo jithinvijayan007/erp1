@@ -427,13 +427,13 @@ alter table customer_details add COLUMN cust_smsaccess BOOLEAN;
 
 
 -- insert query#######################################33333
-INSERT INTO states (vchr_name) VALUES ('JAMMU & KASHMIR'),('HIMACHAL PRADESH'),('PUNJAB'),('CHANDIGARH'),('UTTARANCHAL'),('HARYANA'),('DELHI'),('RAJASTHAN'),('UTTAR PRADESH'),('BIHAR'),('SIKKIM'),('ARUNACHAL PRADESH'),('NAGALAND'),('MANIPUR'),('MIZORAM'),('TRIPURA'),('MEGHALAYA'),('ASSAM'),('WEST BENGAL'),('JHARKHAND'),('ORISSA'),('CHHATTISGARH'),('MADHYA PRADESH'),('GUJARAT'),('DAMAN & DIU'),('DADRA & NAGAR HAVELI'),('MAHARASHTRA'),('ANDHRA PRADESH'),('KARNATAKA'),('GOA'),('LAKSHADWEEP'),('KERALA'),('TAMIL NADU'),('PONDICHERRY'),('ANDAMAN & NICOBAR ISLANDS')
+-- INSERT INTO states (vchr_name) VALUES ('JAMMU & KASHMIR'),('HIMACHAL PRADESH'),('PUNJAB'),('CHANDIGARH'),('UTTARANCHAL'),('HARYANA'),('DELHI'),('RAJASTHAN'),('UTTAR PRADESH'),('BIHAR'),('SIKKIM'),('ARUNACHAL PRADESH'),('NAGALAND'),('MANIPUR'),('MIZORAM'),('TRIPURA'),('MEGHALAYA'),('ASSAM'),('WEST BENGAL'),('JHARKHAND'),('ORISSA'),('CHHATTISGARH'),('MADHYA PRADESH'),('GUJARAT'),('DAMAN & DIU'),('DADRA & NAGAR HAVELI'),('MAHARASHTRA'),('ANDHRA PRADESH'),('KARNATAKA'),('GOA'),('LAKSHADWEEP'),('KERALA'),('TAMIL NADU'),('PONDICHERRY'),('ANDAMAN & NICOBAR ISLANDS')
 
-insert into brands(vchr_code,vchr_name,int_status) values ('ACER','ACER',0),('AMAZON','AMAZON',0),('APPLE','APPLE',0);
+-- insert into brands(vchr_code,vchr_name,int_status) values ('ACER','ACER',0),('AMAZON','AMAZON',0),('APPLE','APPLE',0);
 
-insert into other_category (vchr_name, int_status) values ('dealer',1),('supplier',2),('branch',3);
+-- insert into other_category (vchr_name, int_status) values ('dealer',1),('supplier',2),('branch',3);
 
-insert into hierarchy (vchr_name,int_level) values ('TEAM',1),('FLOOR',2),('BRANCH',3),('DISTRICT',4),('TERIRTORY',5),('STATE',6),('ZONE',7),('COUNTRY',8);
+-- insert into hierarchy (vchr_name,int_level) values ('TEAM',1),('FLOOR',2),('BRANCH',3),('DISTRICT',4),('TERIRTORY',5),('STATE',6),('ZONE',7),('COUNTRY',8);
 
 INSERT INTO sub_category(fk_main_category_id,vchr_sub_category_name,vchr_sub_category_value,int_sub_category_order,vchr_icon_name) VALUES ((SELECT pk_bint_id from main_category WHERE vchr_main_category_name = 'MASTER'),'ADD LOCATIONS','add locations',1,'mdi mdi-map-marker');
 
@@ -506,3 +506,6 @@ create table source(
   fk_company_id bigint REFERENCES company(pk_bint_id),
   fk_category_id bigint REFERENCES category(pk_bint_id);
 alter table enquiry_master add column fk_priority_id bigint REFERENCES priority(pk_bint_id);
+
+
+INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Group Permission',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'GROUP'),'designationpermmison',1,'false','group-permission/addpermission');
