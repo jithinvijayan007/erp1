@@ -38,6 +38,7 @@ from sqlalchemy.orm.session import sessionmaker
 from aldjemy.core import get_engine
 from collections import OrderedDict
 ########################################
+from OXYGEN_API.imei_available_check import Stock_Item_Checking
 from sqlalchemy import and_,func ,cast,Date,case, literal_column,or_,MetaData,desc
 Connection = sessionmaker()
 engine = get_engine()
@@ -541,6 +542,34 @@ class GetPriceForItemAPI(APIView):
             # import pdb; pdb.set_trace()
             """ if parallel run is true fetch data using apis insted of database """
             if settings.PARALLEL_RUN:
+                vchr_branch_code = request.user.userdetails.fk_branch.vchr_code
+                int_id = request.data.get('pk_bint_id')
+                str_imei = request.data.get('strImei')
+                str_item_code = request.data.get('itemCode')
+                bln_avail = request.data.get('blnAvail')
+                ins_item_data = Item.objects.get(pk_bint_id = int_id)
+                dct_response = Stock_Item_Checking(vchr_branch_code,str_item_code,str_imei)
+                if dct_response == 'Not Available':
+                    return Response({'status':'0','data':'Out of Stock'})
+                if ins_item_data:
+                    ins_item_cat = ItemCategory.objects.get(pk_bint_id = ins_item_data.fk_item_category_id)
+                    ins_tax_master = TaxMaster.objects.filter().values()
+
+                    dct_tax_master = {data['vchr_name']:data['pk_bint_id'] for data in ins_tax_master}
+                    dct_data ={}
+                    dct_data['dblRate'] = ins_item_data.dbl_mop
+                    dct_data['dblAmount'] = ins_item_data.dbl_mop
+                    dct_data['dblMopAmount'] = ins_item_data.dbl_mop
+                    dct_data['mrp'] = ins_item_data.dbl_mrp
+                    dct_data['dblMarginAmount'] = 0
+                    # ins_tax_master = TaxMaster.objects.all()
+                    dct_data['dblSGSTPer'] = ins_item_cat.json_tax_master.get(str(dct_tax_master['SGST']),0)
+                    dct_data['dblSGST'] = ins_item_data.dbl_mop*ins_item_cat.json_tax_master.get(str(dct_tax_master['SGST']),0)/100
+                    dct_data['dblCGSTPer'] = ins_item_cat.json_tax_master.get(str(dct_tax_master['CGST']),0)
+                    dct_data['dblCGST'] = ins_item_data.dbl_mop*ins_item_cat.json_tax_master.get(str(dct_tax_master['CGST']),0)/100
+                    dct_data['dblIGSTPer'] = ins_item_cat.json_tax_master.get(str(dct_tax_master['IGST']),0)
+                    dct_data['dblIGST'] = ins_item_data.dbl_mop*ins_item_cat.json_tax_master.get(str(dct_tax_master['IGST']),0)/100
+                    return Response({'status':'1','data':dct_data})
                 url = "dfa"
             conn = engine.connect()
             int_id = request.data.get('pk_bint_id')
