@@ -46,14 +46,14 @@ class UserGroupsAdd(APIView):
     def post(self,request):
         """adding groups"""
         try:
-            # import pdb; pdb.set_trace()
             vchr_code = request.data.get('vchrCode')
             vchr_name = request.data.get('vchrName')
             ins_duplicate = Groups.objects.filter(vchr_code = vchr_code,int_status =0).values('pk_bint_id')
             if ins_duplicate:
                 return Response({'status':0,'message': 'code already exists'})
             else:
-                ins_group_save = Groups.objects.create(vchr_code=vchr_code,vchr_name=vchr_name,int_status = 0,dat_created=datetime.now(),fk_created_id= request.user.id,fk_company_id = request.user.userdetails.fk_company_id)
+                int_company = request.user.userdetails.fk_company_id if request.user.userdetails.fk_company_id else 1
+                ins_group_save = Groups.objects.create(vchr_code=vchr_code,vchr_name=vchr_name,int_status = 0,dat_created=datetime.now(),fk_created_id= request.user.id,fk_company_id = int_company)
             return Response({'status':1})
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -490,10 +490,11 @@ class GroupCreateViewNew(APIView):
             int_dept_id = request.data['intDepartmentId']
             bln_active = True
 
+            # import pdb; pdb.set_trace()
 
             # int_department = int(request.data.get('department'))
             # ins_group_check = Groups.objects.filter(vchr_name__iexact = str_name,fk_company = ins_company,bln_status=True,fk_department_id = int_department)
-            ins_group_check = Groups.objects.filter(vchr_name__iexact = str_name,int_status = 0,fk_company = ins_company)
+            ins_group_check = Groups.objects.filter(vchr_name__iexact = str_name,int_status = 0,fk_company_id = ins_company)
             if ins_group_check:
                 # ins_prv_grp = Groups.objects.filter(vchr_name__iexact = str_name,fk_company = ins_company,bln_status=True,fk_department_id = int_department)
                 # if ins_prv_grp:
@@ -508,13 +509,14 @@ class GroupCreateViewNew(APIView):
                                                   fk_department_id = int_dept_id,
                                                 #   int_area_type = request.data.get("intApplyTo"),
                                                 #   json_area_id = request.data.get("lstAreaId"),
-                                                  fk_company_id = request.data['companyName'],
+                                                  fk_company_id = ins_company,
                                                   dbl_experience = dbl_experience,
                                                   json_qualification = json.dumps(json_qualification),
                                                   vchr_age_limit = vchr_age_limit,
                                                   json_desc = json.dumps(json_desc),
                                                   int_notice_period = int_notice_perid,
-                                                  bln_active = True)
+                                                  bln_active = True,
+                                                  )
                 # import pdb; pdb.set_trace()
                 ins_group.save()
                 # if ins_group:
@@ -991,7 +993,7 @@ class GroupEditView(APIView):
                 dct_final_perms = {}
                 int_group_id = int(request.data['group_id'])
 
-                ins_group = Groups.objects.select_related('fk_company').get(pk_bint_id = int_group_id,int_status = 0)
+                ins_group = Groups.objects.select_related('fk_company').get(pk_bint_id = int_group_id,int_status = 1)
                 str_group_name = ins_group.vchr_name
                 str_company_name = ins_group.fk_company.vchr_name
                 # str_company_code = ins_group.fk_company.vchr_code
