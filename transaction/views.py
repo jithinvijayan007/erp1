@@ -180,7 +180,7 @@ def create_invoice_posting_data(request,pk_bint_id):
             """If Customer has One or Morethan One Payment Method"""
             for data in ins_fop:
                 if data['int_fop'] in [1]: # 1 Cash Account
-                    ins_branch_data = AccountsMap.objects.filter(fk_branch_id = ins_sales_master['fk_branch_id'],vchr_category = 'CASH A/C',int_status = 0).values('int_type','fk_coa_id__pk_bint_id').first()
+                    ins_branch_data = AccountsMap.objects.filter(vchr_category = 'CASH A/C',int_status = 0).values('int_type','fk_coa_id__pk_bint_id').first()
                 elif data['int_fop'] in [2,3]: # 2 debit card , 3 credit card
                     ins_branch_data = AccountsMap.objects.filter(vchr_category = 'TRANSFER',int_status = 0).values('int_type','fk_coa_id__pk_bint_id').first()
                 elif data['int_fop'] in [5]: # 5 Paytm

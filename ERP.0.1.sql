@@ -509,3 +509,13 @@ alter table enquiry_master add column fk_priority_id bigint REFERENCES priority(
 
 
 INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Group Permission',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'GROUP'),'designationpermmison',1,'false','group-permission/addpermission');
+
+-- CREATE TABLE accounts_map( 
+--   pk_bint_id BIGSERIAL PRIMARY KEY,
+--   vchr_module_name varchar(50),
+--   vchr_category varchar(250),
+--   fk_coa_id bigint REFERENCES chart_of_accounts(pk_bint_id),
+--   int_status smallint,
+--   int_type smallint,
+--   fk_branch_id bigint REFERENCES branch(pk_bint_id)
+-- );
