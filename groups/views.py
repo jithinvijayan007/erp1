@@ -32,7 +32,7 @@ class UserGroupsAdd(APIView):
     def get(self,request):
         """listing groups"""
         try:
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             if request.data.get('groupId'):
                 lst_groups = list(Groups.objects.filter(int_status=0,pk_bint_id=request.data.get('groupId')).values('pk_bint_id','vchr_code','vchr_name','fk_created_id','fk_updated_id','dat_created').order_by('-pk_bint_id'))
             else:

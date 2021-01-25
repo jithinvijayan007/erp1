@@ -828,7 +828,7 @@ class AddUsers(APIView):
             
             with transaction.atomic():
                 """Update User """
-                # 
+
                 int_user_id = int(request.data.get("intId"))
                 username = request.data.get('strUserName')
                 bln_approve = True
@@ -845,7 +845,7 @@ class AddUsers(APIView):
                 else:
                     str_img_path = request.data.get('imgSrc')
 
-                lst_phy_loc = json.loads(request.data.get('lstLoc'))
+                lst_phy_loc = json.loads(request.data.get('lstLoc')) if request.data.get("lstLoc") else None
                 int_salary_struct_id = int(request.data.get("intSalaryStructId")) if request.data.get("intSalaryStructId") else None
                 dct_allowances = json.loads(request.data.get('dctAllowances'))
                 dbl_gross = int(request.data.get("dblGrossPay")) if request.data.get("dblGrossPay") else None
@@ -1056,7 +1056,7 @@ class AddUsers(APIView):
                                     dat_created = datetime.now(),
                                     fk_created_id = request.user.id,
                                     fk_salary_struct_id = int_salary_struct_id,
-                                    fk_desig_id = int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None,
+                                    fk_group_id = int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None,
                                     vchr_level = request.data.get("strGrade"),
                                     vchr_grade = request.data.get("strLevelofGrade"),
                                     json_allowance =  dct_allowances,
