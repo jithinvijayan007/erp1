@@ -288,7 +288,6 @@ class AddUsers(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-            # import pdb; pdb.set_trace()
 
             with transaction.atomic():
                 username = str(request.data.get('strUserName'))
@@ -310,7 +309,7 @@ class AddUsers(APIView):
                 '''add users'''
                 int_salary_struct_id = int(request.data.get("intSalaryStructId")) if request.data.get("intSalaryStructId") else None
                 dct_allowances = json.loads(request.data.get('dctAllowances'))
-                lst_phy_loc = json.loads(request.data.get('lstLoc'))
+                lst_phy_loc = json.loads(request.data.get('lstLoc')) if request.data.get('lstLoc') else None
                 dbl_gross = int(request.data.get("dblGrossPay")) if request.data.get("dblGrossPay") else None
                 int_category_id = int(request.data.get("intCategoryId")) if request.data.get("intCategoryId") else None
                 ins_user = UserDetails(vchr_employee_code = str_employee_code,
@@ -334,7 +333,7 @@ class AddUsers(APIView):
                                        fk_created_id = request.user.id,
                                        is_active = True,
                                        fk_salary_struct_id = int_salary_struct_id,
-                                       fk_desig_id = int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None,
+                                    #    fk_desig_id = int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None,
                                        vchr_level = request.data.get("strGrade"),
                                        vchr_grade = request.data.get("strLevelofGrade"),
                                        json_allowance = dct_allowances,
@@ -528,7 +527,7 @@ class AddUsers(APIView):
                 dct_history['fk_department_id'] =  {'Value':int(request.data.get("intDptId")) if request.data.get("intDptId") else None, 'bln_change':False}
                 dct_history['fk_company_id'] =  {'Value':int(int_company_id), 'bln_change':False}
                 dct_history['dbl_gross'] =  {'Value':dbl_gross, 'bln_change':False}
-                dct_history['fk_desig_id'] =  {'Value':int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None, 'bln_change':False}
+                # dct_history['fk_desig_id'] =  {'Value':int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None, 'bln_change':False}
                 dct_history['int_payment'] =  {'Value':int(request.data.get("intPaymentMode")) if request.data.get("intPaymentMode") else None, 'bln_change':False}
                 dct_history['vchr_pan_no'] =  {'Value':request.data.get("intPanNo"), 'bln_change':False}
                 dct_history['vchr_aadhar_no'] =  {'Value':request.data.get("intAadharNo"), 'bln_change':False}
@@ -641,7 +640,7 @@ class AddUsers(APIView):
             
             int_user_id = request.GET.get("id")
             if int_user_id:
-                lst_user_details= list(UserDetails.objects.filter(user_ptr_id = int(int_user_id)).values('vchr_employee_code',
+                lst_user_details= list(UserDetails.objects.filter(user_ptr_id = int(int_user_id)).annotate(fk_desig__vchr_name = F('fk_group__vchr_name'),fk_desig_id= F('fk_group_id')).values('vchr_employee_code',
                                                                                                    'first_name','last_name',
                                                                                                    'username','bint_phone',
                                                                                                    'vchr_email','dat_doj',
@@ -803,7 +802,7 @@ class AddUsers(APIView):
                 if request.GET.get('intRes') == '1':
                     bln_active = False
 
-                lst_user_details = list(UserDetails.objects.filter(is_active = bln_active).annotate(fullname=Concat('first_name', Value(' '),'vchr_middle_name', Value(' ') ,'last_name'), int_emp_id=Cast(Substr('vchr_employee_code',6), TextField())).extra(select ={'dat_doj' :"to_char(dat_doj,'DD-MM-YYYY')"}).values(
+                lst_user_details = list(UserDetails.objects.filter(is_active = bln_active).annotate(fk_desig__vchr_name=F('fk_group__vchr_name'),fullname=Concat('first_name', Value(' '),'vchr_middle_name', Value(' ') ,'last_name'), int_emp_id=Cast(Substr('vchr_employee_code',6), TextField())).extra(select ={'dat_doj' :"to_char(dat_doj,'DD-MM-YYYY')"}).values(
                                                                                          'int_emp_id',
                                                                                          'fullname','vchr_employee_code',
                                                                                          'first_name','last_name',

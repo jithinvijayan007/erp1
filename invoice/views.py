@@ -11564,16 +11564,17 @@ def EnquiryInvoiceUpdate(data):
                                                             dat_updated = datetime.now())
 
                     else:
+                        # import pdb;pdb.set_trace()
                         ins_item = Item.objects.filter(vchr_item_code= dct_item_data[str_data]['strItemCode'])
-                        ins_product = ins_item.values('fk_product__vchr_product_name')[0]['fk_product__vchr_product_name']
+                        ins_product = ins_item.values('fk_product__vchr_name')[0]['fk_product__vchr_name']
                         if ins_product.upper() != 'SERVICE':
                             # ins_item_enq.update(dbl_actual_est_amt = dct_old_item[int_id]['data']['apx_amount'])
-                            apx_amount = ins_item.values('dbl_apx_amount')[0]['dbl_apx_amount']
+                            apx_amount = ins_item.values('dbl_mop')[0]['dbl_mop']
                         else:
                             lst_service_item.append(str_data)
                         if dct_item_data[str_data]['status']==1:
                             ins_item_enq = ItemEnquiry(fk_enquiry_master_id = int_enq_master_id,
-                                                        fk_item_id = ins_item.values('id')[0]['id'],
+                                                        fk_item_id = ins_item.values('pk_bint_id')[0]['pk_bint_id'],
                                                         dbl_buy_back_amount = dct_item_data[str_data]['dblBuyBack'],
                                                         dbl_discount_amount = dct_item_data[str_data]['dblDiscount'],
                                                         dbl_amount = dct_item_data[str_data]['dblAmount']+dct_item_data[str_data]['dblBuyBack'] + dct_item_data[str_data]['dblDiscount'],
@@ -11614,7 +11615,7 @@ def EnquiryInvoiceUpdate(data):
                                                                 dat_updated = datetime.now())
                         elif dct_item_data[str_data]['status']==0:
                             ins_item_enq = ItemEnquiry(fk_enquiry_master_id = int_enq_master_id,
-                                                        fk_item_id = ins_item.values('id')[0]['id'],
+                                                        fk_item_id = ins_item.values('pk_bint_id')[0]['pk_bint_id'],
                                                         dbl_buy_back_amount = dct_item_data[str_data]['dblBuyBack'],
                                                         dbl_discount_amount = dct_item_data[str_data]['dblDiscount'],
                                                         dbl_amount = dct_item_data[str_data]['dblAmount']+dct_item_data[str_data]['dblBuyBack'] + dct_item_data[str_data]['dblDiscount'],
@@ -11726,5 +11727,5 @@ def EnquiryInvoiceUpdate(data):
 
                 return {'status':'success'}
         except Exception as e:
-            ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
+            ins_logger.logger.error(e, extra={'user': 'user_id:' })
             return {'status':'failed','message':str(e)}
