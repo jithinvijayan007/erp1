@@ -58,8 +58,9 @@ class UpdateUserPassword(APIView):
 
     def post(self,request):
         try:
-            user_ptr_id=int(request.data.get("id"))
-            password=request.data.get("password")
+            
+            user_ptr_id=int(request.data.get("intId"))
+            password=request.data.get("strNewPassword")
             userobject=UserDetails.objects.get(id = user_ptr_id )
             userobject.fk_updated_id=request.user.id
             userobject.dat_updated=datetime.now()
@@ -288,7 +289,7 @@ class AddUsers(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-
+          
             with transaction.atomic():
                 username = str(request.data.get('strUserName'))
                 if UserDetails.objects.filter(username = username):
