@@ -58,8 +58,9 @@ class UpdateUserPassword(APIView):
 
     def post(self,request):
         try:
-            user_ptr_id=int(request.data.get("id"))
-            password=request.data.get("password")
+            
+            user_ptr_id=int(request.data.get("intId"))
+            password=request.data.get("strNewPassword")
             userobject=UserDetails.objects.get(id = user_ptr_id )
             userobject.fk_updated_id=request.user.id
             userobject.dat_updated=datetime.now()
@@ -288,7 +289,7 @@ class AddUsers(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-
+          
             with transaction.atomic():
                 username = str(request.data.get('strUserName'))
                 if UserDetails.objects.filter(username = username):
@@ -828,7 +829,7 @@ class AddUsers(APIView):
             
             with transaction.atomic():
                 """Update User """
-                # 
+
                 int_user_id = int(request.data.get("intId"))
                 username = request.data.get('strUserName')
                 bln_approve = True
@@ -1056,7 +1057,7 @@ class AddUsers(APIView):
                                     dat_created = datetime.now(),
                                     fk_created_id = request.user.id,
                                     fk_salary_struct_id = int_salary_struct_id,
-                                    fk_desig_id = int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None,
+                                    fk_group_id = int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None,
                                     vchr_level = request.data.get("strGrade"),
                                     vchr_grade = request.data.get("strLevelofGrade"),
                                     json_allowance =  dct_allowances,
