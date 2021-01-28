@@ -57,7 +57,6 @@ class ItemCategoryAdd(APIView):
         try:
             #listing
             int_id = request.GET.get('pk_bint_id')
-            # import pdb; pdb.set_trace()
             if int_id:
                 ins_item_list = list(ItemCategory.objects.filter(pk_bint_id = int(int_id)).values('pk_bint_id','vchr_item_category','vchr_hsn_code','vchr_sac_code','json_tax_master','json_specification_id'))
 
@@ -102,8 +101,8 @@ class ItemCategoryAdd(APIView):
                     dct_item_details[ins_item['pk_bint_id']]['dat_created'] = datetime.strftime(ins_item['dat_created'],'%d-%m-%Y')
                     dct_item_details[ins_item['pk_bint_id']]['tax_master'] = {}
                     dct_item_details[ins_item['pk_bint_id']]['specification'] = []
-                    for ins_spec in ins_item['json_specification_id']:
-                        dct_item_details[ins_item['pk_bint_id']]['specification'].append(spec_name[ins_spec])
+                    # for ins_spec in ins_item['json_specification_id']:
+                    #     dct_item_details[ins_item['pk_bint_id']]['specification'].append(spec_name[ins_spec])
                     for ins_tax in ins_item['json_tax_master']:
                         dct_item_details[ins_item['pk_bint_id']]['tax_master'][tax_name[int(ins_tax)]] = ins_item['json_tax_master'][ins_tax]
 

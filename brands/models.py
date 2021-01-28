@@ -6,7 +6,7 @@ class Brands(models.Model):
     vchr_code = models.CharField(max_length=50, blank=True, null=True)
     vchr_name = models.CharField(max_length=150, blank=True, null=True)
     int_status = models.IntegerField(default=1,blank=True, null=True) # 0. Active -1. delete,
-    fk_company = models.ForeignKey(Company, models.DO_NOTHING, blank=True, null=True)
+    fk_company = models.ForeignKey(Company, models.DO_NOTHING, blank=True, null=True, default=1)
 
     class Meta:
         managed = False
