@@ -1,5 +1,6 @@
 from django.conf.urls import url,include
 from enquiry.views import Enquiry,ImeiCheckApi,StockNearbyBranchsApi,ItemAgingCheck,StockCheck,EcomStockCheck,CustomerTypeahead
+from enquiry.views0_1 import EnquiryList
 urlpatterns = [
     url(r'^get_stock', Enquiry.as_view(), name='get_stock',),
     url(r'^imei_check', ImeiCheckApi.as_view(), name='ImeiCheckApi',),
@@ -8,5 +9,6 @@ urlpatterns = [
     url(r'^stock_check', StockCheck.as_view(), name='stock_check'),
     url(r'^ecom_stock_check', EcomStockCheck.as_view(), name='ecom_stock_check'),
     url(r'^get_customer_list/$', CustomerTypeahead.as_view(),name='customer_typeahead'),
+    url(r'^list/$', EnquiryList.as_view(),name='enquiry_list'),
 
 ]
