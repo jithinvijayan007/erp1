@@ -900,7 +900,7 @@ class AddUsers(APIView):
                 dct_history['fk_department_id'] = {'Value':int(request.data.get("intDptId")) if request.data.get("intDptId") else None, 'bln_change':ins_user_details.fk_department_id != int(request.data.get('intDptId')) if request.data.get("intDptId") else None}
                 dct_history['fk_company_id'] = {'Value':ins_user_details.fk_company_id, 'bln_change':False}
                 dct_history['dbl_gross'] = {'Value':dbl_gross, 'bln_change':ins_user_details.dbl_gross != dbl_gross}
-                dct_history['fk_desig_id'] = {'Value':int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None, 'bln_change':ins_user_details.fk_desig_id != int(request.data.get('intDesigId')) if request.data.get("intDesigId") else None}
+                dct_history['fk_group_id'] = {'Value':int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None, 'bln_change':ins_user_details.fk_desig_id != int(request.data.get('intDesigId')) if request.data.get("intDesigId") else None}
                 dct_history['int_payment'] = {'Value':int(request.data.get("intPaymentMode")) if request.data.get("intPaymentMode") else None, 'bln_change':ins_user_details.int_payment != int(request.data.get('intPaymentMode')) if request.data.get("intPaymentMode") else None}
                 dct_history['vchr_pan_no'] = {'Value':request.data.get("intPanNo"), 'bln_change':ins_user_details.vchr_pan_no != request.data.get('intPanNo')}
                 dct_history['vchr_aadhar_no'] = {'Value':request.data.get("intAadharNo"), 'bln_change':ins_user_details.vchr_aadhar_no != request.data.get('intAadharNo')}

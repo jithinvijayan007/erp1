@@ -19,7 +19,7 @@ class FinanceSchema(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'finance_schema'
+        db_table = 'finance_scheme'
 
     def __str__(self):
             return str(self.vchr_schema)

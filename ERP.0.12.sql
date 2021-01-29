@@ -212,3 +212,12 @@ CREATE TABLE item_followup (
 ALTER TABLE customer_details add fk_created_id bigint REFERENCES auth_user(id);
 ALTER TABLE customer_details add dat_created date;
 ALTER TABLE customer_details add alternate_mobile bigint;
+
+CREATE TABLE enquiry_finance_images (
+  pk_bint_id BIGSERIAL PRIMARY KEY,
+  vchr_bill_image VARCHAR(350),
+  vchr_delivery_image VARCHAR(350),
+  vchr_proof1 VARCHAR(350),
+  vchr_proof2 VARCHAR(350),
+  fk_enquiry_master_id BIGINT REFERENCES enquiry_master(pk_bint_id)
+);
