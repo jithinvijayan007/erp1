@@ -40,7 +40,7 @@ class AddItemGroup(APIView):
             if (ItemGroup.objects.filter(vchr_item_group=str_item_group,int_status=1)):
                         return Response({'status':0,'reason':'Already exists'})
             else:
-                ItemGroup.objects.create(vchr_item_group=str_item_group,int_status=0,fk_created_id=request.user.id,dat_created=datetime.datetime.now())
+                ItemGroup.objects.create(vchr_item_group=str_item_group,int_status=0,fk_created_id=request.user.id,dat_created=datetime.datetime.now(), fk_company_id = 1)
                 return Response({'status':1})
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
