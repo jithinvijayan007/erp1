@@ -221,3 +221,5 @@ CREATE TABLE enquiry_finance_images (
   vchr_proof2 VARCHAR(350),
   fk_enquiry_master_id BIGINT REFERENCES enquiry_master(pk_bint_id)
 );
+
+alter table products add json_sales jsonb;

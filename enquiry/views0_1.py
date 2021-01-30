@@ -2260,7 +2260,8 @@ class EnquiryList(APIView):
             session = Session()
 
 
-            int_company_id = int(request.data.get('company_id'))
+            int_company_id = 1
+            # int_company_id = int(request.data.get('company_id'))
             int_pending = int(request.data.get('int_pending'))
             lst_branch=[]
             if not int_company_id:
@@ -2382,7 +2383,7 @@ class EnquiryList(APIView):
                         # if Financiers.objects.filter(vchr_code='BAJAJ_FIN'):
                         #     int_fin=Financiers.objects.filter(vchr_code='BAJAJ_FIN').values('pk_bint_id').first()['pk_bint_id']
                         #     rst_enquiry =rst_enquiry.filter(EnquiryFinanceSA.fk_financiers_id == int_fin)
-
+                # import pdb;pdb.set_trace()
                 if int_cust_id:
                     rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_customer_id == int_cust_id)
                 if int_branch_id:
