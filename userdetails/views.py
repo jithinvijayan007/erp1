@@ -294,7 +294,7 @@ class AddUsers(APIView):
                 if UserDetails.objects.filter(username = username):
                     return Response({'status':0,'message':'Username already exists'})
 
-                str_category_code = request.data.get('strCategoryCode')
+                str_category_code = request.data.get('strCategoryCode') if request.data.get('strCategoryCode') !='null' else ""
                 int_company_id = request.data.get("intCompanyId") or request.user.userdetails.fk_company_id
                 ins_document = DocumentHrms.objects.get(vchr_module_name = 'EMPLOYEE CODE',fk_company_id = int_company_id)
                 str_employee_code = ins_document.vchr_short_code+str_category_code.upper()+"-"+str(ins_document.int_number)
