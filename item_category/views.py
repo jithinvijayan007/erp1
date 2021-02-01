@@ -45,7 +45,7 @@ class ItemCategoryAdd(APIView):
             ins_item_duplicate = list(ItemCategory.objects.filter(vchr_item_category = vchr_item_category).values('pk_bint_id'))
             if ins_item_duplicate:
                 return Response({'status':0 , 'data' : 'item category already exists'})
-            ins_item_add = ItemCategory.objects.create(vchr_item_category = vchr_item_category,vchr_hsn_code=vchr_hsn_code,vchr_sac_code=vchr_sac_code,json_tax_master = dct_tax_master,json_specification_id = json_specification_id, fk_created_id=request.user.id,dat_created = datetime.now())
+            ins_item_add = ItemCategory.objects.create(vchr_item_category = vchr_item_category,vchr_hsn_code=vchr_hsn_code,vchr_sac_code=vchr_sac_code,json_tax_master = dct_tax_master,json_specification_id = json_specification_id, fk_created_id=request.user.id,dat_created = datetime.now(),fk_company_id =1)
 
             return Response({'status':1})
         except Exception as e:
@@ -56,8 +56,9 @@ class ItemCategoryAdd(APIView):
     def get(self,request):
         try:
             #listing
-            int_id = request.GET.get('pk_bint_id')
             # import pdb; pdb.set_trace()
+
+            int_id = request.GET.get('pk_bint_id')
             if int_id:
                 ins_item_list = list(ItemCategory.objects.filter(pk_bint_id = int(int_id)).values('pk_bint_id','vchr_item_category','vchr_hsn_code','vchr_sac_code','json_tax_master','json_specification_id'))
 
@@ -102,8 +103,8 @@ class ItemCategoryAdd(APIView):
                     dct_item_details[ins_item['pk_bint_id']]['dat_created'] = datetime.strftime(ins_item['dat_created'],'%d-%m-%Y')
                     dct_item_details[ins_item['pk_bint_id']]['tax_master'] = {}
                     dct_item_details[ins_item['pk_bint_id']]['specification'] = []
-                    for ins_spec in ins_item['json_specification_id']:
-                        dct_item_details[ins_item['pk_bint_id']]['specification'].append(spec_name[ins_spec])
+                    # for ins_spec in ins_item['json_specification_id']:
+                    #     dct_item_details[ins_item['pk_bint_id']]['specification'].append(spec_name[ins_spec])
                     for ins_tax in ins_item['json_tax_master']:
                         dct_item_details[ins_item['pk_bint_id']]['tax_master'][tax_name[int(ins_tax)]] = ins_item['json_tax_master'][ins_tax]
 
@@ -172,6 +173,7 @@ class GetTaxSpecification(APIView):
     permission_classes = [AllowAny]
     def get(self,request):
         try:
+            # import pdb; pdb.set_trace()
             ins_specification = list(Specifications.objects.values('pk_bint_id','vchr_name'))
             ins_tax = list(TaxMaster.objects.values('pk_bint_id','vchr_name'))
             return Response({'status':1 , 'ins_specification' : ins_specification , 'ins_tax' : ins_tax})
@@ -229,7 +231,7 @@ class ItemAdd(APIView):
                         itemg_id=ins_item.values('pk_bint_id').first()['pk_bint_id']
 
                     else:
-                        ins_item=ItemGroup.objects.create(vchr_item_group=str_item_group,int_status=0,fk_created_id=ins_user,dat_created=datetime.now())
+                        ins_item=ItemGroup.objects.create(vchr_item_group=str_item_group,int_status=0,fk_created_id=ins_user,dat_created=datetime.now(),fk_category_id = 1)
                         itemg_id=ins_item.pk_bint_id
                 if str_name or str_code:
                     ins_category = Category.objects.filter(Q(vchr_name=str_name) | Q(vchr_code=str_code),int_status=0)

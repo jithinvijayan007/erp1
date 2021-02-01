@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-HOSTNAME="http://196.168.0.11:8000"
+HOSTNAME="http://192.168.0.11:8000"
 
 
 
