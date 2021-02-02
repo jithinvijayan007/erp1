@@ -2300,7 +2300,7 @@ class AddSalesAPI(APIView):
             else:
                 # =============================================================================================================
                 dct_data['int_cust_id'] = ins_customer['pk_bint_id']
-                CustomerDetails.objects.filter(pk_bint_id = dct_data['int_cust_id']).update(txt_address = request.data.get('txt_address',None))
+                # CustomerDetails.objects.filter(pk_bint_id = dct_data['int_cust_id']).update(txt_address = request.data.get('txt_address',None))
                 ins_customer_exist = CustomerDetails.objects.filter(vchr_name = str_cust_name,vchr_email = str_cust_email,int_mobile = int_cust_mob,vchr_gst_no = request.data.get('vchr_gst_no',None), txt_address = request.data.get('txt_address',None), fk_location = ins_location,fk_state = ins_state,int_cust_type = int_cust_type)
                 ins_cus = CustomerDetails.objects.get(pk_bint_id=dct_data['int_cust_id'])
                 int_edit_count=ins_cus.int_edit_count if ins_cus.int_edit_count else 0
