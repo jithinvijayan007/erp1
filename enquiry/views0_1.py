@@ -2739,8 +2739,8 @@ class EnquiryView(APIView):
 
 
                         dct_customer_data['total_amount'] = total_amount
-
-                lst_enq_fin_image = EnquiryFinanceImages.objects.filter(fk_enquiry_master_id = int_enquiry_id).values_list('pk_bint_id','vchr_bill_image','vchr_delivery_image','vchr_proof1','vchr_proof2')
+                lst_enq_fin_image = []
+                # lst_enq_fin_image = EnquiryFinanceImages.objects.filter(fk_enquiry_master_id = int_enquiry_id).values_list('pk_bint_id','vchr_bill_image','vchr_delivery_image','vchr_proof1','vchr_proof2')
                 bln_edit_approve = False
                 # import pdb;pdb.set_trace()
                 if request.user.userdetails.fk_department.vchr_code.upper() == 'HOD':
