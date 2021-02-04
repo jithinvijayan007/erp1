@@ -124,6 +124,7 @@ INSTALLED_APPS = [
     'adminsettings',
     'customer_rating',
     'inventory',
+    'reports'
 
 ]
 REST_FRAMEWORK = {
@@ -226,7 +227,7 @@ if DEBUG:
     DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'oxygen_db2',
+                'NAME': 'oxygen_db5',
                 'USER': 'admin',
                 'PASSWORD':'tms@123',
                 'HOST': '127.0.0.1',

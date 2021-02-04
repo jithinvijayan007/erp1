@@ -23,12 +23,19 @@ from invoice.models import Bank
 from sales_return.models import SalesReturn
 from invoice.models import SalesMaster,SalesDetails
 from django.db.models import CharField, Case, Value, When,Sum,F,IntegerField,Count
-from customer.models import CustomerDetails,SalesCustomerDetails
+from customer.models import CustomerDetails,SalesCustomerDetails, CustomerOccasionsModel, CustomerRating
 from payment.models import Payment
 from item_category.models import Item
 from branch.models import Branch
 from operator import itemgetter
 from django.db import transaction
+
+from .models import CustomerRating
+import math 
+from django.db.models import Avg
+
+from django.http import JsonResponse
+
 # ===========================================
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import and_,func ,cast,DATE,case,distinct,Date
@@ -57,9 +64,9 @@ class EditCustomer(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-
+            
             int_cust_id = request.data.get('cust_id')
-            str_email = request.data.get('str_email',None)
+            vchr_email = request.data.get('str_email',None)
             str_address = request.data.get('txt_address',None)
             str_gst_no = request.data.get('gst_no',None)
             int_location_id = request.data.get('location_id',None)
@@ -77,7 +84,7 @@ class EditCustomer(APIView):
 
             if request.data.get('cust_id'):
                 CustomerDetails.objects.filter(pk_bint_id = int_cust_id).update(vchr_name = str_full_name,
-                                                                vchr_email = str_email,
+                                                                vchr_email = vchr_email,
                                                                 txt_address = str_address,
                                                                 vchr_gst_no = str_gst_no,
                                                                 fk_location_id = int_location_id,
@@ -128,19 +135,20 @@ class EditCustomer(APIView):
             if dct_data['intState']:
                 dct_data['strState'] = ins_customer.fk_state.vchr_name
 
-            dct_pos = {}
-            print("location ",dct_data['intLocation'])
-            if dct_data['intLocation']:
-                dct_pos=dict(Location.objects.filter(pk_bint_id=dct_data['intLocation']).values('fk_state__vchr_name','fk_state__vchr_code','vchr_district','vchr_pin_code','vchr_name').first())
-            url =settings.BI_HOSTNAME + "/customer/customer_update/"
-            dct_pos.update(dct_data)
-            dct_pos['user_name'] = request.user.username
+            # dct_pos = {}
+            # print("location ",dct_data['intLocation'])
+            # if dct_data['intLocation']:
+            #     dct_pos=dict(Location.objects.filter(pk_bint_id=dct_data['intLocation']).values('fk_state__vchr_name','fk_state__vchr_code','vchr_district','vchr_pin_code','vchr_name').first())
+            # url =settings.BI_HOSTNAME + "/customer/customer_update/"
+            # dct_pos.update(dct_data)
+            # dct_pos['user_name'] = request.user.username
 
-            res_data = requests.post(url,json=dct_pos)
-            if res_data.json().get('status')=='1':
-                pass
-            else:
-                raise ValueError('Something happened in BI')
+            # res_data = requests.post(url,json=dct_pos)
+            # if res_data.json().get('status')=='1':
+            #     pass
+            # else:
+            #     raise ValueError('Something happened in BI')
+
             # if request.user.userdetails.fk_branch.fk_states_id != ins_customer['fk_state_id']:
             #     bln_igst = True
             # dct_data['blnIGST'] = bln_igst
@@ -812,3 +820,72 @@ class AddCustomerSalesReturn (APIView):
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id),'details':'line no: ' + str(exc_tb.tb_lineno)})
 
             return Response({'result':0,'reason':e})
+
+
+class getSelectedCustomerList(APIView):
+    permission_classes=[IsAuthenticated]
+    def post(self,request):
+
+        try:
+            # import pdb;pdb.set_trace()
+            lst_customerlist = list(CustomerDetails.objects.filter(pk_bint_id=request.data['id']).values('pk_bint_id','int_mobile','vchr_email','vchr_name','cust_salutation','fk_location_id','fk_location_id__vchr_name','fk_state_id','fk_state_id__vchr_name','cust_smsaccess') )
+            # 'cust_alternatemobile','cust_alternatemail','cust_contactsrc','cust_customertype','cust_smsaccess','vchr_gst_no','dbl_credit_amount'
+            # return Response({'status':'0'})
+            # for d in lst_customerlist:
+            #     d['name']=d['vchr_name']
+            lst_customer_occassions  = list(CustomerOccasionsModel.objects.filter( int_cust_id =request.data['id']).values('pk_bint_id','vchr_occasion_name','dat_occasion_date'))
+
+            rst_customer_rating = CustomerRating.objects.filter(fk_customer = request.data['id']).values('pk_bint_id','vchr_feedback','dbl_rating','fk_customer','fk_user').aggregate(Avg('dbl_rating'))
+            if(rst_customer_rating['dbl_rating__avg'] != None):
+                int_rating = math.floor(rst_customer_rating['dbl_rating__avg'])
+            else:
+                int_rating = 0
+            return JsonResponse({'cust_list':lst_customerlist,'cust_occasions':lst_customer_occassions,'cust_rating':int_rating})
+
+        except Exception as e:
+            # print(e)
+            return Response({'status':'1'})
+
+# class getSelectedCustomerList(APIView):
+#     permission_classes=[IsAuthenticated]
+#     def post(self,request):
+
+#         try:
+#             import pdb;pdb.set_trace()
+#             lst_customerlist = list(CustomerDetails.objects.filter(pk_bint_id=request.data['id']).values('pk_bint_id','cust_mobile','cust_email','cust_salutation','cust_fname','cust_lname','cust_alternatemobile','cust_alternatemail','cust_contactsrc','cust_customertype','cust_smsaccess','fk_location_id','fk_location_id__vchr_name','fk_state_id','fk_state_id__vchr_name','vchr_gst_no','dbl_credit_amount') )
+#             # return Response({'status':'0'})
+#             # for d in lst_customerlist:
+#             #     d['name']=d['cust_fname']+' '+d['cust_lname']
+#             lst_customer_occassions  = list(CustomerOccasionsModel.objects.filter( cust_id =request.data['id']).values('pk_bint_id','occasion_name','occasion_date'))
+
+#             rst_customer_rating = CustomerRating.objects.filter(fk_customer = request.data['id']).values('pk_bint_id','vchr_feedback','dbl_rating','fk_customer','fk_user').aggregate(Avg('dbl_rating'))
+#             if(rst_customer_rating['dbl_rating__avg'] != None):
+#                 int_rating = math.floor(rst_customer_rating['dbl_rating__avg'])
+#             else:
+#                 int_rating = 0
+#             return JsonResponse({'cust_list':lst_customerlist,'cust_occasions':lst_customer_occassions,'cust_rating':int_rating})
+
+#         except Exception as e:
+#             # print(e)
+#             return Response({'status':'1'})
+
+
+class getCustomerList(APIView):
+    permission_classes=[IsAuthenticated]
+    def get(self,request):
+        try:
+            # import pdb;pdb.set_trace()
+
+            int_company = int(request.GET.get('id'))
+            if int_company:
+                # company_id
+                lst_customerlist = list(CustomerDetails.objects.filter().values('pk_bint_id','int_mobile','vchr_email','cust_salutation','vchr_name','fk_location_id__vchr_name').order_by('-pk_bint_id') )
+            else:
+                lst_customerlist = list(CustomerDetails.objects.filter().values('pk_bint_id','int_mobile','vchr_email','cust_salutation','vchr_name','fk_location_id__vchr_name').order_by('-pk_bint_id') )
+            # return Response({'status':'0'})
+            # for d in lst_customerlist:
+            #     # d['name']=d['cust_fname']+' '+d['cust_lname']
+            #     d['name']=d['vchr_name']
+            return JsonResponse({'lst_cust':lst_customerlist})
+        except Exception as e:
+            return Response({'status':'1'})
