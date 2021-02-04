@@ -295,7 +295,7 @@ class AddUsers(APIView):
                 if UserDetails.objects.filter(username = username):
                     return Response({'status':0,'message':'Employee code already exists'})
 
-                str_category_code = request.data.get('strCategoryCode')
+                str_category_code = request.data.get('strCategoryCode') if request.data.get('strCategoryCode') !='null' else ""
                 int_company_id = request.data.get("intCompanyId") or request.user.userdetails.fk_company_id
                 ins_document = DocumentHrms.objects.get(vchr_module_name = 'EMPLOYEE CODE',fk_company_id = int_company_id)
                 # str_employee_code = ins_document.vchr_short_code+str_category_code.upper()+"-"+str(ins_document.int_number)
@@ -901,7 +901,7 @@ class AddUsers(APIView):
                 dct_history['fk_department_id'] = {'Value':int(request.data.get("intDptId")) if request.data.get("intDptId") else None, 'bln_change':ins_user_details.fk_department_id != int(request.data.get('intDptId')) if request.data.get("intDptId") else None}
                 dct_history['fk_company_id'] = {'Value':ins_user_details.fk_company_id, 'bln_change':False}
                 dct_history['dbl_gross'] = {'Value':dbl_gross, 'bln_change':ins_user_details.dbl_gross != dbl_gross}
-                dct_history['fk_desig_id'] = {'Value':int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None, 'bln_change':ins_user_details.fk_desig_id != int(request.data.get('intDesigId')) if request.data.get("intDesigId") else None}
+                dct_history['fk_group_id'] = {'Value':int(request.data.get("intDesigId")) if request.data.get("intDesigId") else None, 'bln_change':ins_user_details.fk_desig_id != int(request.data.get('intDesigId')) if request.data.get("intDesigId") else None}
                 dct_history['int_payment'] = {'Value':int(request.data.get("intPaymentMode")) if request.data.get("intPaymentMode") else None, 'bln_change':ins_user_details.int_payment != int(request.data.get('intPaymentMode')) if request.data.get("intPaymentMode") else None}
                 dct_history['vchr_pan_no'] = {'Value':request.data.get("intPanNo"), 'bln_change':ins_user_details.vchr_pan_no != request.data.get('intPanNo')}
                 dct_history['vchr_aadhar_no'] = {'Value':request.data.get("intAadharNo"), 'bln_change':ins_user_details.vchr_aadhar_no != request.data.get('intAadharNo')}

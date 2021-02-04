@@ -24,7 +24,7 @@ class AddBrands(APIView):
             if Brands.objects.filter(vchr_name=str_name,vchr_code=str_code,int_status=0):
                 return Response({'status':0,'reason':'already exists'})
             else:
-                Brands.objects.create(vchr_name=str_name,vchr_code=str_code,int_status=0)
+                Brands.objects.create(vchr_name=str_name,vchr_code=str_code,int_status=0,fk_company_id = 1)
             return Response({'status':1,'message':'created successfully'})
         except Exception as e:
             return Response({'status':0,'reason':e})

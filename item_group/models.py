@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from company.models import Company
 
 # Create your models here.
 
@@ -14,6 +15,7 @@ class ItemGroup(models.Model):
     dat_created = models.DateTimeField(blank=True, null=True)
     dat_updated = models.DateTimeField(blank=True, null=True)
     vchr_group_code = models.CharField(max_length=50, blank=True, null=True)
+    fk_company = models.ForeignKey(Company, models.DO_NOTHING, blank=True, null=True)
 
     class Meta:
         managed = False

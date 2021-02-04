@@ -39,7 +39,7 @@ class AddProduct(APIView):
             if ins_product_name:
                     return Response({'status':0 , 'reason' : "product already exists"})
 
-            ins_product_add = Products(vchr_name = vchr_name,fk_category_id =  fk_category_id, int_sales = json_sales,fk_created_id=request.user.id,dat_created = datetime.now())
+            ins_product_add = Products(vchr_name = vchr_name,fk_category_id =  fk_category_id, int_sales = json_sales,fk_created_id=request.user.id,fk_company_id = 1,dat_created = datetime.now())
             ins_product_add.save()
             return Response({'status':1})
         except Exception as e:

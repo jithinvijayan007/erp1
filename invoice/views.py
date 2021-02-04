@@ -1793,6 +1793,8 @@ class AddInvoice(APIView):
 
     def put(self,request):
         try:
+            # import pdb; pdb.set_trace()
+
             int_partial_id = request.data.get('intPartialId')
             str_remark = request.data.get('strRemark')
             # int_partial_id = 11
@@ -1800,8 +1802,11 @@ class AddInvoice(APIView):
                 if request.data.get('blnService'):
                     int_partail = PartialInvoice.objects.filter(pk_bint_id=int_partial_id).first()
                     # url = "http://192.168.0.174:2121/invoice/update_enquiry/"
-                    url =settings.BI_HOSTNAME + "/invoice/update_service/"
-                    res_data = requests.post(url,json={'enquiry_id':int_partail.json_data['int_enq_master_id'],'str_remark':str_remark,'user_code':request.user.username})
+                    # url =settings.BI_HOSTNAME + "/invoice/update_service/"
+                    # res_data = requests.post(url,json={'enquiry_id':int_partail.json_data['int_enq_master_id'],'str_remark':str_remark,'user_code':request.user.username})
+                    # res_data = update_service({'enquiry_id':int_partail.json_data['int_enq_master_id'],'str_remark':str_remark,'user_code':request.user.username})
+                    dct_data = {'enquiry_id':int_partail.json_data['int_enq_master_id'],'str_remark':str_remark,'user_code':request.user.username}
+                    res_data = update_service(dct_data,request)
                     if res_data.json().get('status')=='Success':
                         dct_jsn_data = int_partail.json_data
                         dct_jsn_data['str_remarks'] = str_remark
@@ -1814,9 +1819,11 @@ class AddInvoice(APIView):
                 else:
                     int_partail = PartialInvoice.objects.filter(pk_bint_id=int_partial_id).first()
                     # url = "http://192.168.0.174:2121/invoice/update_enquiry/"
-                    url =settings.BI_HOSTNAME + "/invoice/update_enquiry/"
-                    res_data = requests.post(url,json={'enquiry_id':int_partail.json_data['int_enq_master_id'],'str_remark':str_remark,'user_code':request.user.username})
-                    if res_data.json().get('status')=='Success':
+                    # url =settings.BI_HOSTNAME + "/invoice/update_enquiry/"
+                    # res_data = requests.post(url,json={'enquiry_id':int_partail.json_data['int_enq_master_id'],'str_remark':str_remark,'user_code':request.user.username})
+                    dct_data = {'enquiry_id':int_partail.json_data['int_enq_master_id'],'str_remark':str_remark,'user_code':request.user.username}
+                    res_data = update_enquiry(dct_data,request)
+                    if res_data.get('status')=='Success':
                         dct_jsn_data = int_partail.json_data
                         dct_jsn_data['str_remarks'] = str_remark
                         int_partail.json_data = dct_jsn_data
@@ -1824,12 +1831,77 @@ class AddInvoice(APIView):
                         int_partail.save()
                         return Response({'status':1,'message':'Successfully Rejected'})
                     else:
-                        return Response({'status': 'Failed','data':res_data.json().get('message',res_data.json())})
+                        return Response({'status': 'Failed','data':res_data.get('message',res_data)})
 
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id),'details':'line no: ' + str(exc_tb.tb_lineno)})
             return Response({'status':'0','message':str(e)})
+
+def update_enquiry(data,request):
+
+    try:
+
+        int_enquiry_id = data.get('enquiry_id')
+        str_user_code = data.get('user_code')
+        str_remark = data.get('str_remark')
+        int_user_id = User.objects.get(username=str_user_code).id
+        with transaction.atomic():
+            ins_enquiry = ItemEnquiry.objects.filter(vchr_enquiry_status='BOOKED',fk_enquiry_master_id=int_enquiry_id)
+            lst_item_id = ins_enquiry.values_list('pk_bint_id',flat=True)
+            lst_query = []
+            for int_item_enqid in lst_item_id:
+                ins_item_enquiry = ItemEnquiry.objects.get(pk_bint_id=int_item_enqid)
+                ins_followup = ItemFollowup(
+                    fk_item_enquiry_id = int_item_enqid,
+                    dat_followup = datetime.now(),
+                    fk_user_id = int_user_id,
+                    vchr_enquiry_status = 'LOST',
+                    int_status = 0,
+                    dbl_amount = ins_item_enquiry.dbl_amount,
+                    int_quantity = ins_item_enquiry.int_quantity,
+                    vchr_notes = str_remark
+                )
+                lst_query.append(ins_followup)
+            if lst_query:
+                ItemFollowup.objects.bulk_create(lst_query)
+            ins_enquiry.update(vchr_enquiry_status='LOST',dat_sale =datetime.now())
+            return ({'status':'Success'})
+    except Exception as e:
+        return ({"status":"0","message":str(e)})
+
+def update_service():
+
+    try:
+
+        int_enquiry_id = data.get('enquiry_id')
+        str_user_code = data.get('user_code')
+        str_remark = data.get('str_remark')
+        int_user_id = User.objects.get(username=str_user_code).id
+
+        ins_enquiry = ItemService.objects.filter(fk_job_master_id=int_enquiry_id).first()
+        ins_enquiry.vchr_job_status='LOST'
+        ins_enquiry.save()
+
+
+        ins_item_follow_up = ServiceFollowup( fk_item_service = ins_enquiry,
+                                                    vchr_notes = str_remark,
+                                                    vchr_job_status = 'LOST',
+                                                    int_status = 0,
+                                                    fk_user_id = int_user_id,
+                                                    fk_updated_id = int_user_id,
+                                                    dat_followup = datetime.now(),
+                                                    dat_updated = datetime.now(),
+                                                    )
+        ins_item_follow_up.save()
+        lst_query = []
+
+        return ({'status':'Success'})
+    except Exception as e:
+        return ({"status":"0","message":str(e)})
+
+
+
 
 
 class AddFollowUpAPI(APIView):
@@ -2108,7 +2180,6 @@ class AddSalesAPI(APIView):
     permission_classes = [AllowAny]
     def post(self,request):
         try:
-            
             dct_data = {}
             str_cust_name = request.data.get('vchr_cust_name')
             str_cust_email = request.data.get('vchr_cust_email',None)
@@ -2300,7 +2371,7 @@ class AddSalesAPI(APIView):
             else:
                 # =============================================================================================================
                 dct_data['int_cust_id'] = ins_customer['pk_bint_id']
-                CustomerDetails.objects.filter(pk_bint_id = dct_data['int_cust_id']).update(txt_address = request.data.get('txt_address',None))
+                # CustomerDetails.objects.filter(pk_bint_id = dct_data['int_cust_id']).update(txt_address = request.data.get('txt_address',None))
                 ins_customer_exist = CustomerDetails.objects.filter(vchr_name = str_cust_name,vchr_email = str_cust_email,int_mobile = int_cust_mob,vchr_gst_no = request.data.get('vchr_gst_no',None), txt_address = request.data.get('txt_address',None), fk_location = ins_location,fk_state = ins_state,int_cust_type = int_cust_type)
                 ins_cus = CustomerDetails.objects.get(pk_bint_id=dct_data['int_cust_id'])
                 int_edit_count=ins_cus.int_edit_count if ins_cus.int_edit_count else 0
@@ -8317,7 +8388,7 @@ class InvoiceList(APIView):
             dct_privilege = get_user_privileges(request)
 
             lst_branch = []
-
+            import pdb;pdb.set_trace()
             if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN' or request.user.userdetails.fk_branch.int_type in [2,3]:
                 if request.user.userdetails.fk_branch.vchr_code in ['MCL3']:
                     lst_branch = [request.user.userdetails.fk_branch_id]
@@ -8331,6 +8402,8 @@ class InvoiceList(APIView):
                     lst_branch =  dct_privilege['lst_branches']
                 else:
                     lst_branch = [request.user.userdetails.fk_branch_id]
+            elif Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True):
+                lst_branch = Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True)
             else:
                 lst_branch = [request.user.userdetails.fk_branch_id]
 
@@ -11729,3 +11802,10 @@ def EnquiryInvoiceUpdate(data):
         except Exception as e:
             ins_logger.logger.error(e, extra={'user': 'user_id:' })
             return {'status':'failed','message':str(e)}
+
+def hierarchyBranch(request):
+    if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN':
+        return Branch.objects.all().values_list('pk_bint_id',flat=True)
+    else:
+        request.user.userdetails.fk_hierarchy_data
+        return Branch.objects.all().values_list('pk_bint_id',flat=True)

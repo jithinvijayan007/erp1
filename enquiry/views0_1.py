@@ -21,6 +21,7 @@ from enquiry_mobile.models import MobileEnquiry,TabletEnquiry,ComputersEnquiry,A
 from na_enquiry.models import NaEnquiryMaster,NaEnquiryDetails
 # from airport.models import Airport
 # from station.models import Station
+from sqlalchemy import literal
 from branch.models import Branch
 from zone.models import Zone
 from territory.models import Territory
@@ -2259,9 +2260,11 @@ class EnquiryList(APIView):
             session = Session()
 
 
-            int_company_id = int(request.data.get('company_id'))
+            int_company_id = 1
+            # int_company_id = int(request.data.get('company_id'))
             int_pending = int(request.data.get('int_pending'))
             lst_branch=[]
+            
             if not int_company_id:
                 return Response({'status':'1','data':["No compoany found"]})
             else:
@@ -2308,8 +2311,10 @@ class EnquiryList(APIView):
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_created_by_id==request.user.id)
                     elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
-                    elif request.user.userdetails.int_area_id:
-                        lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+                    elif request.user.userdetails.fk_hierarchy_data:
+                        lst_branch = Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True)
+                        # lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
                     # elif request.user.usermodel.fk_group.vchr_name.upper() =='BALL GAME ADMIN':
                     #     rst_enquiry = rst_enquiry.filter(ItemEnquirySA.vchr_enquiry_status=='PARTIALLY PAID',EnquiryMasterSA.fk_branch_id== request.user.usermodel.fk_branch_id)
@@ -2381,7 +2386,7 @@ class EnquiryList(APIView):
                         # if Financiers.objects.filter(vchr_code='BAJAJ_FIN'):
                         #     int_fin=Financiers.objects.filter(vchr_code='BAJAJ_FIN').values('pk_bint_id').first()['pk_bint_id']
                         #     rst_enquiry =rst_enquiry.filter(EnquiryFinanceSA.fk_financiers_id == int_fin)
-
+                # import pdb;pdb.set_trace()
                 if int_cust_id:
                     rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_customer_id == int_cust_id)
                 if int_branch_id:
@@ -2473,32 +2478,34 @@ class EnquiryView(APIView):
     permission_classes=[IsAuthenticated]
     def post(self,request):
         try:
+            # import pdb; pdb.set_trace()
+
             session = Connection()
             int_enquiry_id=request.data["enquiry_id"]
             if not int_enquiry_id or int_enquiry_id == 'undefined' :
                 return Response({'status': '1','data':'Enquiry id must be provided'})
             else:
-                if not request.user.usermodel.fk_group.vchr_name.upper() in ['ASSISTANT MANAGER - ONLINE FINANCE','ECOMMERCE','EXECUTIVE E COMMERCE AND ONLINE MARKETING','VIRTUAL','FINANCIER','FINANCE ADMIN','BAJAJ ONLINE','MODERN TRADE HEAD']:
+                if not request.user.userdetails.fk_group.vchr_name.upper() in ['ASSISTANT MANAGER - ONLINE FINANCE','ECOMMERCE','EXECUTIVE E COMMERCE AND ONLINE MARKETING','VIRTUAL','FINANCIER','FINANCE ADMIN','BAJAJ ONLINE','MODERN TRADE HEAD']:
                     rst_enquiry = session.query(EnquiryMasterSA.pk_bint_id,EnquiryMasterSA.dat_created_at,EnquiryMasterSA.vchr_enquiry_num,EnquiryMasterSA.vchr_remarks,\
-                                                CustomerSA.cust_fname,CustomerSA.cust_lname,CustomerSA.cust_mobile,CustomerSA.cust_email,\
-                                                CustomerSA.cust_alternatemobile,CustomerSA.cust_alternatemail,CustomerSA.cust_contactsrc,\
+                                                CustomerSA.vchr_name.label('cust_fname'),literal('').label('cust_lname'),CustomerSA.int_mobile.label('cust_mobile'),CustomerSA.vchr_email.label('cust_email'),\
+                                                literal('').label('cust_alternatemobile'),literal('').label('cust_alternatemail'),literal('').label('cust_contactsrc'),\
                                                 EnquiryMasterSA.fk_source_id,EnquiryMasterSA.vchr_customer_type,EnquiryMasterSA.bln_sms,\
                                                 ItemEnquiry.c.int_type,ItemEnquiry.c.dbl_gdp_amount,ItemEnquiry.c.dbl_gdew_amount,ItemEnquiry.c.dbl_buy_back_amount,ItemEnquiry.c.dbl_discount_amount,\
                                                 ItemEnquiry.c.pk_bint_id,ItemEnquiry.c.dbl_min_price,ItemEnquiry.c.dbl_max_price,\
-                                                ItemEnquiry.c.vchr_enquiry_status,ItemEnquiry.c.int_quantity,ItemEnquiry.c.dbl_amount,ItemEnquiry.c.dbl_imei_json,ProductsSA.vchr_product_name.label('product'),\
+                                                ItemEnquiry.c.vchr_enquiry_status,ItemEnquiry.c.int_quantity,ItemEnquiry.c.dbl_amount,ItemEnquiry.c.dbl_imei_json,ProductsSA.vchr_name.label('product'),\
                                                 ItemEnquiry.c.fk_brand_id.label('fk_brand'),\
                                                 ItemEnquiry.c.fk_product_id.label('fk_product'),\
                                                 ItemEnquiry.c.fk_item_id.label('fk_item'),\
                                                 ItemEnquiry.c.int_quantity,\
                                                 ItemEnquiry.c.bln_smart_choice,\
-                                                BrandSA.vchr_brand_name,ItemSA.vchr_item_name,\
+                                                BrandSA.vchr_name.label('vchr_brand_name'),ItemSA.vchr_name.label('vchr_item_name'),\
                                                 SourceSA.vchr_source_name,BranchSA.vchr_name,func.concat(AuthUserSA.first_name,' ',AuthUserSA.last_name).label('staff_name'))\
-                                                .join(CustomerSA,EnquiryMasterSA.fk_customer_id == CustomerSA.id)\
+                                                .join(CustomerSA,EnquiryMasterSA.fk_customer_id == CustomerSA.pk_bint_id)\
                                                 .join(AuthUserSA, EnquiryMasterSA.fk_assigned_id == AuthUserSA.id)\
                                                 .join(ItemEnquiry,EnquiryMasterSA.pk_bint_id == ItemEnquiry.c.fk_enquiry_master_id)\
-                                                .join(ProductsSA,ItemEnquiry.c.fk_product_id == ProductsSA.id)\
-                                                .join(BrandSA,ItemEnquiry.c.fk_brand_id == BrandSA.id)\
-                                                .join(ItemSA,ItemEnquiry.c.fk_item_id == ItemSA.id)\
+                                                .join(ProductsSA,ItemEnquiry.c.fk_product_id == ProductsSA.pk_bint_id)\
+                                                .join(BrandSA,ItemEnquiry.c.fk_brand_id == BrandSA.pk_bint_id)\
+                                                .join(ItemSA,ItemEnquiry.c.fk_item_id == ItemSA.pk_bint_id)\
                                                 .join(SourceSA, EnquiryMasterSA.fk_source_id == SourceSA.pk_bint_id)\
                                                 .join(BranchSA,BranchSA.pk_bint_id == EnquiryMasterSA.fk_branch_id)\
                                                 .filter(EnquiryMasterSA.pk_bint_id == int_enquiry_id,EnquiryMasterSA.chr_doc_status == 'N' )
@@ -2599,7 +2606,7 @@ class EnquiryView(APIView):
 
                         if item_data['product'].title() not in dct_enquiries:
                             dct_enquiries[item_data['product'].title()] = []
-                        if not request.user.usermodel.fk_group.vchr_name.upper() == 'FINANCIER':
+                        if not request.user.userdetails.fk_group.vchr_name.upper() == 'FINANCIER':
                             dct_enquiries[item_data['product'].title()].append({'pk_bint_id':item_data['pk_bint_id'],'vchr_brand_name':item_data['vchr_brand_name'], 'vchr_item_name':item_data['vchr_item_name'],'int_quantity':item_data['int_quantity'],'vchr_enquiry_status':item_data['vchr_enquiry_status'],'vchr_item_code':item_data['fk_item'],'key_amount':int(item_data['dbl_amount']),
                             'int_type':item_data['int_type'],'dbl_gdp':item_data['dbl_gdp_amount'],'dbl_gdew':item_data['dbl_gdew_amount'],'dbl_buyback_amount':item_data['dbl_buy_back_amount'],'dbl_discount_amount':item_data['dbl_discount_amount'],'dbl_imei_json':item_data['dbl_imei_json'],'dbl_amount':item_data['dbl_amount'],'vchr_remarks':'','dbl_min_price':item_data['dbl_min_price'],
                             'dbl_max_price':item_data['dbl_max_price'],'items':lst_exchange,'smartchoice':bln_smartchoice,'dbl_finance_amt':(item_data.get('dbl_finance_amt') or 0)})
@@ -2623,7 +2630,7 @@ class EnquiryView(APIView):
                         if item_data['product'].title() not in dct_enquiries:
                             dct_enquiries[item_data['product'].title()] = []
                     # dct_enquiries[dct_data['product'].title()].append(dct_data)
-                        if not request.user.usermodel.fk_group.vchr_name.upper() == 'FINANCIER':
+                        if not request.user.userdetails.fk_group.vchr_name.upper() == 'FINANCIER':
                             dct_enquiries[item_data['product'].title()].append({'pk_bint_id':item_data['pk_bint_id'],'vchr_brand_name':item_data['vchr_brand_name'],'vchr_item_code':item_data['fk_item'],'key_amount':int(item_data['dbl_amount']), 'vchr_item_name':item_data['vchr_item_name'],'int_quantity':item_data['int_quantity'],'vchr_enquiry_status':item_data['vchr_enquiry_status'],'int_type':item_data['int_type'],'dbl_gdp':item_data['dbl_gdp_amount'],'dbl_gdew':item_data['dbl_gdew_amount'],'dbl_buyback_amount':item_data['dbl_buy_back_amount'],'dbl_discount_amount':item_data['dbl_discount_amount'],'dbl_imei_json':item_data['dbl_imei_json'],'dbl_amount':item_data['dbl_amount'],'vchr_remarks':'','dbl_min_price':item_data['dbl_min_price'],'dbl_max_price':item_data['dbl_max_price'],'items':dct_item,'smartchoice':bln_smartchoice})
                             # if item_data['vchr_enquiry_status'].upper() == 'BOOKED' or item_data['vchr_enquiry_status'].upper() == 'INVOICED':
                             #     total_amount += item_data['dbl_amount'] + item_data['dbl_gdp_amount'] + item_data['dbl_gdew_amount'] - item_data['dbl_buy_back_amount'] - item_data['dbl_discount_amount']
@@ -2641,7 +2648,7 @@ class EnquiryView(APIView):
                     # if settings.DEBUG:
                         # item_data['dat_created_at']=item_data['dat_created_at']+timedelta(hours=5,minutes=30)
                     dct_customer_data = {'vchr_enquiry_num':item_data['vchr_enquiry_num'],'cust_fname':item_data['cust_fname'],'cust_lname':item_data['cust_lname'],'cust_mobile':item_data['cust_mobile'],'cust_email':item_data['cust_email'],'cust_alternatemobile':item_data['cust_alternatemobile'],'cust_alternatemail':item_data['cust_alternatemail'],'vchr_source_name':item_data['vchr_source_name'],'vchr_remarks':item_data['vchr_remarks'],'cust_contactsrc':item_data['cust_contactsrc'],'bln_sms':item_data['bln_sms'],'vchr_name':item_data['vchr_name'],'dat_created_at':datetime.strftime(item_data['dat_created_at'],'%d/%m/%Y'),'time_created_at':datetime.strftime(item_data['dat_created_at'],'%I:%M:%S %p'),'staff_full_name':item_data['staff_name']}
-                    if request.user.usermodel.fk_group.vchr_name.upper() in ['FINANCIER','FINANCE ADMIN']:
+                    if request.user.userdetails.fk_group.vchr_name.upper() in ['FINANCIER','FINANCE ADMIN']:
                         dct_customer_data['status'] = item_data['vchr_finance_status']
                         dct_customer_data['total_amount'] = total_amount
                         dct_customer_data['finance_id'] = item_data['enquiry_finance_id']
@@ -2735,10 +2742,11 @@ class EnquiryView(APIView):
 
 
                         dct_customer_data['total_amount'] = total_amount
-
-                lst_enq_fin_image = EnquiryFinanceImages.objects.filter(fk_enquiry_master_id = int_enquiry_id).values_list('pk_bint_id','vchr_bill_image','vchr_delivery_image','vchr_proof1','vchr_proof2')
+                lst_enq_fin_image = []
+                # lst_enq_fin_image = EnquiryFinanceImages.objects.filter(fk_enquiry_master_id = int_enquiry_id).values_list('pk_bint_id','vchr_bill_image','vchr_delivery_image','vchr_proof1','vchr_proof2')
                 bln_edit_approve = False
-                if request.user.usermodel.fk_department.vchr_code.upper() == 'HOD':
+                # import pdb;pdb.set_trace()
+                if request.user.userdetails.fk_department.vchr_code.upper() == 'HOD':
                     bln_edit_approve = True
             session.close()
             return Response({'status' : 0,'dct_enquiry_details':dct_enquiries,'dct_customer_data':dct_customer_data,'lst_enq_fin_image':lst_enq_fin_image,'bln_edit_approve':bln_edit_approve,'dct_smartchoice':dct_smartchoice})
