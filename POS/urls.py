@@ -87,6 +87,7 @@ urlpatterns = [
     url(r'^job_position/',include('job_position.urls',namespace="job_position")),
     url(r'^mobile/', include('enquiry_mobile.urls', namespace='mobile')),
     url(r'^inventory/', include('inventory.urls', namespace='inventory')),
+    url(r'^mobile_followup/', include('mobile_followup.urls', namespace='mobile_followup')),
 
     #--------------------------------------------
     url(r'^api-token-auth/', obtain_jwt_token),

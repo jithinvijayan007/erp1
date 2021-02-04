@@ -2264,6 +2264,7 @@ class EnquiryList(APIView):
             # int_company_id = int(request.data.get('company_id'))
             int_pending = int(request.data.get('int_pending'))
             lst_branch=[]
+            
             if not int_company_id:
                 return Response({'status':'1','data':["No compoany found"]})
             else:
@@ -2310,8 +2311,10 @@ class EnquiryList(APIView):
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_created_by_id==request.user.id)
                     elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
-                    elif request.user.userdetails.int_area_id:
-                        lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+                    elif request.user.userdetails.fk_hierarchy_data:
+                        lst_branch = Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True)
+                        # lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
                     # elif request.user.usermodel.fk_group.vchr_name.upper() =='BALL GAME ADMIN':
                     #     rst_enquiry = rst_enquiry.filter(ItemEnquirySA.vchr_enquiry_status=='PARTIALLY PAID',EnquiryMasterSA.fk_branch_id== request.user.usermodel.fk_branch_id)
