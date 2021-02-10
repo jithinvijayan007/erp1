@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-HOSTNAME="http://192.168.0.11:8000"
+HOSTNAME="http://192.168.0.116:8000"
 
 
 
@@ -126,6 +126,7 @@ INSTALLED_APPS = [
     'inventory',
     'branch_report_download',
     'group_level',
+    'mobile_followup'
 
 ]
 REST_FRAMEWORK = {
@@ -229,7 +230,7 @@ if DEBUG:
     DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'oxygen5',
+                'NAME': 'oxygen6',
                 'USER': 'admin',
                 'PASSWORD':'tms@123',
                 'HOST': '127.0.0.1',

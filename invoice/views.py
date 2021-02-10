@@ -2371,8 +2371,6 @@ class AddSalesAPI(APIView):
             else:
                 # =============================================================================================================
                 dct_data['int_cust_id'] = ins_customer['pk_bint_id']
-                # import pdb;pdb.set_trace()
-                CustomerDetails.objects.filter(pk_bint_id = dct_data['int_cust_id'])
                 # CustomerDetails.objects.filter(pk_bint_id = dct_data['int_cust_id']).update(txt_address = request.data.get('txt_address',None))
                 ins_customer_exist = CustomerDetails.objects.filter(vchr_name = str_cust_name,vchr_email = str_cust_email,int_mobile = int_cust_mob,vchr_gst_no = request.data.get('vchr_gst_no',None), txt_address = request.data.get('txt_address',None), fk_location = ins_location,fk_state = ins_state,int_cust_type = int_cust_type)
                 ins_cus = CustomerDetails.objects.get(pk_bint_id=dct_data['int_cust_id'])
@@ -8390,7 +8388,7 @@ class InvoiceList(APIView):
             dct_privilege = get_user_privileges(request)
 
             lst_branch = []
-
+            import pdb;pdb.set_trace()
             if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN' or request.user.userdetails.fk_branch.int_type in [2,3]:
                 if request.user.userdetails.fk_branch.vchr_code in ['MCL3']:
                     lst_branch = [request.user.userdetails.fk_branch_id]
@@ -8404,6 +8402,8 @@ class InvoiceList(APIView):
                     lst_branch =  dct_privilege['lst_branches']
                 else:
                     lst_branch = [request.user.userdetails.fk_branch_id]
+            elif Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True):
+                lst_branch = Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True)
             else:
                 lst_branch = [request.user.userdetails.fk_branch_id]
 
@@ -11802,3 +11802,10 @@ def EnquiryInvoiceUpdate(data):
         except Exception as e:
             ins_logger.logger.error(e, extra={'user': 'user_id:' })
             return {'status':'failed','message':str(e)}
+
+def hierarchyBranch(request):
+    if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN':
+        return Branch.objects.all().values_list('pk_bint_id',flat=True)
+    else:
+        request.user.userdetails.fk_hierarchy_data
+        return Branch.objects.all().values_list('pk_bint_id',flat=True)

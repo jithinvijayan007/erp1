@@ -289,16 +289,17 @@ class AddUsers(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-          
+            # import pdb; pdb.set_trace()
             with transaction.atomic():
                 username = str(request.data.get('strUserName'))
                 if UserDetails.objects.filter(username = username):
-                    return Response({'status':0,'message':'Username already exists'})
+                    return Response({'status':0,'message':'Employee code already exists'})
 
                 str_category_code = request.data.get('strCategoryCode') if request.data.get('strCategoryCode') !='null' else ""
                 int_company_id = request.data.get("intCompanyId") or request.user.userdetails.fk_company_id
                 ins_document = DocumentHrms.objects.get(vchr_module_name = 'EMPLOYEE CODE',fk_company_id = int_company_id)
-                str_employee_code = ins_document.vchr_short_code+str_category_code.upper()+"-"+str(ins_document.int_number)
+                # str_employee_code = ins_document.vchr_short_code+str_category_code.upper()+"-"+str(ins_document.int_number)
+                str_employee_code = str(request.data.get('strUserName'))
                 ins_document.int_number = ins_document.int_number+1
                 ins_document.save()
                 str_img_path = ""
