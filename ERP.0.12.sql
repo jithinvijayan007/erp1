@@ -226,3 +226,5 @@ alter table products add json_sales jsonb;
 
 
 alter table item_group add fk_company_id bigint REFERENCES company(pk_bint_id);
+
+ALTER TABLE userdetails add dat_resignation_applied date;

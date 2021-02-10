@@ -124,6 +124,8 @@ INSTALLED_APPS = [
     'adminsettings',
     'customer_rating',
     'inventory',
+    'branch_report_download',
+    'group_level',
 
 ]
 REST_FRAMEWORK = {
@@ -175,6 +177,7 @@ CORS_ALLOW_HEADERS = default_headers + (
 CORS_ORIGIN_ALLOW_ALL = True
 
 MIDDLEWARE = [
+    'reports.middleware.GetMaterializedView',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -226,7 +229,7 @@ if DEBUG:
     DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'oxygen_db2',
+                'NAME': 'oxygen5',
                 'USER': 'admin',
                 'PASSWORD':'tms@123',
                 'HOST': '127.0.0.1',

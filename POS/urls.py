@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.conf import settings
 from django.views.static import serve
 from rest_framework_jwt.views import obtain_jwt_token,verify_jwt_token,refresh_jwt_token
+# from hasher.views import HasherEnquiryView
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -87,6 +89,16 @@ urlpatterns = [
     url(r'^job_position/',include('job_position.urls',namespace="job_position")),
     url(r'^mobile/', include('enquiry_mobile.urls', namespace='mobile')),
     url(r'^inventory/', include('inventory.urls', namespace='inventory')),
+    url(r'^adminsettings/', include('adminsettings.urls', namespace='adminsettings')),
+    url(r'^branch_report_download/',include('branch_report_download.urls',namespace='branch_report_download')),
+    # url(r'^hash/',include('hasher.urls',namespace='hasher')),
+    # url(r'^view_enquiry/(?P<hash>\w+)/$', HasherEnquiryView.as_view(),name='HasherEnquiryView'),
+    url(r'^group_level/',include('group_level.urls',namespace='group_level')),
+
+
+
+
+
 
     #--------------------------------------------
     url(r'^api-token-auth/', obtain_jwt_token),

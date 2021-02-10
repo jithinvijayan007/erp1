@@ -1,5 +1,5 @@
 from django.conf.urls import url,include
-from enquiry.views import Enquiry,ImeiCheckApi,StockNearbyBranchsApi,ItemAgingCheck,StockCheck,EcomStockCheck,CustomerTypeahead
+from enquiry.views import Enquiry,ImeiCheckApi,StockNearbyBranchsApi,ItemAgingCheck,StockCheck,EcomStockCheck,CustomerTypeahead, MobileBranchReport
 from enquiry.views0_1 import EnquiryList, EnquiryView
 urlpatterns = [
     url(r'^get_stock', Enquiry.as_view(), name='get_stock',),
@@ -11,5 +11,8 @@ urlpatterns = [
     url(r'^get_customer_list/$', CustomerTypeahead.as_view(),name='customer_typeahead'),
     url(r'^list/$', EnquiryList.as_view(),name='enquiry_list'),
     url(r'^enquiry_view/$', EnquiryView.as_view(),name='enquiry_view'),
+    url(r'^mobilebranchreport/$', MobileBranchReport.as_view(),name='mobilebranchreport'),
+    # url(r'^branchReportMobileTable', MobileBranchReportTable.as_view(), name='branchReportMobileTable'),
+
 
 ]
