@@ -110,11 +110,9 @@ class MobileBranchReportDownload(APIView):
             # lst_branch = list(Branch.objects.filter(fk_company_id = ins_company[0].pk_bint_id).values())
             lst_branch = list(Branch.objects.all().values())
             # fromdate =  datetime.strptime(request.data['date_from'][:10] , '%Y-%m-%d' )
-            # fromdate =  request.data['date_from']
-            fromdate = '2021-01-5'
-            # todate =  datetime.strptime(request.data['date_to'][:10] , '%Y-%m-%d' )
-            todate = '2021-02-11'
-            # todate =  request.data['date_to']
+            fromdate = request.data['date_from']
+            # # todate =  datetime.strptime(request.data['date_to'][:10] , '%Y-%m-%d' )
+            todate =  request.data['date_to']
             if request.data['bln_chart']:
                 str_sort = request.data.get('strGoodPoorClicked','NORMAL')
                 int_page = int(request.data.get('intCurrentPage',1))
@@ -132,7 +130,7 @@ class MobileBranchReportDownload(APIView):
 
                 if not lst_mv_view:
                     session.close()
-                    return JsonResponse({'status':'failed', 'reason':'No view list found'})
+                    return JsonResponse({'status': 0, 'reason':'No view list found'})
                 query_set = ""
                 if len(lst_mv_view) == 1:
 
@@ -173,7 +171,7 @@ class MobileBranchReportDownload(APIView):
                     str_filter_data += " AND branch_id IN ("+str(lst_branch)[1:-1]+")"
                 else:
                     session.close()
-                    return Response({'status':'failed','reason':'No data'})
+                    return Response({'status': 0,'reason':'No data'})
 
                 if request.data.get('branch'):
                     str_filter_data += " AND branch_id IN ("+str(request.data.get('branch'))[1:-1]+")"
@@ -330,7 +328,7 @@ class MobileBranchReportDownload(APIView):
                     rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
                 else:
                     session.close()
-                    return Response({'status':'failed','reason':'No data'})
+                    return Response({'status':0,'reason':'No data'})
 
                 if request.data.get('branch'):
                     rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(tuple(request.data.get('branch'))))
@@ -386,7 +384,7 @@ class MobileBranchReportDownload(APIView):
 
         except Exception as e:
             session.close()
-            return Response({'status':'failed','data':str(e)})
+            return Response({'status': 0,'data':str(e)})
 
 
 
@@ -398,9 +396,10 @@ def key_sort(tup):
     k,d = tup
     return d['Enquiry'],d['Sale']
 def paginate_data(dct_data,int_page_legth):
+    print("gukhbkj",dct_data)
     dct_paged = {}
     int_count = 1
-    sorted_dct_data = reversed(sorted(dct_data.item(), key=key_sort))
+    sorted_dct_data = reversed(sorted(dct_data.items(), key=key_sort))
     dct_data = OrderedDict(sorted_dct_data)
     for key in dct_data:
         if int_count not in dct_paged:
