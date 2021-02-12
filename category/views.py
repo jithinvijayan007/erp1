@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from category.models import Category,OtherCategory
+from category.models import Category,OtherCategory,EmpCategory
 from rest_framework.permissions import IsAuthenticated,AllowAny
 import datetime
 from django.db.models import Q
@@ -18,7 +18,7 @@ class CategoryList(APIView): # View for listing all category values
     permission_classes = [AllowAny]
     def get(self, request):
         try:
-            lst_articles = list(Category.objects.filter(int_status=0).values('pk_bint_id','vchr_name','vchr_code').order_by("-dat_created")) #passes as a list object
+            lst_articles = list(EmpCategory.objects.filter(int_status=0).values('pk_bint_id','vchr_name','vchr_code').order_by("-dat_created")) #passes as a list object
             return Response({'status':1,'lst_articles':lst_articles})
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()

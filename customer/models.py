@@ -1,6 +1,9 @@
 from django.db import models
 from states.models import States, Location
 from userdetails.models import UserDetails as Userdetails
+# from customer.models import CustomerModel 
+# from user.models import UserModel as UserAppUsermodel
+# Create your models here.
 # from loyalty_card.models import LoyaltyCard
 
 # Create your models here.
@@ -58,3 +61,30 @@ class SalesCustomerDetails(models.Model):
     class Meta:
         managed = False
         db_table = 'sales_customer_details'
+
+class CustomerOccasionsModel(models.Model):
+    pk_bint_id = models.BigAutoField(primary_key=True)
+    int_cust = models.ForeignKey(CustomerDetails, null=True,on_delete = models.SET_NULL)
+    vchr_occasion_name = models.CharField(max_length = 40)
+    dat_occasion_date = models.DateField()
+
+    def __str__(self):
+        return str(self.cust_id)
+    class Meta:
+        managed = False
+        db_table = 'customer_app_customeroccasionsmodel'
+
+
+class CustomerRating(models.Model):
+    pk_bint_id = models.BigAutoField(primary_key=True)
+    vchr_feedback = models.TextField(blank=True, null=True)
+    dbl_rating = models.FloatField(blank=True, null=True)
+    fk_customer = models.ForeignKey(CustomerDetails, models.DO_NOTHING, related_name='customer_customerRating_customertable')
+    fk_user = models.ForeignKey(Userdetails, models.DO_NOTHING,related_name='customer_customerRating_usertable')
+
+    class Meta:
+        managed = False
+        db_table = 'customer_rating'
+
+    def __str__ (self):
+        return self.fk_customer

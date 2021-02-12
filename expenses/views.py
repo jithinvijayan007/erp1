@@ -8,7 +8,7 @@ from company.models import CompanyDetails
 from expenses.models import Expenses
 from user_app.models import UserModel
 from expenses.models import ExpensesCategory
-from CRM import ins_logger
+from POS import ins_logger
 
 from branch.models import Branch
 # Create your views here.

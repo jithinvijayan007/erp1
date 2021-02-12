@@ -128,6 +128,8 @@ INSTALLED_APPS = [
     'dutyroster',
     'bonus',
     'loan'
+    'branch_report_download',
+    'group_level',
 
 ]
 REST_FRAMEWORK = {
@@ -179,6 +181,7 @@ CORS_ALLOW_HEADERS = default_headers + (
 CORS_ORIGIN_ALLOW_ALL = True
 
 MIDDLEWARE = [
+    'reports.middleware.GetMaterializedView',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

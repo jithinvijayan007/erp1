@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from customer.views import EditCustomer,CustomerTypeHead,CustomerView,UpdateCustomer,GenerateOtp,UpdateCustomerInvoice,VarifyOtp,CustomerHistory,AddCustomerPOS,AddCustomerSalesReturn
+from customer.views import EditCustomer,CustomerTypeHead,CustomerView,UpdateCustomer,GenerateOtp,UpdateCustomerInvoice,VarifyOtp,CustomerHistory,AddCustomerPOS,AddCustomerSalesReturn, getSelectedCustomerList, getCustomerList
 
 
 urlpatterns = [
@@ -13,4 +13,8 @@ urlpatterns = [
         url(r'^customer_details/$', CustomerHistory.as_view(), name='customer_details'),
         url(r'^add_customer_pos/',AddCustomerPOS.as_view(),name='add_customer_pos'),
         url(r'^add_customer_sales_return/',AddCustomerSalesReturn.as_view(),name='add_customer_pos'),
+       
+        url(r'^getselectedcustomer/$', getSelectedCustomerList.as_view(),name='getSelectedCustomerList'),
+        url(r'^getcustomerlist/$', getCustomerList.as_view(),name='getCustomerList'),
+
     ]
