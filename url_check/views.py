@@ -1,15 +1,18 @@
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from user_model.models import UserDetails
+from userdetails.models import UserDetails
 from url_check.models import SessionHandler
 from django.db.models import Case, CharField, Value, When,Q
 from django.db.models import F
-from group_permission.models import GroupPermissions
-from company_permission.models import MenuCategory,CategoryItems
+from company_permissions.models import  GroupPermissions
+from company_permissions.models import MenuCategory,CategoryItems
 from POS import ins_logger
 import traceback
 import sys, os
+from url_check.models import UserDownloadLog
+from company_permissions.models import SubCategory
+
 class OneSessionPerUser(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -64,3 +67,34 @@ class OneSessionPerUser(APIView):
             exc_type, exc_obj, exc_tb = sys.exc_info()
             ins_logger.logger.error(e,extra={'details':'line no: ' + str(exc_tb.tb_lineno),'user': 'user_id:' + str(request.user.id)})
             return Response({'status':0,'reason':str(e)+ ' in Line No: '+str(exc_tb.tb_lineno)})
+
+
+class DownloadLog(APIView):
+    permission_classes = [AllowAny]
+    def post(self,request):
+        try:
+            # import pdb; pdb.set_trace()
+            dct_data = request.data
+            vchr_url = dct_data['vchr_url']
+            vchr_filter = dct_data['vchr_filter']
+            vchr_date = dct_data['date_range']
+            vchr_chart = dct_data['vchr_chart']
+            int_user_id = request.user.userdetails.user_ptr_id
+
+            if SubCategory.objects.filter(vchr_sub_category_value = vchr_url):
+                ins_sub_category = SubCategory.objects.filter(vchr_sub_category_value = vchr_url).values('pk_bint_id').first()
+                ins_log = UserDownloadLog.objects.create(
+                                                fk_user_id = request.user.userdetails,
+                                                fk_sub_category_id = ins_sub_category['pk_bint_id'],
+                                                dat_download =  datetime.now(),
+                                                vchr_dat_filter = vchr_date,
+                                                vchr_filter = vchr_filter,
+                                                vchr_chart = vchr_chart,
+                                                fk_company_id = request.user.userdetails.fk_company_id
+                                                )
+                return Response({"status": 1})
+            else:
+                return Response({"status": 0 , "data" : "invalid url"})
+
+        except Exception as e:
+            raise e
