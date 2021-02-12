@@ -8,10 +8,10 @@ from loan.models import *
 from datetime import datetime, date, timedelta
 import calendar
 from django.db import transaction
-from HRMS_python import ins_logger
+from POS import ins_logger
 from sqlalchemy.orm.session import sessionmaker
-from HRMS_python.dftosql import Savedftosql
-from user_model.models import UserDetails
+from POS.dftosql import Savedftosql
+from userdetails.models import UserDetails
 from django.contrib.auth.models import User as AuthUser
 from salary_advance.models import SalaryAdvance
 from hierarchy.models import HierarchyLevel

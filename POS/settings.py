@@ -127,7 +127,7 @@ INSTALLED_APPS = [
     'mobile_followup',
     'dutyroster',
     'bonus',
-    'loan'
+    'loan',
     'branch_report_download',
     'group_level',
 
