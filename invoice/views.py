@@ -8308,7 +8308,7 @@ class InvoiceList(APIView):
     permission_classes=[AllowAny]
     def post(self,request):
         try:
-            
+            # import pdb;pdb.set_trace()
             dat_to = (datetime.strptime(request.data.get("datTo"),'%Y-%m-%d')).date()
             dat_from = (datetime.strptime(request.data.get("datFrom"),'%Y-%m-%d')).date()
             # ins_invoice = None
@@ -8388,7 +8388,7 @@ class InvoiceList(APIView):
             dct_privilege = get_user_privileges(request)
 
             lst_branch = []
-            import pdb;pdb.set_trace()
+            # import pdb;pdb.set_trace()
             if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN' or request.user.userdetails.fk_branch.int_type in [2,3]:
                 if request.user.userdetails.fk_branch.vchr_code in ['MCL3']:
                     lst_branch = [request.user.userdetails.fk_branch_id]

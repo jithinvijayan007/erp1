@@ -124,9 +124,12 @@ INSTALLED_APPS = [
     'adminsettings',
     'customer_rating',
     'inventory',
+    'mobile_followup',
+    'dutyroster',
+    'bonus',
+    'loan',
     'branch_report_download',
     'group_level',
-    'mobile_followup'
 
 ]
 REST_FRAMEWORK = {
