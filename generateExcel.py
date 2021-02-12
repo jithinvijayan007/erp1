@@ -86,21 +86,21 @@ def generate_excel(request,str_report,lst_details=None,dct_label=None,dct_data=N
         dct_staff = dct_data
 
         # Report colour from Adminsettings
-        # if AdminSettings.objects.filter(fk_company=request.user.usermodel.fk_company,vchr_code='SALES_COLOUR',bln_enabled=True).vchr_value.exists():
-        if AdminSettings.objects.filter(fk_company=request.user.usermodel.fk_company,vchr_code='SALES_COLOUR',bln_enabled=True).values_list('vchr_value',flat = True).first():
-            sale_color = AdminSettings.objects.get(fk_company=request.user.usermodel.fk_company,vchr_code='SALES_COLOUR',bln_enabled=True).vchr_value[0]
+        # if AdminSettings.objects.filter(fk_company=request.user.userdetails.fk_company,vchr_code='SALES_COLOUR',bln_enabled=True).vchr_value.exists():
+        if AdminSettings.objects.filter(fk_company=request.user.userdetails.fk_company,vchr_code='SALES_COLOUR',bln_enabled=True).values_list('vchr_value',flat = True).first():
+            sale_color = AdminSettings.objects.get(fk_company=request.user.userdetails.fk_company,vchr_code='SALES_COLOUR',bln_enabled=True).vchr_value[0]
         else:
             sale_color = '#1f77b4'
-        # if AdminSettings.objects.filter(fk_company=request.user.usermodel.fk_company,vchr_code='ENQUIRY_COLOUR',bln_enabled=True).exists():
-        if AdminSettings.objects.filter(fk_company=request.user.usermodel.fk_company,vchr_code='ENQUIRY_COLOUR',bln_enabled=True).values_list('vchr_value',flat = True).first():
-            enquiry_color = AdminSettings.objects.get(fk_company=request.user.usermodel.fk_company,vchr_code='ENQUIRY_COLOUR',bln_enabled=True).vchr_value[0]
+        # if AdminSettings.objects.filter(fk_company=request.user.userdetails.fk_company,vchr_code='ENQUIRY_COLOUR',bln_enabled=True).exists():
+        if AdminSettings.objects.filter(fk_company=request.user.userdetails.fk_company,vchr_code='ENQUIRY_COLOUR',bln_enabled=True).values_list('vchr_value',flat = True).first():
+            enquiry_color = AdminSettings.objects.get(fk_company=request.user.userdetails.fk_company,vchr_code='ENQUIRY_COLOUR',bln_enabled=True).vchr_value[0]
         else:
             enquiry_color='#aec7e8'
 
         colors=[enquiry_color,sale_color]
-        # if AdminSettings.objects.filter(fk_company=request.user.usermodel.fk_company,vchr_code='PIE_CHART_COLOURS',bln_enabled=True).exists():
-        if AdminSettings.objects.filter(fk_company=request.user.usermodel.fk_company,vchr_code='PIE_CHART_COLOURS',bln_enabled=True).values_list('vchr_value',flat = True).first():
-            pie_chart_colour = AdminSettings.objects.get(fk_company=request.user.usermodel.fk_company,vchr_code='PIE_CHART_COLOURS',bln_enabled=True).vchr_value
+        # if AdminSettings.objects.filter(fk_company=request.user.userdetails.fk_company,vchr_code='PIE_CHART_COLOURS',bln_enabled=True).exists():
+        if AdminSettings.objects.filter(fk_company=request.user.userdetails.fk_company,vchr_code='PIE_CHART_COLOURS',bln_enabled=True).values_list('vchr_value',flat = True).first():
+            pie_chart_colour = AdminSettings.objects.get(fk_company=request.user.userdetails.fk_company,vchr_code='PIE_CHART_COLOURS',bln_enabled=True).vchr_value
         # points = []
             points = [{'fill': {'color':i}} for i in pie_chart_colour]
 
@@ -166,7 +166,7 @@ def generate_excel(request,str_report,lst_details=None,dct_label=None,dct_data=N
             # create table heading and filter values
             worksheet.merge_range('A1+:M2', str_report, merge_format1)
             worksheet.merge_range('A3+:E3',"Report Period : "+datetime.strftime(datetime.strptime(request.data['date_from'], '%Y-%m-%d' ),'%d-%m-%Y')+" - "+datetime.strftime(datetime.strptime(request.data['date_to'] , '%Y-%m-%d' ),'%d-%m-%Y'))
-            worksheet.merge_range('A4+:E4',"User :"+request.user.usermodel.first_name.title()+' '+request.user.usermodel.last_name.title())
+            worksheet.merge_range('A4+:E4',"User :"+request.user.userdetails.first_name.title()+' '+request.user.userdetails.last_name.title())
             worksheet.merge_range('A5+:E5',"Report Date :"+datetime.strftime(datetime.now(),'%d-%m-%Y ,%I:%M %p'))
             if request.data.get('branch'):
                 branch_id = []
@@ -491,7 +491,7 @@ def generate_excel(request,str_report,lst_details=None,dct_label=None,dct_data=N
             # worksheet1.protect()
             worksheet1.merge_range('A1+:M2', str_report, merge_format)
             worksheet1.merge_range('A3+:E3',"Report Period : "+datetime.strftime(datetime.strptime(request.data['date_from'], '%Y-%m-%d' ),'%d-%m-%Y')+" - "+datetime.strftime(datetime.strptime(request.data['date_to'] , '%Y-%m-%d' ),'%d-%m-%Y'))
-            worksheet1.merge_range('A4+:E4',"User :"+request.user.usermodel.first_name.title()+' '+request.user.usermodel.last_name.title())
+            worksheet1.merge_range('A4+:E4',"User :"+request.user.userdetails.first_name.title()+' '+request.user.userdetails.last_name.title())
             worksheet1.merge_range('A5+:E5',"Report Date :"+datetime.strftime(datetime.now(),'%d-%m-%Y ,%I:%M %p'))
             if request.data.get('branch'):
                 branch_id = []
@@ -621,18 +621,18 @@ def general_generate_excel(request,str_report,lst_details=None,dct_label=None,dc
         dct_staff = dct_data
 
         # Report colour from Adminsettings
-        if AdminSettings.objects.filter(fk_company=request.user.usermodel.fk_company,vchr_code='SALES_COLOUR',bln_enabled=True).exists():
-            sale_color = AdminSettings.objects.get(fk_company=request.user.usermodel.fk_company,vchr_code='SALES_COLOUR',bln_enabled=True).vchr_value[0]
+        if AdminSettings.objects.filter(fk_company=request.user.userdetails.fk_company,vchr_code='SALES_COLOUR',bln_enabled=True).exists():
+            sale_color = AdminSettings.objects.get(fk_company=request.user.userdetails.fk_company,vchr_code='SALES_COLOUR',bln_enabled=True).vchr_value[0]
         else:
             sale_color = '#1f77b4'
-        if AdminSettings.objects.filter(fk_company=request.user.usermodel.fk_company,vchr_code='ENQUIRY_COLOUR',bln_enabled=True).exists():
-            enquiry_color = AdminSettings.objects.get(fk_company=request.user.usermodel.fk_company,vchr_code='ENQUIRY_COLOUR',bln_enabled=True).vchr_value[0]
+        if AdminSettings.objects.filter(fk_company=request.user.userdetails.fk_company,vchr_code='ENQUIRY_COLOUR',bln_enabled=True).exists():
+            enquiry_color = AdminSettings.objects.get(fk_company=request.user.userdetails.fk_company,vchr_code='ENQUIRY_COLOUR',bln_enabled=True).vchr_value[0]
         else:
             enquiry_color='#aec7e8'
 
         colors=[enquiry_color,sale_color]
-        if AdminSettings.objects.filter(fk_company=request.user.usermodel.fk_company,vchr_code='PIE_CHART_COLOURS',bln_enabled=True).exists():
-            pie_chart_colour = AdminSettings.objects.get(fk_company=request.user.usermodel.fk_company,vchr_code='PIE_CHART_COLOURS',bln_enabled=True).vchr_value
+        if AdminSettings.objects.filter(fk_company=request.user.userdetails.fk_company,vchr_code='PIE_CHART_COLOURS',bln_enabled=True).exists():
+            pie_chart_colour = AdminSettings.objects.get(fk_company=request.user.userdetails.fk_company,vchr_code='PIE_CHART_COLOURS',bln_enabled=True).vchr_value
         # points = []
             points = [{'fill': {'color':i}} for i in pie_chart_colour]
         # import pdb;pdb.set_trace()
@@ -696,7 +696,7 @@ def general_generate_excel(request,str_report,lst_details=None,dct_label=None,dc
             # create table heading and filter values
             worksheet.merge_range('A1+:M2', str_report, merge_format1)
             worksheet.merge_range('A3+:E3',"Report Period : "+datetime.strftime(datetime.strptime(request.data['date_from'], '%Y-%m-%d' ),'%d-%m-%Y')+" - "+datetime.strftime(datetime.strptime(request.data['date_to'] , '%Y-%m-%d' ),'%d-%m-%Y'))
-            worksheet.merge_range('A4+:E4',"User :"+request.user.usermodel.first_name.title()+' '+request.user.usermodel.last_name.title())
+            worksheet.merge_range('A4+:E4',"User :"+request.user.userdetails.first_name.title()+' '+request.user.userdetails.last_name.title())
             worksheet.merge_range('A5+:E5',"Report Date :"+datetime.strftime(datetime.now(),'%d-%m-%Y ,%I:%M %p'))
             if request.data.get('branch'):
                 branch_id = []
@@ -1015,7 +1015,7 @@ def general_generate_excel(request,str_report,lst_details=None,dct_label=None,dc
             worksheet1.protect()
             worksheet1.merge_range('A1+:M2', str_report, merge_format)
             worksheet1.merge_range('A3+:E3',"Report Period : "+datetime.strftime(datetime.strptime(request.data['date_from'], '%Y-%m-%d' ),'%d-%m-%Y')+" - "+datetime.strftime(datetime.strptime(request.data['date_to'] , '%Y-%m-%d' ),'%d-%m-%Y'))
-            worksheet1.merge_range('A4+:E4',"User :"+request.user.usermodel.first_name.title()+' '+request.user.usermodel.last_name.title())
+            worksheet1.merge_range('A4+:E4',"User :"+request.user.userdetails.first_name.title()+' '+request.user.userdetails.last_name.title())
             worksheet1.merge_range('A5+:E5',"Report Date :"+datetime.strftime(datetime.now(),'%d-%m-%Y ,%I:%M %p'))
             if request.data.get('branchselected'):
                 branch_id = []
@@ -1091,6 +1091,6 @@ def general_generate_excel(request,str_report,lst_details=None,dct_label=None,dc
             # print("email-now")
 
             # email_sent(subject, text_content,from_email,to,html_content,filename)
-            return Response({'status':'success'})
+            return Response({'status': 1})
     except Exception as msg:
             return JsonResponse({'status':'failed','data':str(msg)})

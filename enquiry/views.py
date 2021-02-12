@@ -474,9 +474,7 @@ class MobileBranchReport(APIView):
             ins_company = CompanyDetails.objects.filter(pk_bint_id = int_company)
             # lst_branch = list(Branch.objects.filter(fk_company_id = ins_company[0].pk_bint_id).values())
             lst_branch = list(Branch.objects.all().values())
-            # lst_branch = ['OXY- ALAPPUZHA']
             fromdate =  request.data['date_from']
-            # fromdate = '2021-01-30'
             todate =  request.data['date_to']
             # todate = todate + timedelta(days = 1)
             if request.data.get('show_type'):
@@ -580,16 +578,6 @@ class MobileBranchReport(APIView):
                 str_filter_data += " AND branch_id IN ("+str(lst_branch)[1:-1]+")"
 
 
-
-
-
-
-
-
-
-
-
-
                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
             else:
                 session.close()
@@ -629,7 +617,7 @@ class MobileBranchReport(APIView):
             # import pdb; pdb.set_trace()
             if not rst_enquiry:
                 return Response({'status': 0,'data':'No Data'})
-
+    
             """structuring for branch report"""
             if request.data['type'].upper() == 'ENQUIRY':
                 dct_data = structure_data_for_report_old(request,rst_enquiry)
@@ -662,6 +650,7 @@ def structure_data_for_report_old(request,rst_enquiry):
         dct_data['branch_service_brand_item']={}
         dct_data['branch_service_brand_status']={}
         dct_data['branch_service_brand_item_status']={}
+
         for ins_data in rst_enquiry:
             if ins_data.branch_name.title() not in dct_data['branch_all']:
                 dct_data['branch_all'][ins_data.branch_name.title()]={}

@@ -107,11 +107,14 @@ class MobileBranchReportDownload(APIView):
 
             int_company = request.data['company_id']
             ins_company = CompanyDetails.objects.filter(pk_bint_id = int_company)
-            lst_branch = list(Branch.objects.filter(fk_company_id = ins_company[0].pk_bint_id).values())
+            # lst_branch = list(Branch.objects.filter(fk_company_id = ins_company[0].pk_bint_id).values())
+            lst_branch = list(Branch.objects.all().values())
             # fromdate =  datetime.strptime(request.data['date_from'][:10] , '%Y-%m-%d' )
-            fromdate =  request.data['date_from']
+            # fromdate =  request.data['date_from']
+            fromdate = '2021-01-5'
             # todate =  datetime.strptime(request.data['date_to'][:10] , '%Y-%m-%d' )
-            todate =  request.data['date_to']
+            todate = '2021-02-11'
+            # todate =  request.data['date_to']
             if request.data['bln_chart']:
                 str_sort = request.data.get('strGoodPoorClicked','NORMAL')
                 int_page = int(request.data.get('intCurrentPage',1))
@@ -124,6 +127,7 @@ class MobileBranchReportDownload(APIView):
                 conn = engine.connect()
 
                 lst_mv_view = []
+
                 lst_mv_view = request.data.get('lst_mv')
 
                 if not lst_mv_view:
@@ -295,34 +299,34 @@ class MobileBranchReportDownload(APIView):
                     str_report_name = 'Branch Enquiry Report'
                 else:
                     str_report_name = 'Branch Sales Report'
-                rst_enquiry = session.query(ItemEnquirySA.vchr_enquiry_status.label('status'),ProductsSA.vchr_product_name.label('vchr_service'),func.concat(AuthUserSA.first_name, ' ',
+                rst_enquiry = session.query(ItemEnquirySA.vchr_enquiry_status.label('status'),ProductsSA.vchr_name.label('vchr_service'),func.concat(AuthUserSA.first_name, ' ',
                                     AuthUserSA.last_name).label('vchr_staff_full_name'),
-                                    EnquiryMasterSA.fk_assigned_id.label('fk_assigned'),func.DATE(EnquiryMasterSA.dat_created_at).label('dat_created_at'),EnquiryMasterSA.vchr_enquiry_num,func.concat(CustomerModelSA.cust_fname, ' ', CustomerModelSA.cust_lname).label('vchr_full_name'),
+                                    EnquiryMasterSA.fk_assigned_id.label('fk_assigned'),func.DATE(EnquiryMasterSA.dat_created_at).label('dat_created_at'),EnquiryMasterSA.vchr_enquiry_num,func.concat(CustomerModelSA.vchr_name).label('vchr_full_name'),
                                     AuthUserSA.id.label('user_id'),AuthUserSA.last_name.label('staff_last_name'),
-                                    AuthUserSA.first_name.label('staff_first_name'),BranchSA.vchr_name.label('branch_name'),BrandsSA.vchr_brand_name,ItemsSA.vchr_item_name,
+                                    AuthUserSA.first_name.label('staff_first_name'),BranchSA.vchr_name.label('vchr_name'),BrandsSA.vchr_name,ItemsSA.vchr_name,
                                     UserSA.fk_brand_id,UserSA.dat_resignation_applied,
                                     case([(UserSA.dat_resignation_applied < datetime.now(),literal_column("'resigned'"))],
                                         else_=literal_column("'not resigned'")).label("is_resigned"))\
                                     .filter(cast(EnquiryMasterSA.dat_created_at,Date) >= fromdate,
                                             cast(EnquiryMasterSA.dat_created_at,Date) <= todate,
-                                            EnquiryMasterSA.fk_company_id == request.user.usermodel.fk_company_id,
+                                            EnquiryMasterSA.fk_company_id == request.user.userdetails.fk_company_id,
                                             EnquiryMasterSA.chr_doc_status == 'N')\
                                     .join(EnquiryMasterSA,ItemEnquirySA.fk_enquiry_master_id == EnquiryMasterSA.pk_bint_id)\
                                     .join(BranchSA,BranchSA.pk_bint_id == EnquiryMasterSA.fk_branch_id)\
-                                    .join(CustomerSA,EnquiryMasterSA.fk_customer_id == CustomerSA.id)\
+                                    .join(CustomerSA,EnquiryMasterSA.fk_customer_id == CustomerSA.pk_bint_id)\
                                     .join(AuthUserSA, EnquiryMasterSA.fk_assigned_id == AuthUserSA.id)\
                                     .join(UserSA, AuthUserSA.id == UserSA.user_ptr_id )\
-                                    .join(ProductsSA,ProductsSA.id == ItemEnquirySA.fk_product_id)\
-                                    .join(BrandsSA,BrandsSA.id==ItemEnquirySA.fk_brand_id)\
-                                    .join(ItemsSA,ItemsSA.id==ItemEnquirySA.fk_item_id)
+                                    .join(ProductsSA,ProductsSA.pk_bint_id == ItemEnquirySA.fk_product_id)\
+                                    .join(BrandsSA,BrandsSA.pk_bint_id==ItemEnquirySA.fk_brand_id)\
+                                    .join(ItemsSA,ItemsSA.pk_bint_id==ItemEnquirySA.fk_item_id)
 
                 """Permission wise filter for data"""
-                if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES','COUNTRY HEAD']:
+                if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES','COUNTRY HEAD']:
                     pass
-                elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
-                    rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.usermodel.fk_branch_id)
-                elif request.user.usermodel.int_area_id:
-                    lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+                elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
+                    rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
+                elif request.user.userdetails.int_area_id:
+                    lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
                     rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
                 else:
                     session.close()
@@ -360,10 +364,10 @@ class MobileBranchReportDownload(APIView):
 
                 if request.data.get('export_type').upper() == 'DOWNLOAD':
                     session.close()
-                    return Response({"status":"success",'file':file_output['file'],'file_name':file_output['file_name']})
+                    return Response({"status": 1,'file':file_output['file'],'file_name':file_output['file_name']})
                 elif request.data.get('export_type').upper() == 'MAIL':
                     session.close()
-                    return Response({"status":"success"})
+                    return Response({"status": 1})
 
             elif request.data['document'].upper() == 'EXCEL':
                 if request.data['bln_table'] and request.data['bln_chart']:
@@ -375,10 +379,10 @@ class MobileBranchReportDownload(APIView):
 
                 if request.data.get('export_type').upper() == 'DOWNLOAD':
                     session.close()
-                    return Response({"status":"success","file":data})
+                    return Response({"status": 1,"file":data})
                 elif request.data.get('export_type').upper() == 'MAIL':
                     session.close()
-                    return Response({"status":"success"})
+                    return Response({"status": 1})
 
         except Exception as e:
             session.close()
