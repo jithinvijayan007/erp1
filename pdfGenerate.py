@@ -582,7 +582,7 @@ def generate_pdf(request,str_report,lst_details=None,dct_label=None,dct_data=Non
                 mail.attach_file(pdf_path+file)
                 remove(pdf_path+file)
             mail.send()
-            return Response({'status':'success'})
+            return Response({'status': 1})
     except Exception as e:
         ins_logger.logger.error(str(e))
         return Response({'status':'0','data':str(e)})
@@ -1053,7 +1053,7 @@ def general_generate_pdf(request,str_report,lst_details=None,dct_label=None,dct_
                 mail.attach_file(pdf_path+file)
                 remove(pdf_path+file)
             mail.send()
-            return Response({'status':'success'})
+            return Response({'status': 1})
     except Exception as e:
         ins_logger.logger.error(str(e))
         return Response({'status':'0','data':str(e)})

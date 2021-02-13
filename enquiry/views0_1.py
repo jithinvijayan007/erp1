@@ -21,6 +21,8 @@ from enquiry_mobile.models import MobileEnquiry,TabletEnquiry,ComputersEnquiry,A
 from na_enquiry.models import NaEnquiryMaster,NaEnquiryDetails
 # from airport.models import Airport
 # from station.models import Station
+# from invoice.views import hierarchyBranch
+
 from sqlalchemy import literal
 from branch.models import Branch
 from zone.models import Zone
@@ -2312,6 +2314,7 @@ class EnquiryList(APIView):
                     elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
                     elif request.user.userdetails.fk_hierarchy_data:
+                        # hierarchyBranch(request)
                         lst_branch = Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True)
                         # lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
 

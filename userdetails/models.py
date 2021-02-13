@@ -124,7 +124,7 @@ class UserDetails(User,models.Model):
     vchr_address = models.TextField(blank=True, null=True)
     int_weekoff_type = models.IntegerField(blank=True, null=True)#0.Fixed 1.Variable
     json_physical_loc = JSONField(blank=True, null=True)
-    dat_resignation = models.DateField(blank=True, null=True)
+    dat_resignation_applied = models.DateField(blank=True, null=True)
     txt_resignation_reason = models.TextField(blank=True, null=True)
     vchr_po = models.CharField(max_length=75, blank=True, null=True)
     vchr_land_mark = models.CharField(max_length=150, blank=True, null=True)

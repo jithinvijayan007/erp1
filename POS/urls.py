@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 from django.views.static import serve
 from rest_framework_jwt.views import obtain_jwt_token,verify_jwt_token,refresh_jwt_token
+from url_check.views import DownloadLog
 # from hasher.views import HasherEnquiryView
 
 
@@ -69,6 +70,7 @@ urlpatterns = [
     url(r'^professional_tax/', include('professional_tax.urls', namespace='professional_tax')),
     url(r'^location/',include('location.urls',namespace='location')),
     url(r'^salary_process/',include('salary_process.urls',namespace='salary_process')),
+    url(r'^product_report_pdf/',include('product_report_download.urls',namespace='product_report_pdf')),
 
 
     url(r'^tool_settings/',include('tool_settings.urls',namespace="tool_settings")),
@@ -96,6 +98,7 @@ urlpatterns = [
     url(r'^group_level/',include('group_level.urls',namespace='group_level')),
     url(r'^productivityreport/',include('productivity_report.urls',namespace='productivity_reports')),
     url(r'^enquiry_productivity_report_pdf/',include('enquiry_productivity_report_pdf.urls',namespace='enquiry_productivity_report_pdf')),
+    url(r'^download_log/', DownloadLog.as_view(), name='download_log'),
 
 
 

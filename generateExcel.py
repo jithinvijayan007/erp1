@@ -1091,6 +1091,6 @@ def general_generate_excel(request,str_report,lst_details=None,dct_label=None,dc
             # print("email-now")
 
             # email_sent(subject, text_content,from_email,to,html_content,filename)
-            return Response({'status':'success'})
+            return Response({'status': 1})
     except Exception as msg:
             return JsonResponse({'status':'failed','data':str(msg)})

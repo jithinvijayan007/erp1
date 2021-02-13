@@ -228,3 +228,15 @@ alter table products add json_sales jsonb;
 alter table item_group add fk_company_id bigint REFERENCES company(pk_bint_id);
 
 ALTER TABLE userdetails add dat_resignation_applied date;
+
+
+CREATE TABLE user_download_log(
+                    pk_bint_id BIGSERIAL PRIMARY KEY,
+                    fk_user_id BIGINT REFERENCES userdetails(user_ptr_id) NOT NULL,
+                    fk_sub_category_id BIGINT REFERENCES sub_category(pk_bint_id),
+                    dat_download TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+                    vchr_dat_filter Text,
+                    vchr_filter TEXT,
+                    vchr_chart TEXT,
+                    fk_company_id BIGINT REFERENCES company(pk_bint_id) NOT NULL DEFAULT 1
+                  );
