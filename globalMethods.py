@@ -61,22 +61,20 @@ def convert_to_millions(flt_number):
 #         rst_branch = Branch.objects.values_list('pk_bint_id',flat='True')
 #     return list(rst_branch)
 
-def show_data_based_on_role(str_group,int_area_id):
+def show_data_based_on_role(request):
     """ """
-    if not str_group:
+    if not request.user.userdetails.fk_group_id:
         return "Not a valid group."
-    if not int_area_id:
-        return "Not a valid area id"
 
-    str_group = str_group.upper()
+    str_group = request.user.userdetails.fk_group.vchr_name.upper()
     rst_branch = []
-    if str_group == 'TERRITORY MANAGER':
-        rst_branch = Branch.objects.filter(fk_territory_id = int_area_id).values_list('pk_bint_id',flat='True')
+    if str_group == 'CLUSTER MANAGER':
+        rst_branch = Branch.objects.filter(fk_hierarchy_data_id = request.user.userdetails.fk_hierarchy_data_id).values_list('pk_bint_id',flat='True')
     elif str_group =='ZONE MANAGER':
-        rst_branch = Branch.objects.filter(fk_territory_id__fk_zone_id = int_area_id).values_list('pk_bint_id',flat='True')
+        rst_branch = Branch.objects.filter(fk_hierarchy_data_id__in = request.user.userdetails.fk_hierarchy_data.fk_hierarchy_data_id).values_list('pk_bint_id',flat='True')
     elif str_group in ['STATE HEAD','MARKETING','SERVICE HEAD']:
         rst_branch = Branch.objects.filter(fk_territory_id__fk_zone_id__fk_state_id = int_area_id).values_list('pk_bint_id',flat='True')
-    elif str_group in ['COUNTRY HEAD','MODERN TRADE HEAD','PURCHASE MANAGER','GENERAL MANAGER SALES']:
+    elif str_group in ['GENERAL MANAGER']:
         rst_branch = Branch.objects.filter().values_list('pk_bint_id',flat='True')
     elif str_group in ['FINANCE SALES ADMIN','FINANCE MANAGER','INTERNAL AUDITOR']:
         rst_branch = Branch.objects.values_list('pk_bint_id',flat='True')

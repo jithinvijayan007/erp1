@@ -324,3 +324,12 @@ CREATE TABLE late_hours_request(
   int_month INTEGER,
   int_year INTEGER
 );
+
+-- /report/mobilesalesreport
+
+INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Sales Product Report',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'SALES REPORTS'),'Sales Product Report',1,'false','report/mobilesalesreport');
+
+INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Sales Productvity Report',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'SALES REPORTS'),'Sales Productvity Report',1,'false','report/productivityreport');
+
+INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Branch Wise Report',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'SALES REPORTS'),'Branch Wise Report',1,'false','report/mobilebranchreport');
+

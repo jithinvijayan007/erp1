@@ -20,6 +20,7 @@ from customer.models import CustomerDetails
 from company.models import Company as CompanyDetails
 from global_methods import get_user_products
 from collections import OrderedDict
+from globalMethods import show_data_based_on_role,get_user_products,get_branch_on_permission
 
 
 BranchStockMasterSA=BranchStockMaster.sa
@@ -572,8 +573,8 @@ class MobileBranchReport(APIView):
             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                 str_filter_data = str_filter_data+" AND branch_id = "+str(request.user.userdetails.fk_branch_id)+""
                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.usermodel.fk_branch_id)
-            elif request.user.userdetails.int_area_id:
-                lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+            elif request.user.userdetails.fk_hierarchy_group_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                lst_branch=show_data_based_on_role(request)
 
                 str_filter_data += " AND branch_id IN ("+str(lst_branch)[1:-1]+")"
 

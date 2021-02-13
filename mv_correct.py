@@ -14,7 +14,7 @@ def connect():
     try:
         # import pdb; pdb.set_trace()
         # connect to the PostgreSQL server
-        conn = psycopg2.connect(host="localhost",database="oxygen5", user="admin", password="tms@123")
+        conn = psycopg2.connect(host="localhost",database="oxygen6", user="admin", password="tms@123")
         print('Connecting to the PostgreSQL database...')
         # conn = psycopg2.connect(**params)
 
@@ -28,10 +28,10 @@ def connect():
         # display the PostgreSQL database server version
         db_version = cur.fetchone()
         print(db_version)
-        cur.execute("DROP MATERIALIZED VIEW mv_sales_data_3month_back");
-        cur.execute("DROP MATERIALIZED VIEW mv_sales_data");
-        cur.execute("DROP MATERIALIZED VIEW mv_enquiry_data_3month_back");
-        cur.execute("DROP MATERIALIZED VIEW mv_enquiry_data");
+        # cur.execute("DROP MATERIALIZED VIEW mv_sales_data_3month_back");
+        # cur.execute("DROP MATERIALIZED VIEW mv_sales_data");
+        # cur.execute("DROP MATERIALIZED VIEW mv_enquiry_data_3month_back");
+        # cur.execute("DROP MATERIALIZED VIEW mv_enquiry_data");
         cur.execute("SELECT * from pg_matviews where matviewname = 'mv_sales_data_3month_back'");
         #exit(0)
         if not bool(cur.rowcount):

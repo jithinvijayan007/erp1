@@ -101,6 +101,7 @@ from enquiry_mobile.models import ItemEnquiry, ItemFollowup
 from staff_rewards.models import RewardsAvailable
 from invoice.models import GDPRange
 from reminder.models import Reminder
+from globalMethods import show_data_based_on_role,get_user_products
 
 
 PartialInvoiceSA = PartialInvoice.sa
@@ -167,19 +168,19 @@ class SalesList(APIView):
 
             
             if request.data.get('blnService'):
-                if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN':
+                if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES']:
                     ins_partial_inv = PartialInvoice.objects.filter(int_status__in=(3,5,6,10),int_active=0,int_approve__in=(0,2,4),dat_created__date__gte = dat_from,dat_created__date__lte = dat_to).values('pk_bint_id','dat_created','json_data','int_status').order_by('-pk_bint_id')
                 else:
                     ins_partial_inv = PartialInvoice.objects.filter(int_status__in=(3,5,6,10),int_active=0,int_approve__in=(0,2,4),dat_created__date__gte = dat_from,dat_created__date__lte = dat_to,json_data__contains={'int_branch_id':request.user.userdetails.fk_branch_id}).values('pk_bint_id','dat_created','json_data','int_status').order_by('-pk_bint_id')
 
             elif request.data.get('blnBajaj') :
-                if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN':
+                if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES']:
                     ins_partial_inv = PartialInvoice.objects.filter(int_status=11,int_active = 0,int_approve__in=(0,2),dat_created__date__gte = dat_from,dat_created__date__lte = dat_to).values('pk_bint_id','dat_created','json_data','int_status').order_by('-dat_created')
                 else:
                     ins_partial_inv = PartialInvoice.objects.filter(int_status=11,int_active = 0,int_approve__in=(0,2),json_data__contains={'int_branch_id':request.user.userdetails.fk_branch_id},dat_created__date__gte = dat_from,dat_created__date__lte = dat_to).values('pk_bint_id','dat_created','json_data','int_status').order_by('-dat_created')
 
             elif request.data.get('ecom_api') :
-                if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN':
+                if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES']:
                     ins_partial_inv = PartialInvoice.objects.filter(int_status=20,int_sale_type =1,int_active = 0,dat_created__date__gte = dat_from,dat_created__date__lte = dat_to).values('pk_bint_id','dat_created','json_data','int_status').order_by('-dat_created')
                 else:
                     ins_partial_inv = PartialInvoice.objects.filter(int_status=20,int_sale_type =1,int_active = 0,json_data__contains={'int_branch_id':request.user.userdetails.fk_branch_id},dat_created__date__gte = dat_from,dat_created__date__lte = dat_to).values('pk_bint_id','dat_created','json_data','int_status').order_by('-dat_created')
@@ -188,7 +189,7 @@ class SalesList(APIView):
 
 
             else:
-                if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN':
+                if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES']:
                     ins_partial_inv = PartialInvoice.objects.filter(~Q(json_data__contains={'bln_specialsale':'True'}),int_active = 0,int_approve__in=(0,2,4),dat_created__date__gte = dat_from,dat_created__date__lte = dat_to).exclude(int_status__in=(3,6,5,10,11,20)).values('pk_bint_id','dat_created','json_data','int_status').order_by('-dat_created')
                 else:
                     ins_partial_inv = PartialInvoice.objects.filter(Q(json_data__contains={'int_branch_id':request.user.userdetails.fk_branch_id}) & ~Q(json_data__contains={'bln_specialsale':'True'}),int_active = 0,int_approve__in=(0,2,4,3),dat_created__date__gte = dat_from,dat_created__date__lte = dat_to).exclude(int_status__in=(3,6,5,10,11,20)).values('pk_bint_id','dat_created','json_data','int_status').order_by('-dat_created')
@@ -220,7 +221,7 @@ class SalesList(APIView):
                 if request.user.userdetails.fk_group.vchr_name.upper() in ['SERVICE MANAGER','SERVICE ENGINEER','BRANCH MANAGER','ASSISTANT BRANCH MANAGER','ADMIN']:
                     if ins_data['json_data'].get('int_branch_id') in lst_branch_id and ins_data['json_data']['lst_items'][0].get('vchr_job_status') not in ['GDP NORMAL NEW','GDEW NEW','CHECKED']:
                         dct_data['bln_view'] = True
-                    elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ADMIN']:
+                    elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ADMIN','GENERAL MANAGER SALES']:
                         dct_data['bln_view'] = True
                     else:
                         dct_data['bln_view'] = False
@@ -8389,7 +8390,7 @@ class InvoiceList(APIView):
 
             lst_branch = []
             # import pdb;pdb.set_trace()
-            if request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN' or request.user.userdetails.fk_branch.int_type in [2,3]:
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES'] or request.user.userdetails.fk_branch.int_type in [2,3]:
                 if request.user.userdetails.fk_branch.vchr_code in ['MCL3']:
                     lst_branch = [request.user.userdetails.fk_branch_id]
                 else:
@@ -8402,8 +8403,8 @@ class InvoiceList(APIView):
                     lst_branch =  dct_privilege['lst_branches']
                 else:
                     lst_branch = [request.user.userdetails.fk_branch_id]
-            elif Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True):
-                lst_branch = Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True)
+            elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:      
+                lst_branch = show_data_based_on_role(request)
             else:
                 lst_branch = [request.user.userdetails.fk_branch_id]
 

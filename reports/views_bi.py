@@ -346,8 +346,8 @@ class NewCustomerReport(APIView):
                 pass
             elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                 rst_data = rst_data.filter(BranchSA.pk_bint_id == request.user.usermodel.fk_branch_id)
-            elif request.user.usermodel.int_area_id:
-                lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+            elif request.user.usermodel.fk_hierarchy_data_id:
+                lst_branch=show_data_based_on_role(request)
                 rst_data = rst_data.filter(BranchSA.pk_bint_id.in_(lst_branch))
             else:
                 session.close()
@@ -1685,7 +1685,6 @@ class ServiceReportMobile(APIView):
         try:
             session = Session()
             lst_enquiry_data = []
-            # import pdb;pdb.set_trace()
             # request.data['date_from'] = "2021-01-12"
             int_company = request.data['company_id']
             if request.data.get('show_type'):
@@ -1738,14 +1737,15 @@ class ServiceReportMobile(APIView):
 
 
             """Permission wise filter for data"""
+            # import pdb;pdb.set_trace()
             if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','MANAGER BUSINESS OPERATIONS','AUDITOR','AUDITING ADMIN','COUNTRY HEAD','GENERAL MANAGER SALES']:
                 pass
             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
 
                 str_filter_data = str_filter_data+" AND branch_id = "+str(request.user.userdetails.fk_branch_id)+""
                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
-            elif request.user.userdetails.int_area_id:
-                lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+            elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                lst_branch=show_data_based_on_role(request)
 
                 str_filter_data += " AND branch_id IN ("+str(lst_branch)[1:-1]+")"
                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
@@ -2949,8 +2949,8 @@ class ServiceReportMobileExportExcel(APIView):
                 elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
 
                     str_filter_data = str_filter_data+" AND branch_id = "+str(request.user.userdetails.fk_branch_id)+""
-                elif request.user.userdetails.int_area_id:
-                    lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+                elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                    lst_branch=show_data_based_on_role(request)
 
                     str_filter_data += " AND branch_id IN ("+str(lst_branch)[1:-1]+")"
                 else:
@@ -3089,8 +3089,8 @@ class ServiceReportMobileExportExcel(APIView):
                     pass
                 elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                     rst_enquiry_table_data = rst_enquiry_table_data.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
-                elif request.user.userdetails.int_area_id:
-                    lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+                elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                    lst_branch=show_data_based_on_role(request)
                     rst_enquiry_table_data = rst_enquiry_table_data.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
                 else:
                     session.close()
@@ -6202,8 +6202,8 @@ class PaymentReport(APIView):
                 lst_branch = Branch.objects.filter(fk_company_id=request.user.userdetails.fk_company_id).values_list('pk_bint_id')
             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                 lst_branch = [request.user.userdetails.fk_branch_id]
-            elif request.user.userdetails.int_area_id:
-                lst_branch = show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+            elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                lst_branch = show_data_based_on_role(request)
             else:
                 session.close()
                 return Response({'status':1 ,'data' : "no data"})
@@ -6437,8 +6437,8 @@ class PaymentReportDownload(APIView):
                 lst_branch = Branch.objects.filter(fk_company_id=request.user.userdetails.fk_company_id).values_list('pk_bint_id')
             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                 lst_branch = [request.user.userdetails.fk_branch_id]
-            elif request.user.userdetails.int_area_id:
-                lst_branch = show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+            elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                lst_branch = show_data_based_on_role(request)
             else:
                 session.close()
                 return Response({'status':1 ,'data' : "no data"})
@@ -6669,8 +6669,8 @@ class GdpReport(APIView):
 
                 str_filter +=" AND br.pk_bint_id = "+str(request.user.userdetails.fk_branch_id)+""
                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
-            elif request.user.userdetails.int_area_id:
-                lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+            elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                lst_branch=show_data_based_on_role(request)
 
                 str_filter += " AND br.pk_bint_id IN ("+str(lst_branch)[1:-1]+")"
 
@@ -6923,8 +6923,8 @@ class StaffRewardReport(APIView):
 
                 str_filter +=" AND br.pk_bint_id = "+str(request.user.userdetails.fk_branch_id)+""
                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
-            elif request.user.userdetails.int_area_id:
-                lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+            elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                lst_branch=show_data_based_on_role(request)
 
                 str_filter += " AND br.pk_bint_id IN ("+str(lst_branch)[1:-1]+")"
 
@@ -7144,8 +7144,8 @@ class BankDetailRewardReport(APIView):
 
                 str_filter +=" AND br.pk_bint_id = "+str(request.user.userdetails.fk_branch_id)+""
                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
-            elif request.user.userdetails.int_area_id:
-                lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+            elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                lst_branch=show_data_based_on_role(request)
 
                 str_filter += " AND br.pk_bint_id IN ("+str(lst_branch)[1:-1]+")"
 
@@ -7417,8 +7417,8 @@ class SlabWiseRewardReport(APIView):
 
                 str_filter_data +=" AND br.pk_bint_id = "+str(request.user.userdetails.fk_branch_id)+""
                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
-            elif request.user.userdetails.int_area_id:
-                lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+            elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                lst_branch=show_data_based_on_role(request)
 
                 str_filter += " AND reward_sum.int_branch_id IN ("+str(lst_branch)[1:-1]+")"
 

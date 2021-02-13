@@ -37,7 +37,7 @@ from brands.models import Brands
 from item_category.models import Item as Items
 # from enquiry_solar.models import ProductType,ProductBrand, ProductCategory, ProductCategoryVariant, ProductEnquiry
 from finance_enquiry.models import FinanceCustomerDetails
-# from globalMethods import show_data_based_on_role,get_user_products
+from globalMethods import show_data_based_on_role,get_user_products
 import random
 import json
 from enquiry_print.views import enquiry_print
@@ -2313,10 +2313,10 @@ class EnquiryList(APIView):
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_created_by_id==request.user.id)
                     elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
-                    elif request.user.userdetails.fk_hierarchy_data:
+                    elif request.user.userdetails.fk_hierarchy_data_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
                         # hierarchyBranch(request)
-                        lst_branch = Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True)
-                        # lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+                        # lst_branch = Branch.objects.filter(fk_hierarchy_data = request.user.userdetails.fk_hierarchy_data).values_list('pk_bint_id',flat=True)
+                        lst_branch = show_data_based_on_role(request)
 
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
                     # elif request.user.usermodel.fk_group.vchr_name.upper() =='BALL GAME ADMIN':
