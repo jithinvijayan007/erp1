@@ -70,6 +70,7 @@ urlpatterns = [
     url(r'^professional_tax/', include('professional_tax.urls', namespace='professional_tax')),
     url(r'^location/',include('location.urls',namespace='location')),
     url(r'^salary_process/',include('salary_process.urls',namespace='salary_process')),
+    url(r'^product_report_pdf/',include('product_report_download.urls',namespace='product_report_pdf')),
 
 
     url(r'^tool_settings/',include('tool_settings.urls',namespace="tool_settings")),

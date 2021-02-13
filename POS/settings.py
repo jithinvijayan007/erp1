@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-HOSTNAME="http://192.168.0.116:8000"
+HOSTNAME="http://192.168.18.17:8000"
 
 
 
@@ -130,6 +130,7 @@ INSTALLED_APPS = [
     'loan',
     'branch_report_download',
     'group_level',
+    'product_report_download',
 
 ]
 REST_FRAMEWORK = {
