@@ -896,15 +896,15 @@ def get_perm_data(rst_enquiry,user):
 #                 ins_enquiry_check = NaEnquiryMaster.objects.filter(vchr_enquiry_num__iexact =enquiry_number,fk_company = ins_company).values()
 #             else:
 #                 ins_enquiry_check = EnquiryMaster.objects.filter(chr_doc_status='N',vchr_enquiry_num__iexact = enquiry_number,fk_company = ins_company).values()
-#             if request.user.usermodel.fk_group.vchr_name.upper()=='ADMIN':
+#             if request.user.userdetails.fk_group.vchr_name.upper()=='ADMIN':
 #                 pass
-#             elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
-#                 ins_enquiry_check=ins_enquiry_check.filter(fk_branch_id=request.user.usermodel.fk_branch_id)
-#             elif request.user.usermodel.int_area_id:
-#                 lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+#             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
+#                 ins_enquiry_check=ins_enquiry_check.filter(fk_branch_id=request.user.userdetails.fk_branch_id)
+#             elif request.user.userdetails.int_area_id:
+#                 lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
 #                 ins_enquiry_check = ins_enquiry_check.filter(fk_branch_id__in=lst_branch)
 #             else:
-#                 ins_enquiry_check=ins_enquiry_check.filter(fk_branch_id=request.user.usermodel.fk_branch_id,fk_assigned_id=request.user.id)
+#                 ins_enquiry_check=ins_enquiry_check.filter(fk_branch_id=request.user.userdetails.fk_branch_id,fk_assigned_id=request.user.id)
 
 
 #             if ins_enquiry_check:
@@ -1914,7 +1914,7 @@ def get_perm_data(rst_enquiry,user):
 #                                     else_=literal_column("'not resigned'")).label("is_resigned"))\
 #                                 .filter(cast(EnquiryMasterSA.dat_created_at,Date) >= fromdate,
 #                                         cast(EnquiryMasterSA.dat_created_at,Date) <= todate,
-#                                         EnquiryMasterSA.fk_company_id == request.user.usermodel.fk_company_id,
+#                                         EnquiryMasterSA.fk_company_id == request.user.userdetails.fk_company_id,
 #                                         EnquiryMasterSA.chr_doc_status == 'N')\
 #                                 .join(EnquiryMasterSA,ItemEnquirySA.fk_enquiry_master_id == EnquiryMasterSA.pk_bint_id)\
 #                                 .join(BranchSA,BranchSA.pk_bint_id == EnquiryMasterSA.fk_branch_id)\
@@ -1926,20 +1926,20 @@ def get_perm_data(rst_enquiry,user):
 #                                 .join(ItemsSA,ItemsSA.id==ItemEnquirySA.fk_item_id)
 
 #             """Permission wise filter for data"""
-#             # if request.user.usermodel.fk_group.vchr_name.upper()=='BRANCH MANAGER':
-#             #     rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.usermodel.fk_branch_id)
-#             # elif request.user.usermodel.int_area_id:
-#             #     lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+#             # if request.user.userdetails.fk_group.vchr_name.upper()=='BRANCH MANAGER':
+#             #     rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
+#             # elif request.user.userdetails.int_area_id:
+#             #     lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
 #             #     rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
 #             # else:
 #             #     return Response({'status':'failed','reason':'No data'})
 #             #
-#             if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES','COUNTRY HEAD']:
+#             if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES','COUNTRY HEAD']:
 #                 pass
-#             elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
-#                 rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.usermodel.fk_branch_id)
-#             elif request.user.usermodel.int_area_id:
-#                 lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+#             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
+#                 rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
+#             elif request.user.userdetails.int_area_id:
+#                 lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
 #                 rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
 #             else:
 #                 session.close()
@@ -2045,7 +2045,7 @@ def get_perm_data(rst_enquiry,user):
 #             #                         else_=literal_column("'not resigned'")).label("is_resigned"))\
 #             #                     .filter(cast(EnquiryMasterSA.dat_created_at,Date) >= fromdate,
 #             #                             cast(EnquiryMasterSA.dat_created_at,Date) <= todate,
-#             #                             EnquiryMasterSA.fk_company_id == request.user.usermodel.fk_company_id,
+#             #                             EnquiryMasterSA.fk_company_id == request.user.userdetails.fk_company_id,
 #             #                             EnquiryMasterSA.chr_doc_status == 'N')\
 #             #                     .join(EnquiryMasterSA,ItemEnquirySA.fk_enquiry_master_id == EnquiryMasterSA.pk_bint_id)\
 #             #                     .join(BranchSA,BranchSA.pk_bint_id == EnquiryMasterSA.fk_branch_id)\
@@ -2063,13 +2063,13 @@ def get_perm_data(rst_enquiry,user):
 #             str_filter_data = "where dat_enquiry :: date BETWEEN '"+request.data['date_from']+"' AND '"+request.data['date_to']+"' AND int_company_id = "+int_company+""
 
 #             """Permission wise filter for data"""
-#             if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN','COUNTRY HEAD','GENERAL MANAGER SALES']:
+#             if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN','COUNTRY HEAD','GENERAL MANAGER SALES']:
 #                 pass
-#             elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
-#                 str_filter_data = str_filter_data+" AND branch_id = "+str(request.user.usermodel.fk_branch_id)+""
-#                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.usermodel.fk_branch_id)
-#             elif request.user.usermodel.int_area_id:
-#                 lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+#             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
+#                 str_filter_data = str_filter_data+" AND branch_id = "+str(request.user.userdetails.fk_branch_id)+""
+#                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
+#             elif request.user.userdetails.int_area_id:
+#                 lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
 
 #                 str_filter_data += " AND branch_id IN ("+str(lst_branch)[1:-1]+")"
 #                 # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
@@ -2316,8 +2316,8 @@ class EnquiryList(APIView):
                         # lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
 
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
-                    # elif request.user.usermodel.fk_group.vchr_name.upper() =='BALL GAME ADMIN':
-                    #     rst_enquiry = rst_enquiry.filter(ItemEnquirySA.vchr_enquiry_status=='PARTIALLY PAID',EnquiryMasterSA.fk_branch_id== request.user.usermodel.fk_branch_id)
+                    # elif request.user.userdetails.fk_group.vchr_name.upper() =='BALL GAME ADMIN':
+                    #     rst_enquiry = rst_enquiry.filter(ItemEnquirySA.vchr_enquiry_status=='PARTIALLY PAID',EnquiryMasterSA.fk_branch_id== request.user.userdetails.fk_branch_id)
                     else:
                         rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id== request.user.userdetails.fk_branch_id,EnquiryMasterSA.fk_assigned_id==request.user.id)
                     if int_pending:
@@ -2370,13 +2370,13 @@ class EnquiryList(APIView):
                                                     .group_by(ItemSA.vchr_item_code,CustomerSA.cust_mobile,BrandSA.vchr_brand_name,EnquiryMasterSA.pk_bint_id,EnquiryMasterSA.dat_created_at, EnquiryMasterSA.vchr_enquiry_num,'customer' , AuthUserSA.first_name, AuthUserSA.last_name, ItemEnquirySA.vchr_enquiry_status, ProductsSA.vchr_product_name,'branch_name')\
                                                     .filter(or_(ItemEnquirySA.vchr_enquiry_status.in_(['CHECK ELIGIBILITY','TO PROCESS','IMEI PENDING','IMEI REQUESTED','IMEI REJECTED','IMAGE PENDING','IMAGE PENDING','PROCESSED']),and_(or_(ItemEnquirySA.vchr_enquiry_status == 'BOOKED',ItemEnquirySA.vchr_enquiry_status == 'INVOICED'),ItemEnquirySA.int_fop == 1)))
 
-                    # if request.user.usermodel.fk_group.vchr_name.upper()=='BAJAJ ONLINE':
+                    # if request.user.userdetails.fk_group.vchr_name.upper()=='BAJAJ ONLINE':
                     #     rst_enquiry =rst_enquiry.filter(GroupsSA.vchr_name=='BAJAJ ONLINE')
                     # import pdb; pdb.set_trace()
-                    if request.user.usermodel.fk_group.vchr_name.upper()=='FINANCIER':
-                        rst_enquiry =rst_enquiry.filter(EnquiryFinanceSA.fk_financiers_id == request.user.usermodel.fk_financier_id)
+                    if request.user.userdetails.fk_group.vchr_name.upper()=='FINANCIER':
+                        rst_enquiry =rst_enquiry.filter(EnquiryFinanceSA.fk_financiers_id == request.user.userdetails.fk_financier_id)
                     else:
-                        if request.user.usermodel.fk_group.vchr_name.upper() in ['ASSISTANT MANAGER - ONLINE FINANCE','BAJAJ ONLINE','FINANCE SALES ADMIN']:
+                        if request.user.userdetails.fk_group.vchr_name.upper() in ['ASSISTANT MANAGER - ONLINE FINANCE','BAJAJ ONLINE','FINANCE SALES ADMIN']:
                             rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.int_customer_type.in_([1]))
                         else:
                             rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.int_customer_type.in_([2,3,4]))
@@ -2687,7 +2687,7 @@ class EnquiryView(APIView):
                             dct_customer_data['financier_entry']['vchr_finance'] =  ins_finance_customer[0].get('fk_enquiry_finance_id__fk_financiers_id__vchr_name')
 
 
-                    # if request.user.usermodel.fk_group.vchr_name.upper() == 'BRANCH MANAGER':
+                    # if request.user.userdetails.fk_group.vchr_name.upper() == 'BRANCH MANAGER':
                     else:
 
                         dct_customer_data['status'] = 'PENDING'

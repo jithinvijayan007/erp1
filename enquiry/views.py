@@ -551,7 +551,7 @@ class MobileBranchReport(APIView):
             #                         else_=literal_column("'not resigned'")).label("is_resigned"))\
             #                     .filter(cast(EnquiryMasterSA.dat_created_at,Date) >= fromdate,
             #                             cast(EnquiryMasterSA.dat_created_at,Date) <= todate,
-            #                             EnquiryMasterSA.fk_company_id == request.user.usermodel.fk_company_id,
+            #                             EnquiryMasterSA.fk_company_id == request.user.userdetails.fk_company_id,
             #                             EnquiryMasterSA.chr_doc_status == 'N')\
             #                     .join(EnquiryMasterSA,ItemEnquirySA.fk_enquiry_master_id == EnquiryMasterSA.pk_bint_id)\
             #                     .join(BranchSA,BranchSA.pk_bint_id == EnquiryMasterSA.fk_branch_id)\
@@ -573,7 +573,7 @@ class MobileBranchReport(APIView):
                 pass
             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                 str_filter_data = str_filter_data+" AND branch_id = "+str(request.user.userdetails.fk_branch_id)+""
-                # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.usermodel.fk_branch_id)
+                # rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
             elif request.user.userdetails.int_area_id:
                 lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
 

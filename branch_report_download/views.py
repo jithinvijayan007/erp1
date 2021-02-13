@@ -305,7 +305,7 @@ class MobileBranchReportDownload(APIView):
                                         else_=literal_column("'not resigned'")).label("is_resigned"))\
                                     .filter(cast(EnquiryMasterSA.dat_created_at,Date) >= fromdate,
                                             cast(EnquiryMasterSA.dat_created_at,Date) <= todate,
-                                            EnquiryMasterSA.fk_company_id == request.user.usermodel.fk_company_id,
+                                            EnquiryMasterSA.fk_company_id == request.user.userdetails.fk_company_id,
                                             EnquiryMasterSA.chr_doc_status == 'N')\
                                     .join(EnquiryMasterSA,ItemEnquirySA.fk_enquiry_master_id == EnquiryMasterSA.pk_bint_id)\
                                     .join(BranchSA,BranchSA.pk_bint_id == EnquiryMasterSA.fk_branch_id)\
@@ -317,12 +317,12 @@ class MobileBranchReportDownload(APIView):
                                     .join(ItemsSA,ItemsSA.id==ItemEnquirySA.fk_item_id)
 
                 """Permission wise filter for data"""
-                if request.user.usermodel.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES','COUNTRY HEAD']:
+                if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES','COUNTRY HEAD']:
                     pass
-                elif request.user.usermodel.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
-                    rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.usermodel.fk_branch_id)
-                elif request.user.usermodel.int_area_id:
-                    lst_branch=show_data_based_on_role(request.user.usermodel.fk_group.vchr_name,request.user.usermodel.int_area_id)
+                elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
+                    rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
+                elif request.user.userdetails.int_area_id:
+                    lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
                     rst_enquiry = rst_enquiry.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
                 else:
                     session.close()

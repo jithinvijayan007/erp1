@@ -126,7 +126,9 @@ INSTALLED_APPS = [
     'inventory',
     'branch_report_download',
     'group_level',
-    'mobile_followup'
+    'mobile_followup',
+    'productivity_report',
+    'enquiry_productivity_report_pdf',
 
 ]
 REST_FRAMEWORK = {
