@@ -96,6 +96,8 @@ urlpatterns = [
     # url(r'^hash/',include('hasher.urls',namespace='hasher')),
     # url(r'^view_enquiry/(?P<hash>\w+)/$', HasherEnquiryView.as_view(),name='HasherEnquiryView'),
     url(r'^group_level/',include('group_level.urls',namespace='group_level')),
+    url(r'^productivityreport/',include('productivity_report.urls',namespace='productivity_reports')),
+    url(r'^enquiry_productivity_report_pdf/',include('enquiry_productivity_report_pdf.urls',namespace='enquiry_productivity_report_pdf')),
     url(r'^download_log/', DownloadLog.as_view(), name='download_log'),
 
 

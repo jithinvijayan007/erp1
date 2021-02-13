@@ -130,6 +130,8 @@ INSTALLED_APPS = [
     'loan',
     'branch_report_download',
     'group_level',
+    'productivity_report',
+    'enquiry_productivity_report_pdf',
     'product_report_download',
 
 ]

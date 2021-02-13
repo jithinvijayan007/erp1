@@ -550,7 +550,7 @@ class MobileBranchReport(APIView):
             #                         else_=literal_column("'not resigned'")).label("is_resigned"))\
             #                     .filter(cast(EnquiryMasterSA.dat_created_at,Date) >= fromdate,
             #                             cast(EnquiryMasterSA.dat_created_at,Date) <= todate,
-            #                             EnquiryMasterSA.fk_company_id == request.user.usermodel.fk_company_id,
+            #                             EnquiryMasterSA.fk_company_id == request.user.userdetails.fk_company_id,
             #                             EnquiryMasterSA.chr_doc_status == 'N')\
             #                     .join(EnquiryMasterSA,ItemEnquirySA.fk_enquiry_master_id == EnquiryMasterSA.pk_bint_id)\
             #                     .join(BranchSA,BranchSA.pk_bint_id == EnquiryMasterSA.fk_branch_id)\

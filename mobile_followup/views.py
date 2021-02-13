@@ -222,7 +222,7 @@ def Session():
 #             if int_status:
 #                 ins_user = UserModel.objects.get(username = request.data['vchr_current_user_name'])
 #                 enquiry_print(str_enquiry_no,request,ins_user)
-#             int_enquiry_id = EnquiryMaster.objects.get(chr_doc_status = 'N',vchr_enquiry_num = str_enquiry_no, fk_company_id = request.user.usermodel.fk_company_id).pk_bint_id
+#             int_enquiry_id = EnquiryMaster.objects.get(chr_doc_status = 'N',vchr_enquiry_num = str_enquiry_no, fk_company_id = request.user.userdetails.fk_company_id).pk_bint_id
 #             return JsonResponse({'status':'success','value':'Follow-up completed successfully!','remarks':request.data['vchr_followup_remarks'],'followup':request.data['vchr_followup_status'],'amount':request.data['int_followup_amount'],'change':int_status,'enqId':int_enquiry_id,'int_quantity':request.data.get('int_followup_quantity')})
 #
 #         except Exception as e:
@@ -312,7 +312,7 @@ class AddFollowup(APIView):
                     #     return Response({'status':'5', 'data':'Selected '+rst_enq.fk_brand.vchr_brand_name+'-'+rst_enq.fk_item.vchr_item_name+' quantity '+str(request.data.get('int_followup_quantity'))+' exceeds available stock quantity of '+str(int_available)+' in your branch'})
                 ins_item_follow_up = ItemFollowup(fk_item_enquiry = ItemEnquiry.objects.get(pk_bint_id = request.data['int_service_id']),\
                     vchr_notes = request.data['vchr_followup_remarks'],vchr_enquiry_status = request.data['vchr_followup_status'],\
-                    int_status = int_status,dbl_amount = request.data['int_followup_amount'],fk_user = request.user.usermodel,\
+                    int_status = int_status,dbl_amount = request.data['int_followup_amount'],fk_user = request.user.userdetails,\
                     fk_updated_id = fk_updated_by,dat_followup = dat_created,dat_updated = dat_updated_time,int_quantity=request.data.get('int_followup_quantity'))
                 ins_item_follow_up.save()
                 dbl_discount = 0
@@ -408,7 +408,7 @@ class AddFollowup(APIView):
                     '''Following code commented in order to prevent lost case if same product booked multiple times'''
 
                     '''
-                    ins_item_enq_exist = ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer_id = ins_customer_id,fk_enquiry_master__fk_company = request.user.usermodel.fk_company,fk_product_id=ins_obj.first().fk_product_id).exclude(vchr_enquiry_status__in =['BOOKED','INVOICED'])
+                    ins_item_enq_exist = ItemEnquiry.objects.filter(fk_enquiry_master__fk_customer_id = ins_customer_id,fk_enquiry_master__fk_company = request.user.userdetails.fk_company,fk_product_id=ins_obj.first().fk_product_id).exclude(vchr_enquiry_status__in =['BOOKED','INVOICED'])
                     if ins_item_enq_exist:
                         ins_item_enq_exist.update(vchr_enquiry_status = 'LOST')
                         lst_query_set = []
@@ -419,8 +419,8 @@ class AddFollowup(APIView):
                                                               int_status = 1,
                                                               dbl_amount = 0.0,
                                                               int_quantity = 0,
-                                                              fk_user = request.user.usermodel,
-                                                              fk_updated = request.user.usermodel,
+                                                              fk_user = request.user.userdetails,
+                                                              fk_updated = request.user.userdetails,
                                                               dat_followup = datetime.now(),
                                                               dat_updated = datetime.now())
                             lst_query_set.append(ins_follow_up)
@@ -433,7 +433,7 @@ class AddFollowup(APIView):
                 else:
                     EnquiryMaster.objects.filter(pk_bint_id = enq_mastr_id).update(vchr_remarks = request.data.get('vchr_followup_remarks'))
 
-                int_enquiry_id = EnquiryMaster.objects.get(chr_doc_status = 'N',vchr_enquiry_num = str_enquiry_no, fk_company_id = request.user.usermodel.fk_company_id).pk_bint_id
+                int_enquiry_id = EnquiryMaster.objects.get(chr_doc_status = 'N',vchr_enquiry_num = str_enquiry_no, fk_company_id = request.user.userdetails.fk_company_id).pk_bint_id
 
                 # ----------- POS ------------
                 # import pdb; pdb.set_trace()
@@ -453,7 +453,7 @@ class AddFollowup(APIView):
                 # ----------------------------
 
                 # if int_status:
-                #     enquiry_print(str_enquiry_no,request,request.user.usermodel)
+                #     enquiry_print(str_enquiry_no,request,request.user.userdetails)
                 return JsonResponse({'status':'success','value':'Follow-up completed successfully!','remarks':request.data['vchr_followup_remarks'],'followup':request.data['vchr_followup_status'],'amount':request.data['int_followup_amount'],'change':int_status,'enqId':int_enquiry_id,'int_quantity':request.data.get('int_followup_quantity')})
 
 
