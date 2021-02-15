@@ -1176,8 +1176,8 @@ class ProductivityReportMobile(APIView):
                 # lst_branch_id = lst_branch_id.append(request.user.userdetails.fk_branch_id)
                 lst_staffs = lst_staffs.filter(fk_branch_id=request.user.userdetails.fk_branch_id)
                 str_filter += " branch_id ="+str(request.user.userdetails.fk_branch_id)
-            elif request.user.userdetails.int_area_id:
-                lst_branch_id=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+            elif request.user.userdetails.fk_hierarchy_group_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                lst_branch_id=show_data_based_on_role(request)
                 str_filter += " branch_id in ("+str(lst_branch_id)[1:-1]+")"
                 lst_staffs = lst_staffs.filter(fk_branch_id__in=lst_branch_id)
                 # rst_table_data = rst_table_data.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
@@ -1640,8 +1640,8 @@ class ProductivityReportMobileTable(APIView):
                     pass
                 elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                     rst_table_data = rst_table_data.filter(EnquiryMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
-                elif request.user.userdetails.int_area_id:
-                    lst_branch=show_data_based_on_role(request.user.userdetails.fk_group.vchr_name,request.user.userdetails.int_area_id)
+                elif request.user.userdetails.fk_hierarchy_group_id or request.user.userdetails.fk_group.vchr_name.upper() in ['CLUSTER MANAGER']:
+                    lst_branch=show_data_based_on_role(request)
                     rst_table_data = rst_table_data.filter(EnquiryMasterSA.fk_branch_id.in_(lst_branch))
                 else:
                     session.close()
