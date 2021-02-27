@@ -2181,6 +2181,7 @@ class AddSalesAPI(APIView):
     permission_classes = [AllowAny]
     def post(self,request):
         try:
+            # import pdb;pdb.set_trace()
             dct_data = {}
             str_cust_name = request.data.get('vchr_cust_name')
             str_cust_email = request.data.get('vchr_cust_email',None)
@@ -2372,19 +2373,20 @@ class AddSalesAPI(APIView):
             else:
                 # =============================================================================================================
                 dct_data['int_cust_id'] = ins_customer['pk_bint_id']
+                # import pdb;pdb.set_trace()
                 # CustomerDetails.objects.filter(pk_bint_id = dct_data['int_cust_id']).update(txt_address = request.data.get('txt_address',None))
-                ins_customer_exist = CustomerDetails.objects.filter(vchr_name = str_cust_name,vchr_email = str_cust_email,int_mobile = int_cust_mob,vchr_gst_no = request.data.get('vchr_gst_no',None), txt_address = request.data.get('txt_address',None), fk_location = ins_location,fk_state = ins_state,int_cust_type = int_cust_type)
+                # ins_customer_exist = CustomerDetails.objects.filter(vchr_name = str_cust_name,vchr_email = str_cust_email,int_mobile = int_cust_mob,vchr_gst_no = request.data.get('vchr_gst_no',None), txt_address = request.data.get('txt_address',None), fk_location = ins_location,fk_state = ins_state,int_cust_type = int_cust_type)
                 ins_cus = CustomerDetails.objects.get(pk_bint_id=dct_data['int_cust_id'])
-                int_edit_count=ins_cus.int_edit_count if ins_cus.int_edit_count else 0
-                if not ins_customer_exist:
-                    ins_cus.vchr_email = str_cust_email
-                    ins_cus.int_cust_type = int_cust_type
-                    ins_cus.vchr_gst_no = request.data.get('vchr_gst_no',None)
-                    ins_cus.txt_address = request.data.get('txt_address',None)
-                    ins_cus.fk_location = ins_location
-                    ins_cus.fk_state = ins_state
-                    ins_cus.int_edit_count=int_edit_count+1
-                    ins_cus.save()
+                # int_edit_count=ins_cus.int_edit_count if ins_cus.int_edit_count else 0
+                # if not ins_customer_exist:
+                #     ins_cus.vchr_email = str_cust_email
+                #     ins_cus.int_cust_type = int_cust_type
+                #     ins_cus.vchr_gst_no = request.data.get('vchr_gst_no',None)
+                #     ins_cus.txt_address = request.data.get('txt_address',None)
+                #     ins_cus.fk_location = ins_location
+                #     ins_cus.fk_state = ins_state
+                #     ins_cus.int_edit_count=int_edit_count+1
+                #     ins_cus.save()
                 ins_sales_customer=SalesCustomerDetails.objects.filter(vchr_name = str_cust_name,vchr_email = str_cust_email,int_mobile = int_cust_mob,vchr_gst_no = request.data.get('vchr_gst_no',None),  fk_location = ins_location,fk_state = ins_state).order_by('-pk_bint_id').first()
                 if not ins_sales_customer:
 
@@ -8412,7 +8414,7 @@ class InvoiceList(APIView):
 
             # rst_invoice = rst_invoice.filter(SalesMasterSA.fk_branch_id == request.user.userdetails.fk_branch_id)
             # rst_jio_invoice = rst_jio_invoice.filter(SalesMasterJioSa.fk_branch_id == request.user.userdetails.fk_branch_id)
-            if not (request.user.userdetails.fk_branch.int_type in [2,3] or request.user.userdetails.fk_group.vchr_name.upper() == 'ADMIN' ):
+            if not (request.user.userdetails.fk_branch.int_type in [2,3] or request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','GENERAL MANAGER SALES']):
                 rst_invoice = rst_invoice.filter(SalesMasterSA.fk_branch_id.in_(lst_branch) )
                 rst_jio_invoice = rst_jio_invoice.filter(SalesMasterJioSa.fk_branch_id.in_(lst_branch))
 

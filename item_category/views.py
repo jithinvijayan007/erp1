@@ -319,7 +319,8 @@ class ItemAdd(APIView):
                         if ins_duplicate:
                             return Response({'status':0 , 'reason': "item code already exists"})
                         if request.FILES.get('image1'):
-                            int_update = Item.objects.filter(pk_bint_id = request.data.get('pk_bint_id')).update(vchr_name=item_name,fk_product_id=product_id,fk_brand_id=brand_id,vchr_item_code=vchr_item_code,fk_item_category_id=item_category_id,fk_item_group_id=item_group_id,dbl_supplier_cost=dbl_supplier_cost,dbl_dealer_cost=dbl_dealer_cost,dbl_mrp=dbl_mrp,dbl_mop=dbl_mop,json_specification_id=json_specification_id,int_reorder_level=int_reorder_level,vchr_prefix=vchr_prefix,imei_status=imei_status,sale_status=bln_sales,fk_updated_id = request.user.id,image1=image1,image2=image2,image3=image3)
+                            int_update = Item.objects.filter(pk_bint_id = request.data.get('pk_bint_id')).update(vchr_name=item_name,fk_product_id=product_id,fk_brand_id=brand_id,vchr_item_code=vchr_item_code,fk_item_category_id=item_category_id,fk_item_group_id=item_group_id,dbl_supplier_cost=dbl_supplier_cost,dbl_dealer_cost=dbl_dealer_cost,dbl_mrp=dbl_mrp,dbl_mop=dbl_mop,json_specification_id=json_specification_id,int_reorder_level=int_reorder_level,vchr_prefix=vchr_prefix,imei_status=imei_status,sale_status=bln_sales,fk_updated_id = request.user.id)
+                            # int_update = Item.objects.filter(pk_bint_id = request.data.get('pk_bint_id')).update(vchr_name=item_name,fk_product_id=product_id,fk_brand_id=brand_id,vchr_item_code=vchr_item_code,fk_item_category_id=item_category_id,fk_item_group_id=item_group_id,dbl_supplier_cost=dbl_supplier_cost,dbl_dealer_cost=dbl_dealer_cost,dbl_mrp=dbl_mrp,dbl_mop=dbl_mop,json_specification_id=json_specification_id,int_reorder_level=int_reorder_level,vchr_prefix=vchr_prefix,imei_status=imei_status,sale_status=bln_sales,fk_updated_id = request.user.id,image1=image1,image2=image2,image3=image3)
 
                         else:
                             int_update = Item.objects.filter(pk_bint_id = request.data.get('pk_bint_id')).update(vchr_name=item_name,fk_product_id=product_id,fk_brand_id=brand_id,vchr_item_code=vchr_item_code,fk_item_category_id=item_category_id,fk_item_group_id=item_group_id,dbl_supplier_cost=dbl_supplier_cost,dbl_dealer_cost=dbl_dealer_cost,dbl_mrp=dbl_mrp,dbl_mop=dbl_mop,json_specification_id=json_specification_id,int_reorder_level=int_reorder_level,vchr_prefix=vchr_prefix,imei_status=imei_status,sale_status=bln_sales,fk_updated_id = request.user.id)
@@ -332,7 +333,8 @@ class ItemAdd(APIView):
                     if ins_duplicate:
                         return Response({'status':0 , 'reason': "item code already exists"})
 
-                    ins_item_add = Item.objects.create(vchr_name=item_name,fk_product_id=product_id,fk_brand_id=brand_id,vchr_item_code=vchr_item_code,fk_item_category_id=item_category_id,fk_item_group_id=item_group_id,dbl_supplier_cost=dbl_supplier_cost,dbl_dealer_cost=dbl_dealer_cost,dbl_mrp=dbl_mrp,dbl_mop=dbl_mop,json_specification_id=json_specification_id,int_reorder_level=int_reorder_level,vchr_prefix=vchr_prefix,imei_status=imei_status,sale_status=bln_sales,fk_created_id = request.user.id,image1=image1,image2=image2,image3=image3,dat_created = datetime.now())
+                    # ins_item_add = Item.objects.create(vchr_name=item_name,fk_product_id=product_id,fk_brand_id=brand_id,vchr_item_code=vchr_item_code,fk_item_category_id=item_category_id,fk_item_group_id=item_group_id,dbl_supplier_cost=dbl_supplier_cost,dbl_dealer_cost=dbl_dealer_cost,dbl_mrp=dbl_mrp,dbl_mop=dbl_mop,json_specification_id=json_specification_id,int_reorder_level=int_reorder_level,vchr_prefix=vchr_prefix,imei_status=imei_status,sale_status=bln_sales,fk_created_id = request.user.id,image1=image1,image2=image2,image3=image3,dat_created = datetime.now())
+                    ins_item_add = Item.objects.create(vchr_name=item_name,fk_product_id=product_id,fk_brand_id=brand_id,vchr_item_code=vchr_item_code,fk_item_category_id=item_category_id,fk_item_group_id=item_group_id,dbl_supplier_cost=dbl_supplier_cost,dbl_dealer_cost=dbl_dealer_cost,dbl_mrp=dbl_mrp,dbl_mop=dbl_mop,json_specification_id=json_specification_id,int_reorder_level=int_reorder_level,vchr_prefix=vchr_prefix,imei_status=imei_status,sale_status=bln_sales,fk_created_id = request.user.id,dat_created = datetime.now())
 
                     return Response({'status':1})
         except Exception as e:
@@ -435,7 +437,7 @@ class GetItemSpecData(APIView):
     permission_classes = [AllowAny]
     def get(self,request):
         try:
-            ins_item_category = list(ItemCategory.objects.filter(int_status = 0).values('pk_bint_id','vchr_item_category'))
+            ins_item_category = list(ItemCategory.objects.filter(int_status = 0).extra(select={'sgst':"json_tax_master->>'1'",'cgst':"json_tax_master->>'2'"}).values('pk_bint_id','vchr_item_category','sgst','cgst'))
             ins_item_group = list(ItemGroup.objects.filter(int_status = 0).values('pk_bint_id','vchr_item_group'))
             return Response({'status':1 ,'item_category':ins_item_category,'item_group':ins_item_group })
         except Exception as e:

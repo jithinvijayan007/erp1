@@ -545,4 +545,7 @@ ALTER TABLE item_category ADD column fk_company_id BIGINT REFERENCES company(pk_
 ALTER TABLE item_category ALTER COLUMN fk_company_id SET DEFAULT 1;
 
 INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Enquiry List',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'INVOICE'),'Enquiry List',1,'false','lead/lead-list');
+
+INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Add Brand',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'BRAND'),'Add Brand',1,'false','brand/addbrand');
+INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Brand List',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'BRAND'),'Brand List',1,'false','brand/brandlist');
  
