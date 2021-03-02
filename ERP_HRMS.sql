@@ -333,3 +333,5 @@ INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_c
 
 INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Branch Wise Report',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'SALES REPORTS'),'Branch Wise Report',1,'false','report/mobilebranchreport');
 
+INSERT INTO menu_category(vchr_menu_category_name,fk_sub_category_id,vchr_menu_category_value,int_menu_category_order,bln_has_children,vchr_addurl) VALUES('Territory Enquiry Report',(SELECT pk_bint_id from sub_category WHERE vchr_sub_category_name = 'SALES REPORTS'),'Branch Wise Report',1,'false','report/territoryenquiryreport');
+

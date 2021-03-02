@@ -2181,6 +2181,7 @@ class AddSalesAPI(APIView):
     permission_classes = [AllowAny]
     def post(self,request):
         try:
+            # import pdb; pdb.set_trace()
             dct_data = {}
             str_cust_name = request.data.get('vchr_cust_name')
             str_cust_email = request.data.get('vchr_cust_email',None)

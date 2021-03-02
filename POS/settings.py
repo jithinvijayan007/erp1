@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-HOSTNAME="http://192.168.18.17:8000"
+HOSTNAME="http://localhost:8001"
 
 
 
@@ -133,6 +133,10 @@ INSTALLED_APPS = [
     'productivity_report',
     'enquiry_productivity_report_pdf',
     'product_report_download',
+    'generalize_report',
+    'generalize_report_new',
+    'generalize_report_download',
+    'staff_rating',
 
 ]
 REST_FRAMEWORK = {
@@ -188,6 +192,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -236,7 +241,7 @@ if DEBUG:
     DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'oxygen6',
+                'NAME': 'oxygen_db6',
                 'USER': 'admin',
                 'PASSWORD':'tms@123',
                 'HOST': '127.0.0.1',

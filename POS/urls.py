@@ -71,6 +71,8 @@ urlpatterns = [
     url(r'^location/',include('location.urls',namespace='location')),
     url(r'^salary_process/',include('salary_process.urls',namespace='salary_process')),
     url(r'^product_report_pdf/',include('product_report_download.urls',namespace='product_report_pdf')),
+    
+
 
 
     url(r'^tool_settings/',include('tool_settings.urls',namespace="tool_settings")),
@@ -99,6 +101,10 @@ urlpatterns = [
     url(r'^productivityreport/',include('productivity_report.urls',namespace='productivity_reports')),
     url(r'^enquiry_productivity_report_pdf/',include('enquiry_productivity_report_pdf.urls',namespace='enquiry_productivity_report_pdf')),
     url(r'^download_log/', DownloadLog.as_view(), name='download_log'),
+    url(r'^generalize_report/',include('generalize_report.urls',namespace='generalize_report')),
+    url(r'^generalize_report_new/',include('generalize_report_new.urls',namespace='generalize_report_new')),
+    url(r'^generalize_report_download/',include('generalize_report_download.urls',namespace='generalize_report_download')),
+    url(r'^staff_rating/',include('staff_rating.urls',namespace='staff_rating')),
 
 
 

@@ -17,7 +17,10 @@ import json
 import sys
 from django.db.models.functions import Concat, Substr, Cast
 from django.db.models import F, Q, Value, IntegerField
-
+from django.db.models import Value, BooleanField
+from django.conf import settings
+from dateutil.tz import tzlocal
+import pytz
 
 
 lst_add_disabled=[]
@@ -1062,3 +1065,342 @@ class GroupEditView(APIView):
         except Exception as e:
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
             return Response({'status':1,'data':str(e)})
+
+
+class SidebarAPI(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self,request):
+        try:
+            if request.user.is_staff:
+                ins_main = MainCategory.objects.exclude(vchr_main_category_name = 'ENQUIRY').values().order_by('int_main_category_order')
+            else:
+                ins_main = MainCategory.objects.exclude(vchr_main_category_name__in = lst_superuser_enabled).values().order_by('int_main_category_order')    #taking all main categories
+            lst_perms = []
+            dct_perms ={}
+            lst_category = []
+            lst_all_category = []
+            local = tzlocal()
+            tz = pytz.timezone('Asia/Kolkata')
+            now = datetime.now()
+            now = now.replace(tzinfo=local)
+            current_time = now.astimezone(tz).time()
+            for dct_main in ins_main:
+                lst_sub_perms = []
+                dct_sub_perms ={}
+                ins_sub = ''
+                ins_sub = SubCategory.objects.filter(fk_main_category_id = dct_main['pk_bint_id']).values().order_by('int_sub_category_order')  #taking sub categories of main category by looping
+                if not settings.TIME_TO >= current_time >= settings.TIME_FROM:
+                    ins_sub = ins_sub.filter(bln_non_timeperiod=True)
+                for dct_sub in ins_sub:
+                    bln_sub = False
+                    if not request.user.is_staff:
+                        ins_userModel = Userdetails.objects.get(id = request.user.id) #id of logged in user
+                        # lst_all_category = CategoryItems.objects.filter(fk_company_type = None).values_list('fk_sub_category_id__vchr_sub_category_name',flat = True) #category for every company
+                        # lst_category = CategoryItems.objects.filter(fk_company_type = UserModel.objects.get(id = request.user.id).fk_company.fk_company_type).values_list('fk_sub_category_id__vchr_sub_category_name',flat = True)   #category for specific company
+                        ins_group_perms = GroupPermissions.objects.filter(Q(Q(bln_add=True) | Q(bln_view=True) | Q(bln_edit=True) | Q(bln_delete=True)),fk_category_items__fk_sub_category_id  = dct_sub['pk_bint_id'], fk_groups_id = ins_userModel.fk_group_id ).values().order_by('fk_category_items__fk_sub_category_id') #group permissions of logged in user
+                    else:
+                        ins_group_perms = [{'bln_add': True,'bln_view': True}]  #group permissions for super admin
+                    if ins_group_perms:
+                        if dct_sub['vchr_sub_category_name'] not in lst_route_disabled:
+                            bln_sub = True
+                            if dct_sub['bln_has_children']:
+                                if ins_group_perms[0]['bln_add']:
+                                    if dct_sub['vchr_sub_category_name'] == 'ENQUIRY' and not request.user.is_staff:
+                                        if ins_userModel.fk_company.fk_company_type.vchr_company_type == 'TRAVEL AND TOURISM':
+                                            lst_sub_perms.append({
+                                            "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                            "routing": '/crm/addtravellead',
+                                            'visible' : True
+                                            })
+                                        elif ins_userModel.fk_company.fk_company_type.vchr_company_type == 'SOFTWARE':
+                                            lst_sub_perms.append({
+                                            "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                            "routing": '/crm/addsoftwarelead',
+                                            'visible' : True
+                                            })
+                                        elif ins_userModel.fk_company.fk_company_type.vchr_company_type == 'MOBILE':
+                                            lst_sub_perms.append({
+                                            "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                            "routing": '/crm/addmobilelead',
+                                            'visible' : True
+                                            })
+                                        elif ins_userModel.fk_company.fk_company_type.vchr_company_type == 'AUTOMOBILE':
+                                            lst_sub_perms.append({
+                                            "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                            "routing": '/crm/addautomobilelead',
+                                            'visible' : True
+                                            })
+                                        elif ins_userModel.fk_company.fk_company_type.vchr_company_type == 'MAINTENANCE':
+                                            lst_sub_perms.append({
+                                            "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                            "routing": '/crm/addmaintenancelead',
+                                            'visible' : True
+                                            })
+                                        elif ins_userModel.fk_company.fk_company_type.vchr_company_type == 'SOLAR':
+                                            lst_sub_perms.append({
+                                            "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                            "routing": '/crm/addsolarlead',
+                                            'visible' : True
+                                            })
+                                    else:
+                                        lst_sub_perms.append({
+                                        "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                        "routing": '/crm/add'+dct_sub['vchr_sub_category_value'],
+                                        'visible' : True
+                                        })
+                                if ins_group_perms[0]['bln_view']:
+                                    lst_sub_perms.append({
+                                    "title": dct_sub['vchr_sub_category_name'].title()+' List',
+                                    "routing": '/crm/'+dct_sub['vchr_sub_category_value']+'list',
+                                    'visible' : True
+                                    })
+                            else:
+                                if ins_group_perms[0]['bln_view']:
+                                    if (dct_main['vchr_main_category_name'].upper() == 'BUDGET' or dct_main['vchr_main_category_name'].title() == 'Sales Reports' or dct_main['vchr_main_category_name'].title() == 'Enquiry Reports' or dct_main['vchr_main_category_name'].title() == 'Turnover Reports' or dct_main['vchr_main_category_name'].title() == 'Lms Reports' or dct_main['vchr_main_category_name'].title() == 'Net Profit Reports' or dct_main['vchr_main_category_name'].title() == 'Status Reports' or dct_main['vchr_main_category_name'].title() == 'Target Reports') and not request.user.is_staff:
+                                        if ins_userModel.fk_company.fk_company_type.vchr_company_type == 'MOBILE' and (dct_main['vchr_main_category_name'].title() == 'Enquiry Reports' or dct_main['vchr_main_category_name'].title() == 'Sales Reports'or dct_main['vchr_main_category_name'].upper() == 'BUDGET'):
+                                            if dct_sub['vchr_sub_category_name'] == 'SERVICE REPORT':
+                                                lst_sub_perms.append({'title' : 'PRODUCT REPORT'.title(),
+                                                'routing' : '/crm/report/mobile'+dct_sub['vchr_sub_category_value'],
+                                                'visible' : True
+                                                })
+                                            else:
+                                                if dct_main['vchr_main_category_name'].upper() == 'BUDGET' and dct_sub['vchr_sub_category_name'] == 'BUDGET V/S ACTUAL':
+                                                    lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                                    'routing' : '/crm/report/mobile'+dct_sub['vchr_sub_category_value'],
+                                                    'visible' : True
+                                                    })
+                                                elif dct_main['vchr_main_category_name'].upper() == 'BUDGET' and dct_sub['vchr_sub_category_name'] == 'SET BUDGET':
+                                                    lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                                    'routing' : '/crm/'+dct_sub['vchr_sub_category_value'],
+                                                    'visible' : True
+                                                    })
+                                                else:
+                                                    lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                                    'routing' : '/crm/report/mobile'+dct_sub['vchr_sub_category_value'],
+                                                    'visible' : True
+                                                    })
+
+                                        else:
+                                            if dct_sub['vchr_sub_category_name'] == 'SERVICE REPORT':
+                                                lst_sub_perms.append({'title' : 'SERVICE REPORT'.title(),
+                                                'routing' : '/crm/report/'+dct_sub['vchr_sub_category_value'],
+                                                'visible' : True
+                                                })
+                                            else:
+                                                lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                                'routing' : '/crm/report/'+dct_sub['vchr_sub_category_value'],
+                                                'visible' : True
+                                                })
+                                    else:
+                                        if dct_sub['vchr_sub_category_name'].title() == 'Approve Followups' and ins_userModel.fk_company.fk_company_type.vchr_company_type == 'MOBILE':
+                                            lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                            'routing' : '/crm/mobile'+dct_sub['vchr_sub_category_value'],
+                                            'visible' : True
+                                            })
+                                        else:
+                                            lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                            'routing' : '/crm/'+dct_sub['vchr_sub_category_value'],
+                                            'visible' : True
+                                            })
+                    else:
+                        bln_sub = False
+                if not request.user.is_staff:
+                    if len(lst_sub_perms) and ins_sub:
+                        lst_perms.append({
+                        'title' : dct_main['vchr_main_category_name'].title(),
+                        'icon' : dct_main['vchr_icon_name'],
+                        'active' : False,
+                        'groupTitle' : False,
+                        'routing' : '',
+                        'externalLink' : '',
+                        'budge' : '',
+                        'budgeColor' : '',
+                        'visible' : True,
+                        'sub' : lst_sub_perms
+                        })
+                else:
+                    if bln_sub and ins_sub:
+                        lst_perms.append({
+                        'title' : dct_main['vchr_main_category_name'].title(),
+                        'icon' : dct_main['vchr_icon_name'],
+                        'active' : False,
+                        'groupTitle' : False,
+                        'routing' : '',
+                        'externalLink' : '',
+                        'budge' : '',
+                        'budgeColor' : '',
+                        'visible' : True,
+                        'sub' : lst_sub_perms
+                        })
+            return Response(lst_perms)
+
+        except Exception as e:
+            ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
+            return Response({'status':'1','data':str(e)})
+
+def get_side_bar(lst_main_id,request):
+    try:
+        if request.user.is_staff:
+            ins_main = MainCategory.objects.exclude(vchr_main_category_name = 'ENQUIRY').filter(pk_bint_id__in=lst_main_id).values().order_by('int_main_category_order')
+        else:
+            ins_main = MainCategory.objects.exclude(vchr_main_category_name__in = lst_superuser_enabled).filter(pk_bint_id__in=lst_main_id).values().order_by('int_main_category_order')    #taking all main categories
+        lst_perms = []
+        dct_perms ={}
+        lst_category = []
+        lst_all_category = []
+        local = tzlocal()
+        tz = pytz.timezone('Asia/Kolkata')
+        now = datetime.now()
+        now = now.replace(tzinfo=local)
+        current_time = now.astimezone(tz).time()
+        for dct_main in ins_main:
+            lst_sub_perms = []
+            dct_sub_perms ={}
+            ins_sub = SubCategory.objects.filter(fk_main_category_id = dct_main['pk_bint_id']).values().order_by('int_sub_category_order')  #taking sub categories of main category by looping
+            if not settings.TIME_TO >= current_time >= settings.TIME_FROM:
+                ins_sub = ins_sub.filter(bln_non_timeperiod=True)
+            for dct_sub in ins_sub:
+                bln_sub = False
+                if not request.user.is_staff:
+                    ins_userModel = Userdetails.objects.get(id = request.user.id) #id of logged in user
+                    # lst_all_category = CategoryItems.objects.filter(fk_company_type = None).values_list('fk_sub_category_id__vchr_sub_category_name',flat = True) #category for every company
+                    # lst_category = CategoryItems.objects.filter(fk_company_type = UserModel.objects.get(id = request.user.id).fk_company.fk_company_type).values_list('fk_sub_category_id__vchr_sub_category_name',flat = True)   #category for specific company
+                    ins_group_perms = GroupPermissions.objects.filter(Q(Q(bln_add=True) | Q(bln_view=True) | Q(bln_edit=True) | Q(bln_delete=True)),fk_category_items__fk_sub_category_id  = dct_sub['pk_bint_id'], fk_groups_id = ins_userModel.fk_group_id ).values().order_by('fk_category_items__fk_sub_category_id') #group permissions of logged in user
+                else:
+                    ins_group_perms = [{'bln_add': True,'bln_view': True}]  #group permissions for super admin
+                if ins_group_perms:
+                    if dct_sub['vchr_sub_category_name'] not in lst_route_disabled:
+                        bln_sub = True
+                        if dct_sub['bln_has_children']:
+                            if ins_group_perms[0]['bln_add']:
+                                if dct_sub['vchr_sub_category_name'] == 'ENQUIRY' and not request.user.is_staff:
+                                    if ins_userModel.fk_company.fk_company_type.vchr_company_type == 'TRAVEL AND TOURISM':
+                                        lst_sub_perms.append({
+                                        "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                        "routing": '/crm/addtravellead',
+                                        'visible' : True
+                                        })
+                                    elif ins_userModel.fk_company.fk_company_type.vchr_company_type == 'SOFTWARE':
+                                        lst_sub_perms.append({
+                                        "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                        "routing": '/crm/addsoftwarelead',
+                                        'visible' : True
+                                        })
+                                    elif ins_userModel.fk_company.fk_company_type.vchr_company_type == 'MOBILE':
+                                        lst_sub_perms.append({
+                                        "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                        "routing": '/crm/addmobilelead',
+                                        'visible' : True
+                                        })
+                                    elif ins_userModel.fk_company.fk_company_type.vchr_company_type == 'AUTOMOBILE':
+                                        lst_sub_perms.append({
+                                        "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                        "routing": '/crm/addautomobilelead',
+                                        'visible' : True
+                                        })
+                                    elif ins_userModel.fk_company.fk_company_type.vchr_company_type == 'MAINTENANCE':
+                                        lst_sub_perms.append({
+                                        "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                        "routing": '/crm/addmaintenancelead',
+                                        'visible' : True
+                                        })
+                                    elif ins_userModel.fk_company.fk_company_type.vchr_company_type == 'SOLAR':
+                                        lst_sub_perms.append({
+                                        "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                        "routing": '/crm/addsolarlead',
+                                        'visible' : True
+                                        })
+                                else:
+                                    lst_sub_perms.append({
+                                    "title": 'Add '+dct_sub['vchr_sub_category_name'].title(),
+                                    "routing": '/crm/add'+dct_sub['vchr_sub_category_value'],
+                                    'visible' : True
+                                    })
+                            if ins_group_perms[0]['bln_view']:
+                                lst_sub_perms.append({
+                                "title": dct_sub['vchr_sub_category_name'].title()+' List',
+                                "routing": '/crm/'+dct_sub['vchr_sub_category_value']+'list',
+                                'visible' : True
+                                })
+                        else:
+                            if ins_group_perms[0]['bln_view']:
+                                if (dct_main['vchr_main_category_name'].upper() == 'BUDGET' or dct_main['vchr_main_category_name'].title() == 'Sales Reports' or dct_main['vchr_main_category_name'].title() == 'Enquiry Reports' or dct_main['vchr_main_category_name'].title() == 'Turnover Reports' or dct_main['vchr_main_category_name'].title() == 'Lms Reports' or dct_main['vchr_main_category_name'].title() == 'Net Profit Reports' or dct_main['vchr_main_category_name'].title() == 'Status Reports' or dct_main['vchr_main_category_name'].title() == 'Target Reports') and not request.user.is_staff:
+                                    if ins_userModel.fk_company.fk_company_type.vchr_company_type == 'MOBILE' and (dct_main['vchr_main_category_name'].title() == 'Enquiry Reports' or dct_main['vchr_main_category_name'].title() == 'Sales Reports'or dct_main['vchr_main_category_name'].upper() == 'BUDGET'):
+                                        if dct_sub['vchr_sub_category_name'] == 'SERVICE REPORT':
+                                            lst_sub_perms.append({'title' : 'PRODUCT REPORT'.title(),
+                                            'routing' : '/crm/report/mobile'+dct_sub['vchr_sub_category_value'],
+                                            'visible' : True
+                                            })
+                                        else:
+                                            if dct_main['vchr_main_category_name'].upper() == 'BUDGET' and dct_sub['vchr_sub_category_name'] == 'BUDGET V/S ACTUAL':
+                                                lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                                'routing' : '/crm/report/mobile'+dct_sub['vchr_sub_category_value'],
+                                                'visible' : True
+                                                })
+                                            elif dct_main['vchr_main_category_name'].upper() == 'BUDGET' and dct_sub['vchr_sub_category_name'] == 'SET BUDGET':
+                                                lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                                'routing' : '/crm/'+dct_sub['vchr_sub_category_value'],
+                                                'visible' : True
+                                                })
+                                            else:
+                                                lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                                'routing' : '/crm/report/mobile'+dct_sub['vchr_sub_category_value'],
+                                                'visible' : True
+                                                })
+
+                                    else:
+                                        if dct_sub['vchr_sub_category_name'] == 'SERVICE REPORT':
+                                            lst_sub_perms.append({'title' : 'SERVICE REPORT'.title(),
+                                            'routing' : '/crm/report/'+dct_sub['vchr_sub_category_value'],
+                                            'visible' : True
+                                            })
+                                        else:
+                                            lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                            'routing' : '/crm/report/'+dct_sub['vchr_sub_category_value'],
+                                            'visible' : True
+                                            })
+                                else:
+                                    if dct_sub['vchr_sub_category_name'].title() == 'Approve Followups' and ins_userModel.fk_company.fk_company_type.vchr_company_type == 'MOBILE':
+                                        lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                        'routing' : '/crm/mobile'+dct_sub['vchr_sub_category_value'],
+                                        'visible' : True
+                                        })
+                                    else:
+                                        lst_sub_perms.append({'title' : dct_sub['vchr_sub_category_name'].title(),
+                                        'routing' : '/crm/'+dct_sub['vchr_sub_category_value'],
+                                        'visible' : True
+                                        })
+                else:
+                    bln_sub = False
+            if not request.user.is_staff:
+                if len(lst_sub_perms) and ins_sub:
+                    lst_perms.append({
+                    'title' : dct_main['vchr_main_category_name'].title(),
+                    'icon' : dct_main['vchr_icon_name'],
+                    'active' : False,
+                    'groupTitle' : False,
+                    'routing' : '',
+                    'externalLink' : '',
+                    'budge' : '',
+                    'budgeColor' : '',
+                    'visible' : True,
+                    'sub' : lst_sub_perms
+                    })
+            else:
+                if bln_sub and ins_sub:
+                    lst_perms.append({
+                    'title' : dct_main['vchr_main_category_name'].title(),
+                    'icon' : dct_main['vchr_icon_name'],
+                    'active' : False,
+                    'groupTitle' : False,
+                    'routing' : '',
+                    'externalLink' : '',
+                    'budge' : '',
+                    'budgeColor' : '',
+                    'visible' : True,
+                    'sub' : lst_sub_perms
+                    })
+        return lst_perms
+    except Exception as e:
+        return Response({'status':'failled','data':str(e)})
