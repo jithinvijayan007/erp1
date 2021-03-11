@@ -568,7 +568,7 @@ class MobileBranchReport(APIView):
             str_filter_data = "where dat_enquiry :: date BETWEEN '"+fromdate+"' AND '"+request.data['date_to']+"' AND int_company_id = "+int_company+""
 
             """Permission wise filter for data"""
-            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN','COUNTRY HEAD','GENERAL MANAGER SALES']:
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN','COUNTRY HEAD','GENERAL MANAGER SALES','PRODUCT MANAGER']:
                 pass
             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                 str_filter_data = str_filter_data+" AND branch_id = "+str(request.user.userdetails.fk_branch_id)+""
@@ -583,6 +583,10 @@ class MobileBranchReport(APIView):
             else:
                 session.close()
                 return Response({'status':'failed','reason':'No data'})
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['PRODUCT MANAGER']:
+                lst_product = get_user_products(request.user.id)
+                if lst_product:
+                    str_filter_data += " AND product_id in ("+str(lst_product)[1:-1]+")"
 
             if request.data.get('branch'):
 

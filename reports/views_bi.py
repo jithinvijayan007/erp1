@@ -1683,6 +1683,7 @@ class ServiceReportMobile(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
+            # import pdb;pdb.set_trace()
             session = Session()
             lst_enquiry_data = []
             # request.data['date_from'] = "2021-01-12"
@@ -1738,7 +1739,7 @@ class ServiceReportMobile(APIView):
 
             """Permission wise filter for data"""
             # import pdb;pdb.set_trace()
-            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','MANAGER BUSINESS OPERATIONS','AUDITOR','AUDITING ADMIN','COUNTRY HEAD','GENERAL MANAGER SALES']:
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','MANAGER BUSINESS OPERATIONS','AUDITOR','AUDITING ADMIN','COUNTRY HEAD','GENERAL MANAGER SALES','PRODUCT MANAGER']:
                 pass
             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
 
@@ -1752,6 +1753,10 @@ class ServiceReportMobile(APIView):
             else:
                 session.close()
                 return Response({'status':'failed','reason':'No data'})
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['PRODUCT MANAGER']:
+                lst_product = get_user_products(request.user.id)
+                if lst_product:
+                    str_filter_data += " AND product_id in ("+str(lst_product)[1:-1]+")"
 
             if request.data.get('branch'):
                 branch = request.data.get('branch')
@@ -1835,8 +1840,7 @@ class ServiceReportMobileTable(APIView):
     permission_classes = [IsAuthenticated]
     def get(self,request):
         try:
-            # import pdb; pdb.set_trace()
-
+            
             session = Session()
             lst_enquiry_data = []
             int_company = request.data['company_id']

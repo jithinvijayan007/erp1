@@ -133,6 +133,7 @@ INSTALLED_APPS = [
     'productivity_report',
     'enquiry_productivity_report_pdf',
     'product_report_download',
+    'target'
 
 ]
 REST_FRAMEWORK = {
@@ -236,7 +237,7 @@ if DEBUG:
     DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
-                'NAME': 'oxygen6',
+                'NAME': 'oxygen',
                 'USER': 'admin',
                 'PASSWORD':'tms@123',
                 'HOST': '127.0.0.1',

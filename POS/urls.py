@@ -106,6 +106,7 @@ urlpatterns = [
 
 
     url(r'^mobile_followup/', include('mobile_followup.urls', namespace='mobile_followup')),
+    url(r'^target/', include('target.urls', namespace='target')),
 
     #--------------------------------------------
     url(r'^api-token-auth/', obtain_jwt_token),

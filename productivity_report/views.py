@@ -1139,7 +1139,7 @@ class ProductivityReportMobile(APIView):
     permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
-
+            # import pdb;pdb.set_trace()
             staffs = []
             start = datetime.now()
             session = Session()
@@ -1170,7 +1170,7 @@ class ProductivityReportMobile(APIView):
             str_filter = ''
             lst_staffs = UserModel.objects.filter(fk_group__vchr_name='STAFF')
             """Permission wise filter for data"""
-            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN','COUNTRY HEAD','GENERAL MANAGER SALES']:
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['ADMIN','AUDITOR','AUDITING ADMIN','COUNTRY HEAD','GENERAL MANAGER SALES','PRODUCT MANAGER']:
                 pass
             elif request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER']:
                 # lst_branch_id = lst_branch_id.append(request.user.userdetails.fk_branch_id)
@@ -1184,7 +1184,11 @@ class ProductivityReportMobile(APIView):
             else:
                 session.close()
                 return Response({'status':'0','reason':'No data'})
-
+            # import pdb;pdb.set_trace()
+            if request.user.userdetails.fk_group.vchr_name.upper() in ['PRODUCT MANAGER']:
+                lst_product = get_user_products(request.user.id)
+                if lst_product:
+                    str_filter += " product_id in ("+str(lst_product)[1:-1]+")"
 
              # '''Get with Branch'''
             if request.data.get('branch'):

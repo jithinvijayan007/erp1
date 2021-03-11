@@ -11,6 +11,7 @@ class Company(models.Model):
     vchr_logo = models.CharField(max_length=350, blank=True, null=True)
     vchr_print_logo = models.CharField(max_length=350, blank=True, null=True)
     int_status = models.IntegerField(default = 0)# 0. Active -1. delete,
+    vchr_fin_type = models.CharField(max_length=10,blank=True,null=True)
 
     class Meta:
         managed = False

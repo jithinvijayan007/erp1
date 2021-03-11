@@ -344,12 +344,9 @@ def get_user_products(lst_user_id):
     try:
         # import pdb; pdb.set_trace()
         lst_product_id=[]
-        rst_product_id = list(AuthUser.objects.filter(user_ptr_id__in = lst_user_id).values('json_function'))
-        for ins_product in rst_product_id:
-            if ins_product['json_function']:
-                lst_product_id.extend(ins_product['json_function']['productId'])
-        lst_product_id = list(map(int, lst_product_id))
-        lst_product_id = list(OrderedDict.fromkeys(lst_product_id))
+        rst_product_id = list(AuthUser.objects.filter(user_ptr_id = lst_user_id).values('json_function'))
+        if rst_product_id:
+            lst_product_id = [x for x in json.loads(rst_product_id[0]['json_function'])]
         return lst_product_id
     except Exception as e:
         print(str(e))
