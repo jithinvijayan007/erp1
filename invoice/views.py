@@ -103,6 +103,8 @@ from invoice.models import GDPRange
 from reminder.models import Reminder
 from globalMethods import show_data_based_on_role,get_user_products
 
+from enquiry_mobile.views import special_rewards_script
+
 
 PartialInvoiceSA = PartialInvoice.sa
 SalesMasterSA = SalesMaster.sa
@@ -948,14 +950,14 @@ class AddInvoice(APIView):
     def post(self,request):
         try:
             # import pdb; pdb.set_trace()
-            if request.data.get('salesRowId'):
-                    if PartialInvoice.objects.filter(pk_bint_id = request.data.get('salesRowId'),fk_invoice_id__isnull=False).exists():
-                        return Response({'status':0,'message':'Already sold'})
+            # if request.data.get('salesRowId'):
+            #         if PartialInvoice.objects.filter(pk_bint_id = request.data.get('salesRowId'),fk_invoice_id__isnull=False).exists():
+            #             return Response({'status':0,'message':'Already sold'})
             inst_partial_validation=None
             if request.data.get('salesRowId'):
               inst_partial_validation = PartialInvoice.objects.filter(pk_bint_id = request.data.get('salesRowId'))
             if inst_partial_validation:
-               inst_partial_validation.update(fk_invoice_id=1)
+               inst_partial_validation.update(fk_invoice_id=1) 
             with transaction.atomic():
 
                 dct_item_data = json.loads(request.data.get('dctTableData'))
@@ -11794,7 +11796,7 @@ def EnquiryInvoiceUpdate(data):
                         if dct_item_data[str_data]['int_type']==2:
                             ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei')),fk_item__vchr_item_name='GDC00002',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value)
                 # commented for o2force
-                # special_rewards_script_sudheesh(int_enq_master_id)
+                special_rewards_script(int_enq_master_id)
                 # custome_enq(int_enq_master_id,
                 # Uncomment When using celery
                 # send_feedback_sms.delay(int_enq_master_id)

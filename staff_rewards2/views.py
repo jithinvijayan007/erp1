@@ -5,7 +5,10 @@ from user_app.models import UserModel
 from rest_framework.views import APIView
 from datetime import datetime, timedelta
 from rest_framework.response import Response
-from inventory.models import Products,Brands,Items
+# from inventory.models import Products,Brands,Items
+from brands.models import Brands
+from products.models import Products 
+from item_category.models import Item as Items 
 from django.db.models import Sum
 from zone.models import Zone
 from territory.models import Territory

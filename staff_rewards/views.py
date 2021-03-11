@@ -3,7 +3,10 @@ from .models import RewardsMaster,RewardsDetails,RewardsAvailable,RewardsPaid,Re
 from rest_framework.views import APIView
 from datetime import datetime, timedelta
 from rest_framework.response import Response
-from inventory.models import Products,Brands,Items
+# from inventory.models import Products,Brands,Items
+from brands.models import Brands
+from products.models import Products 
+from item_category.models import Item as Items 
 from django.db.models import Sum
 from zone.models import Zone
 from territory.models import Territory
@@ -25,7 +28,9 @@ from django.db.models import Value
 from django.db.models.functions import Cast
 from django.db.models.fields import DateField
 from django.db.models import Q
-from user_app.models import UserModel
+# from user_app.models import UserModel
+from userdetails.models import UserDetails as UserModel
+
 
 
 from sqlalchemy import case, literal_column, desc, tuple_, select, table, column
@@ -36,14 +41,13 @@ from sqlalchemy import and_,func,cast,Date,MetaData,or_
 from sqlalchemy.sql.expression import literal,union_all
 from sqlalchemy.types import TypeDecorator,BigInteger
 from dateutil.relativedelta import relativedelta
-from CRM.dftosql import Savedftosql
+from POS.dftosql import Savedftosql
 from enquiry.models import EnquiryMaster
 from enquiry_mobile.models import ItemEnquiry
 from globalMethods import convert_to_millions,show_data_based_on_role,get_user_products
 
-from territory_hierarchy.models import State
-from country.models import Countries
-
+from location.models import State
+from location.models import Country as Countries
 from itertools import chain
 
 sqlalobj = Savedftosql('','')
@@ -131,7 +135,7 @@ class AddReward(APIView):
                 elif area_type.upper()=='BRANCH':
                     lst_branch_id = area_id
                 else:
-                    return Response({'status':'failed','reason':'Area Not Found'})
+                    return Response({'status':'0','reason':'Area Not Found'})
             else:
                 lst_branch_id = area_id
             reward_name = request.data.get('rewardName')
@@ -152,7 +156,7 @@ class AddReward(APIView):
                             ins_prv_details = RewardsDetails.objects.filter(fk_rewards_master = ins_prev_reward[0]['pk_bint_id'],int_map_type=int(request.data.get('map_type')),dbl_value_from = int(ins_details[0]['fromAmt']), dbl_value_to = int(ins_details[0]['toAmt']))
 
                         if ins_prv_details:
-                            return Response({'status':'failed','reason':'Reward Already Exist'})
+                            return Response({'status':'0','reason':'Reward Already Exist'})
                 ins_reward_master = RewardsMaster.objects.get(pk_bint_id=request.data.get('id'))
                 ins_reward_master.int_status = 0
                 ins_reward_master.fk_updated_by = request.user.userdetails
@@ -170,7 +174,7 @@ class AddReward(APIView):
                         elif int(request.data.get('map_type')) == 4:
                             ins_prv_details = RewardsDetails.objects.filter(fk_rewards_master = ins_prev_reward[0]['pk_bint_id'],int_map_type=int(request.data.get('map_type')),dbl_value_from = int(ins_details[0]['fromAmt']), dbl_value_to = int(ins_details[0]['toAmt']))
                         if ins_prv_details:
-                            return Response({'status':'failed','reason':'Reward Already Exist'})
+                            return Response({'status':'0','reason':'Reward Already Exist'})
 
                 ins_reward_master = RewardsMaster()
                 ins_reward_master.int_status = 1
@@ -266,7 +270,7 @@ class AddReward(APIView):
 
                 ins_reward_assigned.int_to = items['reward_to']
                 ins_reward_assigned.save()
-            return Response({'status':'success','data':{}})
+            return Response({'status':'1','data':{}})
         except Exception as e:
             return Response({"status":"0","reason":str(e)})
 
@@ -279,10 +283,10 @@ class AddReward(APIView):
                 RewardsDetails.objects.filter(fk_rewards_master_id=id).update(int_status=-1)
                 RewardAssigned.objects.filter(fk_reward_details_id__fk_rewards_master_id = id).update(int_status=-1)
             elif RewardsAvailable.objects.filter(fk_rewards_master_id=id):
-                return Response({'status':'success','data':'This reward already used by some Staff'})
+                return Response({'status':'1','data':'This reward already used by some Staff'})
             else:
-                return Response({'status':'success','data':'Reward not used'})
-            return Response({'status':'success'})
+                return Response({'status':'1','data':'Reward not used'})
+            return Response({'status':'1'})
         except Exception as e:
             return Response({"status":"0","reason":str(e)})
 
@@ -449,7 +453,7 @@ class GetRewardDetails(APIView):
             #     lst_rewards_all.append(dct_rewards_all)
             # print(lst_rewards_all)
             session.close()
-            return Response({'status':'success','data':lst_rewards_all})
+            return Response({'status':'1','data':lst_rewards_all})
         except Exception as e:
             session.close()
             return Response({'status':'0','reason':str(e)})
@@ -477,7 +481,7 @@ class RewardPaidSave(APIView):
                         dct_item['vchr_transaction_id'] = vchr_transaction_id
                         lst_pos_data.append(dct_item)
                     else:
-                        return Response({'status':'failed'})
+                        return Response({'status':'0'})
             if lst_pos_data:
                 dct_pos_data['branch_code'] = request.user.userdetails.fk_branch.vchr_code
                 dct_pos_data['dat_created'] = datetime.strftime(datetime.now(),'%Y-%m-%d')
@@ -488,8 +492,8 @@ class RewardPaidSave(APIView):
                 if res_data.json().get('status')==1:
                     pass
                 else:
-                    return Response({'status': 'Failed','data':res_data.json().get('message',res_data.json())})
-            return Response({'status':'success', 'vchr_transaction_id' : vchr_transaction_id })
+                    return Response({'status': '0','data':res_data.json().get('message',res_data.json())})
+            return Response({'status':'1', 'vchr_transaction_id' : vchr_transaction_id })
         except Exception as e:
             return Response({'status':'0','reason':str(e)})
 
@@ -498,17 +502,18 @@ class AreaSearch(APIView):
     permission_classes=[IsAuthenticated]
     def post(self,request):
         try:
+            # import pdb;pdb.set_trace()
             area_type = request.data.get('area_type')
             lst_area=[]
             if area_type.upper() == 'ZONE':
-                lst_area = Zone.objects.filter(chr_status = 'N').values('pk_bint_id','vchr_name')
+                lst_area = Zone.objects.filter().values('pk_bint_id','vchr_name')
             elif area_type.upper() == 'TERRITORY':
-                lst_area = Territory.objects.filter(chr_status = 'N').values('pk_bint_id','vchr_name')
+                lst_area = Territory.objects.filter().values('pk_bint_id','vchr_name')
             elif area_type.upper() == 'BRANCH':
                 lst_area = Branch.objects.filter().values('pk_bint_id','vchr_name')
             else:
-                return Response({'status':'failed','reason':'No data'})
-            return Response({'status':'success','data':lst_area})
+                return Response({'status':'0','reason':'No data'})
+            return Response({'status':'1','data':lst_area})
         except Exception as e:
             return Response({'status':'0','reason':str(e)})
 
@@ -558,7 +563,7 @@ class RewardsList(APIView):
                 if ins_data['fk_rewards_master__pk_bint_id'] not in lst_id:
                     lst_data.append(dct_data)
                     lst_id.append(ins_data['fk_rewards_master__pk_bint_id'])
-            return Response({'status':'success','data':lst_data})
+            return Response({'status':'1','data':lst_data})
         except Exception as e:
             return Response({'status':'0','reason':str(e)})
 
@@ -667,7 +672,7 @@ class RewardsList(APIView):
                     dct_item['map_id'] = product['id']
                 dct_data['items'].append(dct_item)
 
-            return Response({'status':'success','data':dct_data})
+            return Response({'status':'1','data':dct_data})
         except Exception as e:
             return Response({'status':'0','reason':str(e)})
 
@@ -774,7 +779,7 @@ class StaffRewardList(APIView):
                         rst_staff_details = rst_staff_details.filter(UserModelSA.fk_branch_id.in_(branch_list))
                         if request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']:
                                                 session.close()
-                                                return Response({'status':'success','data':[]})
+                                                return Response({'status':'1','data':[]})
 
 
             elif str_type.upper() == 'ZONE' and int_area_id :
@@ -784,7 +789,7 @@ class StaffRewardList(APIView):
                 rst_staff_details = rst_staff_details.filter(or_(UserModelSA.int_area_id.in_(territory_list),UserModelSA.fk_branch_id.in_(branch_list)))
                 if request.user.userdetails.fk_group.vchr_name.upper() in ['BRANCH MANAGER','ASSISTANT BRANCH MANAGER','FLOOR MANAGER1','FLOOR MANAGER2','FLOOR MANAGER3','FLOOR MANAGER4','ASM1','ASM2','ASM3','ASM4']:
                                         session.close()
-                                        return Response({'status':'success','data':[]})
+                                        return Response({'status':'1','data':[]})
 
             elif str_type.upper() == 'TERRITORY':
                 rst_staff_details = rst_staff_details.filter(GroupsSA.vchr_name=='TERRITORY MANAGER')
@@ -804,7 +809,7 @@ class StaffRewardList(APIView):
                     pass
             else:
                 session.close()
-                return Response({'status':'success','data':[]})
+                return Response({'status':'1','data':[]})
 
             # if int_branch_id:
             #     #listing all rewards paid
@@ -952,12 +957,12 @@ class StaffRewardList(APIView):
                     #     lst_data1.append(dct_branch[key])
                     lst_data1=[dct_branch[key] for key in dct_branch]
                     session.close()
-                    return Response({'status':'success','data':lst_data1})
+                    return Response({'status':'1','data':lst_data1})
             session.close()
-            return Response({'status':'success','data':lst_data})
+            return Response({'status':'1','data':lst_data})
         except Exception as e:
             session.close()
-            return Response({'status':'failed','reason':str(e)})
+            return Response({'status':'0','reason':str(e)})
 
     def post(self,request):
 
@@ -1099,10 +1104,10 @@ class StaffRewardList(APIView):
 
 
             session.close()
-            return Response({'status':'success','data':lst_data})
+            return Response({'status':'1','data':lst_data})
         except Exception as e:
             session.close()
-            return Response({'status':'failed','reason':str(e)})
+            return Response({'status':'0','reason':str(e)})
 
 class RewardPaidList(APIView):
     def post(self,request):
@@ -1162,9 +1167,9 @@ class RewardPaidList(APIView):
                         dct_data['strBranchName'] = ins_data.get('fk_staff__fk_branch__vchr_name')
                         dct_data['strStaffName'] = ins_data['staff_name']
                         lst_data.append(dct_data)
-            return Response({'status':'success','data':lst_data})
+            return Response({'status':'1','data':lst_data})
         except Exception as e:
-            return Response({'status':'failed','reason':str(e)})
+            return Response({'status':'0','reason':str(e)})
 
 
 class StaffByBranch(APIView):
@@ -1197,11 +1202,11 @@ class StaffByBranch(APIView):
                     dct_temp['id'] = value['id']
                     lst_user.append(dct_temp)
 
-                return Response({'status':'success','data':lst_user})
+                return Response({'status':'1','data':lst_user})
             else:
-                return Response({'status':'success','data':[]})
+                return Response({'status':'1','data':[]})
         except Exception as e:
-            return Response({"status":"failed","message":str(e)})
+            return Response({"status":"0","message":str(e)})
 
 
 
@@ -1237,7 +1242,7 @@ class RewardPaidListDownload(APIView):
 
             if not rst_reward.all():
                 session.close()
-                return Response({'status':'failed','message':'No data'})
+                return Response({'status':'0','message':'No data'})
 
             sheet_name1 = 'Sheet1'
             dct_table_data = rst_reward.all()
@@ -1292,10 +1297,10 @@ class RewardPaidListDownload(APIView):
             # data = settings.HOSTNAME+'/media/reward_paid_list.xlsx'
             data = request.scheme+'://'+request.get_host()+'/media/reward_paid_list.xlsx'
             session.close()
-            return Response({'status':'success','data':data})
+            return Response({'status':'1','data':data})
         except Exception as e:
             session.close()
-            return Response({'status':'failed','reason':str(e)})
+            return Response({'status':'0','reason':str(e)})
 
 def get_col_widths(dataframe):
     # First we find the maximum length of the index column

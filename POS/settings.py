@@ -31,7 +31,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-HOSTNAME="http://localhost:8001"
+HOSTNAME="http://localhost:8000"
 
 
 
@@ -137,6 +137,8 @@ INSTALLED_APPS = [
     'generalize_report_new',
     'generalize_report_download',
     'staff_rating',
+    'rewards_app',
+    
 
 ]
 REST_FRAMEWORK = {

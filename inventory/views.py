@@ -172,13 +172,13 @@ class ProductView(APIView):
             ins_product_code_exist = Items.objects.filter(vchr_item_code= request.data.get('itemcode').upper(), fk_product__fk_company = request.user.userdetails.fk_company)
             if ins_product_code_exist :
                 return Response({'status':'failed','reason':'code already exist'})
-            ins_product_name_exist = Items.objects.filter( vchr_item_name =  request.data.get('product').upper(),fk_product = request.data.get('category'),fk_brand = request.data.get('subcategory'), fk_product__fk_company = request.user.userdetails.fk_company)
+            ins_product_name_exist = Items.objects.filter( vchr_name =  request.data.get('product').upper(),fk_product = request.data.get('category'),fk_brand = request.data.get('subcategory'), fk_product__fk_company = request.user.userdetails.fk_company)
             if ins_product_name_exist :
                 return Response({'status':'failed','reason':'name already exist'})
             ins_product_barcode_exist = Items.objects.filter( vchr_barcode =  request.data.get('barcode').upper(),fk_product__fk_company = request.user.userdetails.fk_company)
             if ins_product_barcode_exist:
                 return Response({'status':'failed','reason':'barcode already exist'})
-            ins_product = Items.objects.create(vchr_item_code= request.data.get('itemcode').upper(),vchr_barcode= request.data.get('barcode').upper(),dbl_apx_amount=float(request.data.get('itemprice')),vchr_item_name = request.data.get('product').upper(),fk_product = Products.objects.get(id = request.data.get('category')),fk_brand = Brands.objects.get(id = request.data.get('subcategory')),fk_item_group_id = request.data.get('intItemGroup'))
+            ins_product = Items.objects.create(vchr_item_code= request.data.get('itemcode').upper(),vchr_barcode= request.data.get('barcode').upper(),dbl_apx_amount=float(request.data.get('itemprice')),vchr_name = request.data.get('product').upper(),fk_product = Products.objects.get(id = request.data.get('category')),fk_brand = Brands.objects.get(id = request.data.get('subcategory')),fk_item_group_id = request.data.get('intItemGroup'))
             # ins_product.save()
 
             return Response({'status':'success'})
@@ -191,9 +191,9 @@ class ProductView(APIView):
             # import pdb;pdb.set_trace()
             int_id = int(request.GET.get('id',0))
             if int_id > 0:
-                lst_data = list(Items.objects.filter(id = int_id,fk_brand_id__isnull=False).values('vchr_item_code','vchr_barcode','vchr_item_name','fk_product__vchr_product_name','fk_brand__vchr_brand_name','id','dbl_apx_amount','fk_item_group_id','fk_item_group__vchr_item_group'))
+                lst_data = list(Items.objects.filter(id = int_id,fk_brand_id__isnull=False).values('vchr_item_code','vchr_barcode','vchr_name','fk_product__vchr_product_name','fk_brand__vchr_brand_name','id','dbl_apx_amount','fk_item_group_id','fk_item_group__vchr_item_group'))
             else:
-                lst_data = list(Items.objects.filter(fk_product__fk_company = request.user.userdetails.fk_company,fk_brand_id__isnull=False).values('vchr_item_code','vchr_barcode','vchr_item_name','fk_product__vchr_product_name','fk_brand__vchr_brand_name','id','dbl_apx_amount','fk_item_group__vchr_item_group'))
+                lst_data = list(Items.objects.filter(fk_product__fk_company = request.user.userdetails.fk_company,fk_brand_id__isnull=False).values('vchr_item_code','vchr_barcode','vchr_name','fk_product__vchr_product_name','fk_brand__vchr_brand_name','id','dbl_apx_amount','fk_item_group__vchr_item_group'))
             return Response(lst_data)
         except Exception as e:
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
@@ -205,7 +205,7 @@ class ProductView(APIView):
             ins_code_exist = Items.objects.filter(~Q(id = int(request.data.get('id'))) & Q(vchr_item_code= request.data.get('itemcode').upper()) & Q(fk_product__fk_company = request.user.userdetails.fk_company))
             if ins_code_exist:
                 return Response({'status':'failed','reason':'code exist'})
-            ins_name_exist = Items.objects.filter(~Q(id = int(request.data.get('id'))) & Q(vchr_item_name= request.data.get('product').upper()) & Q(fk_brand = request.data.get('subcategory'))  & Q(fk_product__fk_company = request.user.userdetails.fk_company))
+            ins_name_exist = Items.objects.filter(~Q(id = int(request.data.get('id'))) & Q(vchr_name= request.data.get('product').upper()) & Q(fk_brand = request.data.get('subcategory'))  & Q(fk_product__fk_company = request.user.userdetails.fk_company))
             if ins_name_exist:
                 return Response({'status':'failed','reason':'name exist'})
             # 
@@ -213,7 +213,7 @@ class ProductView(APIView):
             if ins_barcode_exist:
                 return Response({'status':'failed','reason':'barcode exist'})
             ins_product = Items.objects.filter(id = int(request.data.get('id')))
-            ins_product.update(vchr_barcode =request.data.get('barcode').upper(),dbl_apx_amount=float(request.data.get('itemprice')),vchr_item_code =request.data.get('itemcode').upper(), vchr_item_name= request.data.get('product').upper(),fk_product = Products.objects.get(id = request.data.get('category')),fk_brand = Brands.objects.get(id = request.data.get('subcategory')),fk_item_group_id = request.data.get('intItemGroup'))
+            ins_product.update(vchr_barcode =request.data.get('barcode').upper(),dbl_apx_amount=float(request.data.get('itemprice')),vchr_item_code =request.data.get('itemcode').upper(), vchr_name= request.data.get('product').upper(),fk_product = Products.objects.get(id = request.data.get('category')),fk_brand = Brands.objects.get(id = request.data.get('subcategory')),fk_item_group_id = request.data.get('intItemGroup'))
             return Response({'status':'success'})
         except Exception as e:
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
@@ -222,7 +222,7 @@ class ProductView(APIView):
 class GetProductById(APIView):
     def get(self,request):
         try:
-            lst_data = list(Items.objects.filter(id = int(request.GET.get('id'))).values('vchr_barcode','vchr_item_code','vchr_item_name','fk_product__vchr_product_name','fk_brand__vchr_brand_name','id','fk_product','fk_brand','dbl_apx_amount','fk_item_group_id','fk_item_group__vchr_item_group'))
+            lst_data = list(Items.objects.filter(id = int(request.GET.get('id'))).values('vchr_barcode','vchr_item_code','vchr_name','fk_product__vchr_product_name','fk_brand__vchr_brand_name','id','fk_product','fk_brand','dbl_apx_amount','fk_item_group_id','fk_item_group__vchr_item_group'))
             return Response(lst_data)
         except Exception as e:
             ins_logger.logger.error(e, extra={'user': 'user_id:' + str(request.user.id)})
@@ -297,17 +297,17 @@ class itemBySub(APIView):
                 ins_subcategory=[]
                 for search_term in lst_search_term:         # search term combinations list check with items db
                     query = reduce(operator.and_, (Q(vchr_name__icontains = item) for item in search_term))
-                    ins_data = list(Items.objects.filter(query | Q(vchr_item_code__icontains = str_search_term), fk_brand = str_brand , fk_product__vchr_name__icontains = str_product,fk_product__fk_company = int_company_id ).annotate(id = F('pk_bint_id'),vchr_item_name= F('vchr_name')).values('id','vchr_item_name','vchr_item_code')[:50])
+                    ins_data = list(Items.objects.filter(query | Q(vchr_item_code__icontains = str_search_term), fk_brand = str_brand , fk_product__vchr_name__icontains = str_product,fk_product__fk_company = int_company_id ).annotate(id = F('pk_bint_id'),vchr_name= F('vchr_name')).values('id','vchr_name','vchr_item_code')[:50])
                     for item in ins_data:
                         if item not in ins_subcategory:
                             ins_subcategory.append(item)
                     if len(ins_subcategory)>50:
                         break
-                # ins_subcategory = Items.objects.filter(Q(vchr_item_name__icontains = str_search_term) | Q(vchr_item_code__icontains = str_search_term), fk_brand = str_brand , fk_product__vchr_product_name__icontains = str_product,fk_product__fk_company = int_company_id ).values('id','vchr_item_name','vchr_item_code')[:50]
+                # ins_subcategory = Items.objects.filter(Q(vchr_item_name__icontains = str_search_term) | Q(vchr_item_code__icontains = str_search_term), fk_brand = str_brand , fk_product__vchr_product_name__icontains = str_product,fk_product__fk_company = int_company_id ).values('id','vchr_name','vchr_item_code')[:50]
                 
                 for itr_item in ins_subcategory[:50]:
                     dct_subcategory = {}
-                    dct_subcategory['name'] = itr_item['vchr_item_name']
+                    dct_subcategory['name'] = itr_item['vchr_name']
                     dct_subcategory['id'] = itr_item['id']
                     dct_subcategory['code'] = itr_item['vchr_item_code']
                     if lst_branch:
@@ -360,18 +360,18 @@ class itemByBrand(APIView):
             if str_search_term != -1:
                 lst_items = []
                 if str_product:
-                    ins_item = Items.objects.filter(Q(vchr_item_name__icontains = str_search_term) | Q(vchr_item_code__icontains = str_search_term), fk_product = str_product ,fk_product__fk_company = int_company_id ).values('id','vchr_item_name','vchr_item_code','fk_brand_id','fk_product_id','fk_brand_id__vchr_brand_name','fk_product_id__vchr_product_name')[:50]
+                    ins_item = Items.objects.filter(Q(vchr_name__icontains = str_search_term) | Q(vchr_item_code__icontains = str_search_term), fk_product = str_product ,fk_product__fk_company = int_company_id ).values('pk_bint_id','vchr_name','vchr_item_code','fk_brand_id','fk_product_id','fk_brand_id__vchr_name','fk_product_id__vchr_name')[:50]
                 else:
-                    ins_item = Items.objects.filter(Q(vchr_item_name__icontains = str_search_term) | Q(vchr_item_code__icontains = str_search_term),fk_product__fk_company = int_company_id ).values('id','vchr_item_name','vchr_item_code','fk_brand_id','fk_product_id','fk_brand_id__vchr_brand_name','fk_product_id__vchr_product_name')[:50]
+                    ins_item = Items.objects.filter(Q(vchr_name__icontains = str_search_term) | Q(vchr_item_code__icontains = str_search_term),fk_product__fk_company = int_company_id ).values('pk_bint_id','vchr_name','vchr_item_code','fk_brand_id','fk_product_id','fk_brand_id__vchr_name','fk_product_id__vchr_name')[:50]
                 for itr_item in ins_item:
                     dct_item = {}
-                    dct_item['name'] = itr_item['vchr_item_name']
-                    dct_item['id'] = itr_item['id']
+                    dct_item['name'] = itr_item['vchr_name']
+                    dct_item['id'] = itr_item['pk_bint_id']
                     dct_item['code'] = itr_item['vchr_item_code']
                     dct_item['brand_id'] = itr_item['fk_brand_id']
                     dct_item['product_id'] = itr_item['fk_product_id']
-                    dct_item['brand_name'] = itr_item['fk_brand_id__vchr_brand_name']
-                    dct_item['product_name'] = itr_item['fk_product_id__vchr_product_name']
+                    dct_item['brand_name'] = itr_item['fk_brand_id__vchr_name']
+                    dct_item['product_name'] = itr_item['fk_product_id__vchr_name']
 
                     # 
                     # lst_stock = list(BranchStock.objects.filter(fk_item_id = 29064,fk_branch= request.user.userdetails.fk_branch_id , int_available__gt=0).values('pk_bint_id','int_available','json_avail_imei','fk_item__vchr_item_name').order_by('dat_added'))
@@ -382,7 +382,7 @@ class itemByBrand(APIView):
 
                     lst_items.append(dct_item)
 
-            return Response({'status':'success','data':lst_items})
+            return Response({'status':'1','data':lst_items})
         except Exception as e:
             return Response({"status":"0","message":str(e)})
 
@@ -463,7 +463,7 @@ class SynchronizeView(APIView):
                     for dct_data in lst_diff_data:
                         if dct_data['BRAND_NAME'] in dct_brands:
                             try:
-                                cur.execute("insert into items (vchr_item_name,vchr_item_code,fk_brand_id,fk_product_id,vchr_barcode,dat_updated) values ('" +dct_data['ITEM_NAME'].split(':')[0]+ "','" +dct_data['ITEM_CODE']+ "',"+str(dct_brands[dct_data['BRAND_NAME']])+ ","+str(dct_products[dct_data['PRODUCT_NAME']])+ ",'"+dct_data['ITEM_CODE']+"','"+str(datetime.datetime.now().date())+"');")
+                                cur.execute("insert into items (vchr_name,vchr_item_code,fk_brand_id,fk_product_id,vchr_barcode,dat_updated) values ('" +dct_data['ITEM_NAME'].split(':')[0]+ "','" +dct_data['ITEM_CODE']+ "',"+str(dct_brands[dct_data['BRAND_NAME']])+ ","+str(dct_products[dct_data['PRODUCT_NAME']])+ ",'"+dct_data['ITEM_CODE']+"','"+str(datetime.datetime.now().date())+"');")
                             except Exception as e:
                                 print("item_cant update")
                                 str_to_wtite+=" item_cant update"
@@ -475,7 +475,7 @@ class SynchronizeView(APIView):
                             lst_brand=cur.fetchall()
                             dct_brands={data[0]:data[1] for data in lst_brand}
                             try:
-                                cur.execute("insert into items (vchr_item_name,vchr_item_code,fk_brand_id,fk_product_id,vchr_barcode,dat_updated) values ('" +dct_data['ITEM_NAME'].split(':')[0]+ "','" +dct_data['ITEM_CODE']+ "',"+str(dct_brands[dct_data['BRAND_NAME']])+ ","+str(dct_products[dct_data['PRODUCT_NAME']])+ ",'"+dct_data['ITEM_CODE']+"','"+str(datetime.datetime.now().date())+"');")
+                                cur.execute("insert into items (vchr_name,vchr_item_code,fk_brand_id,fk_product_id,vchr_barcode,dat_updated) values ('" +dct_data['ITEM_NAME'].split(':')[0]+ "','" +dct_data['ITEM_CODE']+ "',"+str(dct_brands[dct_data['BRAND_NAME']])+ ","+str(dct_products[dct_data['PRODUCT_NAME']])+ ",'"+dct_data['ITEM_CODE']+"','"+str(datetime.datetime.now().date())+"');")
                             except Exception as e:
                                 print("item_cant update")
                                 str_to_wtite+=" item_cant update"
@@ -725,17 +725,17 @@ class ItemTypeahead(APIView):
             lst_item = []
             if str_search_term != -1:
                 if lst_brand  and lst_product:
-                    ins_item_group = Items.objects.filter(Q(fk_brand_id__in = lst_brand),Q(fk_product_id__in = lst_product),Q(Q(vchr_item_name__icontains=str_search_term)|Q(vchr_item_code__icontains=str_search_term))).values('id','vchr_item_code','vchr_item_name').distinct()
+                    ins_item_group = Items.objects.filter(Q(fk_brand_id__in = lst_brand),Q(fk_product_id__in = lst_product),Q(Q(vchr_name__icontains=str_search_term)|Q(vchr_item_code__icontains=str_search_term))).values('id','vchr_item_code','vchr_name').distinct()
                 elif lst_brand:
-                    ins_item_group = Items.objects.filter(Q(fk_brand_id__in = lst_brand),Q(Q(vchr_item_name__icontains=str_search_term)|Q(vchr_item_code__icontains=str_search_term))).values('id','vchr_item_code','vchr_item_name').distinct()
+                    ins_item_group = Items.objects.filter(Q(fk_brand_id__in = lst_brand),Q(Q(vchr_name__icontains=str_search_term)|Q(vchr_item_code__icontains=str_search_term))).values('id','vchr_item_code','vchr_name').distinct()
                 elif lst_product:
-                    ins_item_group = Items.objects.filter(Q(fk_product_id__in = lst_product),Q(Q(vchr_item_name__icontains=str_search_term)|Q(vchr_item_code__icontains=str_search_term))).values('id','vchr_item_code','vchr_item_name').distinct()
+                    ins_item_group = Items.objects.filter(Q(fk_product_id__in = lst_product),Q(Q(vchr_name__icontains=str_search_term)|Q(vchr_item_code__icontains=str_search_term))).values('id','vchr_item_code','vchr_name').distinct()
                 else:
-                    ins_item_group = Items.objects.filter(Q(Q(vchr_item_name__icontains=str_search_term)|Q(vchr_item_code__icontains=str_search_term))).values('id','vchr_item_code','vchr_item_name').distinct()
+                    ins_item_group = Items.objects.filter(Q(Q(vchr_name__icontains=str_search_term)|Q(vchr_item_code__icontains=str_search_term))).values('id','vchr_item_code','vchr_name').distinct()
 
                 for itr_item in ins_item_group:
                     dct_item = {}
-                    dct_item['name'] = itr_item['vchr_item_code'] +' - '+ itr_item['vchr_item_name']
+                    dct_item['name'] = itr_item['vchr_item_code'] +' - '+ itr_item['vchr_name']
                     dct_item['id'] = itr_item['id']
                     lst_item.append(dct_item)
                 return Response({'status':'success','data':lst_item})

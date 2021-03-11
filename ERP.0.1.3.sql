@@ -52,3 +52,45 @@ CREATE TABLE gdp_details(
 
 ALTER TABLE products ADD COLUMN jsn_warranty JSONB; 
 
+CREATE TABLE rewards_master(pk_bint_id BIGSERIAL PRIMARY KEY,
+  dat_from TIMESTAMP WITHOUT TIME ZONE,
+  dat_to TIMESTAMP WITHOUT TIME ZONE,
+  vchr_area_type VARCHAR(20),
+  json_branch JSONB,
+  vchr_reward_name VARCHAR(250),
+  dbl_slab1_percentage DOUBLE PRECISION,
+  dbl_slab2_percentage DOUBLE PRECISION,
+  dbl_slab3_percentage DOUBLE PRECISION,
+  dat_created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL DEFAULT NOW(),
+  fk_created_by_id BIGINT REFERENCES user_app_usermodel(user_ptr_id) NOT NULL);
+
+CREATE TABLE rewards_details(pk_bint_id BIGSERIAL PRIMARY KEY,
+  fk_rewards_master_id BIGINT REFERENCES rewards_master(pk_bint_id) NOT NULL,
+  int_quantity_from BIGINT,
+  int_quantity_to BIGINT,
+  dbl_value_from DOUBLE PRECISION,
+  dbl_value_to DOUBLE PRECISION,
+  dbl_slab1_percentage DOUBLE PRECISION,
+  dbl_slab1_amount DOUBLE PRECISION,
+  dbl_slab2_percentage DOUBLE PRECISION,
+  dbl_slab2_amount DOUBLE PRECISION,
+  dbl_slab3_percentage DOUBLE PRECISION,
+  dbl_slab3_amount DOUBLE PRECISION,
+  int_map_id BIGINT,
+  int_map_type INTEGER NOT NULL,
+  int_mop_sale INTEGER,
+  int_to INTEGER);
+
+CREATE TABLE reward_assigned(
+  pk_bint_id BIGSERIAL PRIMARY KEY,
+  fk_reward_details_id BIGINT REFERENCES rewards_details(pk_bint_id),
+  int_to INTEGER,
+  int_status INTEGER,
+  fk_group_id BIGINT REFERENCES groups(pk_bint_id),
+  dbl_slab1_percentage DOUBLE PRECISION,
+  dbl_slab1_amount DOUBLE PRECISION,
+  dbl_slab2_percentage DOUBLE PRECISION,
+  dbl_slab2_amount DOUBLE PRECISION,
+  dbl_slab3_percentage DOUBLE PRECISION,
+  dbl_slab3_amount DOUBLE PRECISION
+);

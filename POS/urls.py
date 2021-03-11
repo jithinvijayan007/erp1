@@ -105,8 +105,8 @@ urlpatterns = [
     url(r'^generalize_report_new/',include('generalize_report_new.urls',namespace='generalize_report_new')),
     url(r'^generalize_report_download/',include('generalize_report_download.urls',namespace='generalize_report_download')),
     url(r'^staff_rating/',include('staff_rating.urls',namespace='staff_rating')),
-
-
+    url(r'^rewards_app/',include('rewards_app.urls',namespace='rewards_app')),
+    url(r'^staff_rewards/',include('staff_rewards.urls',namespace='staff_rewards')),
 
 
 

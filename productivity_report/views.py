@@ -155,12 +155,12 @@ class ProductTypeheadGDP(APIView):
             str_search_term = request.data.get('term',-1)
             lst_product = []
             if str_search_term != -1:
-                ins_product = Products.objects.filter(vchr_product_name__icontains=str_search_term,fk_company_id = request.user.userdetails.fk_company_id).values('id','vchr_product_name')
+                ins_product = Products.objects.filter(vchr_name__icontains=str_search_term,fk_company_id = request.user.userdetails.fk_company_id).values('pk_bint_id','vchr_name')
                 if ins_product:
                     for itr_item in ins_product:
                         dct_product = {}
-                        dct_product['name'] = itr_item['vchr_product_name'].capitalize()
-                        dct_product['id'] = itr_item['id']
+                        dct_product['name'] = itr_item['vchr_name'].capitalize()
+                        dct_product['id'] = itr_item['pk_bint_id']
                         lst_product.append(dct_product)
                 return Response({'status':'success','data':lst_product})
             else:

@@ -31,7 +31,7 @@ from enquiry_print.views import enquiry_print
 from enquiry_mobile.models import MobileEnquiry,TabletEnquiry,ComputersEnquiry,AccessoriesEnquiry
 from branch.models import Branch
 from stock_app.models import Stockmaster,Stockdetails
-from invoice.views import AddSalesAPI
+# from invoice.views import AddSalesAPI 
 '''for alchemy'''
 from sqlalchemy.orm import sessionmaker
 import aldjemy
@@ -411,7 +411,7 @@ class EnquiryInvoicedSave(APIView):
                                                             ins_item_reward.save()
                                             ############GDP
                                             if data['int_type'] in [1,3]:
-                                                int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                                                int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
                                                 item_data=RewardsDetails2.objects.filter(int_to__in=lst_available,fk_rewards_master__fk_created_by__fk_company_id=request.user.userdetails.fk_company_id,int_map_type=0,int_map_id=int_gdp,fk_rewards_master__dat_from__lte=datetime.now().date(),fk_rewards_master__dat_to__gte=datetime.now().date(),fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_rewards_master_id','int_quantity_from','int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','int_mop_sale').order_by('int_quantity_to').first()
                                                 total_reward=0
                                                 if item_data:
@@ -475,7 +475,7 @@ class EnquiryInvoicedSave(APIView):
                                                             ins_item_reward.save()
                                             ############ GDEW
                                             if data['int_type'] in [2,3]:
-                                                int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                                                int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
                                                 item_data=RewardsDetails2.objects.filter(int_to__in=lst_available,fk_rewards_master__fk_created_by__fk_company_id=request.user.userdetails.fk_company_id,int_map_type=0,int_map_id=int_gdew,fk_rewards_master__dat_from__lte=datetime.now().date(),fk_rewards_master__dat_to__gte=datetime.now().date(),fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_rewards_master_id','int_quantity_from','int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','int_mop_sale').order_by('int_quantity_to').first()
                                                 total_reward=0
                                                 if item_data:
@@ -799,7 +799,7 @@ class EnquiryInvoicedSave(APIView):
                                                         # import pdb;
                                                         # pdb.set_trace()
                                                         if data['int_type'] in [1,3]:
-                                                            int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                                                            int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
 
                                                             item_data=RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0,  fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id =request.user.userdetails.fk_company_id,fk_reward_details__int_map_type=0,fk_reward_details__int_map_id=int_gdp,fk_reward_details__fk_rewards_master__dat_from__lte=datetime.now().date(),fk_reward_details__fk_rewards_master__dat_to__gte=datetime.now().date(),fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id',\
                                                             'fk_reward_details__int_quantity_from','fk_reward_details__int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','fk_reward_details__int_mop_sale','fk_reward_details').order_by('fk_reward_details__int_quantity_to','fk_reward_details',"-pk_bint_id").first()
@@ -878,7 +878,7 @@ class EnquiryInvoicedSave(APIView):
 
                                                         ############ GDEW
                                                         if data['int_type'] in [2,3]:
-                                                            int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                                                            int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
                                                             item_data=RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=request.user.userdetails.fk_company_id,fk_reward_details__int_map_type=0,fk_reward_details__int_map_id=int_gdew,fk_reward_details__fk_rewards_master__dat_from__lte=datetime.now().date(),fk_reward_details__fk_rewards_master__dat_to__gte=datetime.now().date(),fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(request.user.userdetails.fk_branch_id)]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','fk_reward_details__int_quantity_from','fk_reward_details__int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','fk_reward_details__int_mop_sale','fk_reward_details').order_by('fk_reward_details__int_quantity_to',"-pk_bint_id").first()
 
                                                             total_reward=0
@@ -1240,7 +1240,7 @@ def value_based_staff_rewards(request):
             """GDP"""
 
             if data['int_type'] in [1,3]:
-                int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
 
 
                 total_reward=0
@@ -1326,7 +1326,7 @@ def value_based_staff_rewards(request):
 
             """GDEW"""
             if data['int_type'] in [2,3]:
-                int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
 
                 total_reward=0
                 item_amount['dbl_apx_amount']=0
@@ -1565,7 +1565,7 @@ class SaveEnquiry(APIView):
                             else:
                                 ins_stock_details = None
                         else:
-                            return Response({'status':'1', 'data':'Selected Computer '+ins_brand.vchr_brand_name+'-'+ins_item.vchr_item_name+' quantity '+int(dct_computer['intQty'])+' exceeds available stock amount'})
+                            return Response({'status':'1', 'data':'Selected Computer '+ins_brand.vchr_name+'-'+ins_item.vchr_name+' quantity '+int(dct_computer['intQty'])+' exceeds available stock amount'})
                         ins_computer = ComputersEnquiry(
                             fk_enquiry_master = ins_enquiry
                             ,fk_brand = ins_brand
@@ -1614,7 +1614,7 @@ class SaveEnquiry(APIView):
                             else:
                                 ins_stock_details = None
                         else:
-                            return Response({'status':'1', 'data':'Selected Tablet '+ins_brand.vchr_brand_name+'-'+ins_item.vchr_item_name+' quantity '+int(dct_tablet['intQty'])+' exceeds available stock amount'})
+                            return Response({'status':'1', 'data':'Selected Tablet '+ins_brand.vchr_name+'-'+ins_item.vchr_name+' quantity '+int(dct_tablet['intQty'])+' exceeds available stock amount'})
                         ins_tablet = TabletEnquiry(
                             fk_enquiry_master = ins_enquiry
                             ,fk_brand = ins_brand
@@ -1662,7 +1662,7 @@ class SaveEnquiry(APIView):
                             else:
                                 ins_stock_details = None
                         else:
-                            return Response({'status':'1', 'data':'Selected Mobile '+ins_brand.vchr_brand_name+'-'+ins_item.vchr_item_name+' quantity '+str(dct_mobile['intQty'])+' exceeds available stock amount'})
+                            return Response({'status':'1', 'data':'Selected Mobile '+ins_brand.vchr_name+'-'+ins_item.vchr_name+' quantity '+str(dct_mobile['intQty'])+' exceeds available stock amount'})
                         ins_mobile = MobileEnquiry(
                             fk_enquiry_master = ins_enquiry
                             ,fk_brand = ins_brand
@@ -1711,7 +1711,7 @@ class SaveEnquiry(APIView):
                             else:
                                 ins_stock_details = None
                         else:
-                            return Response({'status':'1', 'data':'Selected Accessory '+ins_brand.vchr_brand_name+'-'+ins_item.vchr_item_name+' quantity '+int(dct_accessories['intQty'])+' exceeds available stock amount'})
+                            return Response({'status':'1', 'data':'Selected Accessory '+ins_brand.vchr_name+'-'+ins_item.vchr_name+' quantity '+int(dct_accessories['intQty'])+' exceeds available stock amount'})
                         ins_accessories = AccessoriesEnquiry(
                             fk_enquiry_master = ins_enquiry
                             ,fk_brand = ins_brand
@@ -1902,7 +1902,7 @@ class PendingEnquiryListSide(APIView):
                 # # .filter(AccessoriesEnquirySA.vchr_enquiry_status != 'LOST' ,AccessoriesEnquirySA.vchr_enquiry_status != 'BOOKED' , AccessoriesEnquirySA.vchr_enquiry_status != 'UNQUALIFIED' )
                 # rst_data = rst_mobile.union_all(rst_tablet,rst_computer,rst_accessories).subquery()
                 #
-                # rst_enquiry = session.query(EnquiryMasterSA.pk_bint_id,EnquiryMasterSA.dat_created_at,EnquiryMasterSA.vchr_enquiry_num,rst_data.c.vchr_service,rst_data.c.int_quantity,rst_data.c.amount,rst_data.c.vchr_service,rst_data.c.status,BranchSA.vchr_name,ItemSA.vchr_item_name,rst_data.c.remarks)\
+                # rst_enquiry = session.query(EnquiryMasterSA.pk_bint_id,EnquiryMasterSA.dat_created_at,EnquiryMasterSA.vchr_enquiry_num,rst_data.c.vchr_service,rst_data.c.int_quantity,rst_data.c.amount,rst_data.c.vchr_service,rst_data.c.status,BranchSA.vchr_name,ItemSA.vchr_name,rst_data.c.remarks)\
                 #                         .filter( EnquiryMasterSA.fk_company_id == int_company_id,EnquiryMasterSA.fk_customer_id == int_cust_id)\
                 #                         .join(rst_data,and_(rst_data.c.FK_Enquery == EnquiryMasterSA.pk_bint_id,EnquiryMasterSA.chr_doc_status == 'N'))\
                 #                         .join(CustomerSA,EnquiryMasterSA.fk_customer_id == CustomerSA.id)\
@@ -1913,14 +1913,14 @@ class PendingEnquiryListSide(APIView):
                 rst_enquiry = session.query(EnquiryMasterSA.pk_bint_id,EnquiryMasterSA.dat_created_at,EnquiryMasterSA.vchr_enquiry_num,\
                                             CustomerSA.cust_fname.label('customer_first_name'),CustomerSA.cust_lname.label('customer_last_name'),\
                                             AuthUserSA.first_name.label('staff_first_name'),AuthUserSA.last_name.label('staff_last_name'),\
-                                            ItemEnquirySA.vchr_enquiry_status,ProductsSA.vchr_product_name.label('service'),BranchSA.vchr_name,ItemEnquirySA.vchr_remarks,ItemEnquirySA.int_quantity,ItemEnquirySA.dbl_amount,ItemSA.vchr_item_name,BrandSA.vchr_brand_name)\
+                                            ItemEnquirySA.vchr_enquiry_status,ProductsSA.vchr_name.label('service'),BranchSA.vchr_name,ItemEnquirySA.vchr_remarks,ItemEnquirySA.int_quantity,ItemEnquirySA.dbl_amount,ItemSA.vchr_name,BrandSA.vchr_name)\
                                             .join(CustomerSA,EnquiryMasterSA.fk_customer_id == CustomerSA.id)\
                                             .join(AuthUserSA, EnquiryMasterSA.fk_assigned_id == AuthUserSA.id)\
                                             .join(ItemEnquirySA,EnquiryMasterSA.pk_bint_id == ItemEnquirySA.fk_enquiry_master_id)\
                                             .join(BranchSA,BranchSA.pk_bint_id == EnquiryMasterSA.fk_branch_id)\
                                             .join(ProductsSA,ItemEnquirySA.fk_product_id == ProductsSA.id).join(BrandSA,ItemEnquirySA.fk_brand_id==BrandSA.id)\
                                             .filter(EnquiryMasterSA.fk_company_id ==  int_company_id,EnquiryMasterSA.fk_customer_id == int_cust_id).join(ItemSA,ItemSA.id==ItemEnquirySA.fk_item_id)
-                                        # .group_by(EnquiryMasterSA.pk_bint_id,EnquiryMasterSA.vchr_enquiry_num,rst_data.c.vchr_service, CustomerSA.cust_fname,BranchSA.vchr_name,ItemsSA.vchr_item_name,\
+                                        # .group_by(EnquiryMasterSA.pk_bint_id,EnquiryMasterSA.vchr_enquiry_num,rst_data.c.vchr_service, CustomerSA.cust_fname,BranchSA.vchr_name,ItemsSA.vchr_name,\
                                         # rst_data.c.vchr_service,rst_data.c.remarks,CustomerSA.cust_fname,CustomerSA.cust_lname,)
 
                                                     # , EnquiryMasterSA.int_company_id == int_company_id )\
@@ -1944,21 +1944,21 @@ class PendingEnquiryListSide(APIView):
                 for dct_data in rst_enquiry.all():
                     if dct_data.vchr_enquiry_num == dct_enquiries.get('enquiry'):
                         dct_enquiries['services'].append(dct_data._asdict()['service'])
-                        dct_enquiries['brands'].append(dct_data._asdict()['vchr_brand_name'])
-                        dct_enquiries['items'].append(dct_data._asdict()['vchr_item_name'])
+                        dct_enquiries['brands'].append(dct_data._asdict()['vchr_name'])
+                        dct_enquiries['items'].append(dct_data._asdict()['vchr_name'])
                         dct_enquiries['status'].append(dct_data._asdict()['vchr_enquiry_status'])
                         dct_enquiries['remarks'].append(dct_data._asdict()['vchr_remarks'])
                         dct_enquiries['amount'].append(dct_data._asdict()['dbl_amount'])
                         dct_enquiries['quantity'].append(dct_data._asdict()['int_quantity'])
                     else:
                         if dct_enquiries == {}:
-                            dct_enquiries = {'enquiry':dct_data._asdict()['vchr_enquiry_num'],'date':dct_data._asdict()['dat_created_at'].strftime('%d-%m-%Y'),'services':[dct_data._asdict()['service']],'status':[dct_data._asdict()['vchr_enquiry_status']],'branch':dct_data._asdict()['vchr_name'],'amount':[dct_data._asdict()['dbl_amount']],'quantity':[dct_data._asdict()['int_quantity']],'items':[dct_data._asdict()['vchr_item_name']],'brands':[dct_data._asdict()['vchr_brand_name']],'remarks':[dct_data._asdict()['vchr_remarks']]}
+                            dct_enquiries = {'enquiry':dct_data._asdict()['vchr_enquiry_num'],'date':dct_data._asdict()['dat_created_at'].strftime('%d-%m-%Y'),'services':[dct_data._asdict()['service']],'status':[dct_data._asdict()['vchr_enquiry_status']],'branch':dct_data._asdict()['vchr_name'],'amount':[dct_data._asdict()['dbl_amount']],'quantity':[dct_data._asdict()['int_quantity']],'items':[dct_data._asdict()['vchr_name']],'brands':[dct_data._asdict()['vchr_name']],'remarks':[dct_data._asdict()['vchr_remarks']]}
                         else:
                             lst_enquiry_data.append(dct_enquiries)
-                            dct_enquiries = {'enquiry':dct_data._asdict()['vchr_enquiry_num'],'date':dct_data._asdict()['dat_created_at'].strftime('%d-%m-%Y'),'services':[dct_data._asdict()['service']],'status':[dct_data._asdict()['vchr_enquiry_status']],'branch':dct_data._asdict()['vchr_name'],'amount':[dct_data._asdict()['dbl_amount']],'quantity':[dct_data._asdict()['int_quantity']],'items':[dct_data._asdict()['vchr_item_name']],'brands':[dct_data._asdict()['vchr_brand_name']],'remarks':[dct_data._asdict()['vchr_remarks']]}
+                            dct_enquiries = {'enquiry':dct_data._asdict()['vchr_enquiry_num'],'date':dct_data._asdict()['dat_created_at'].strftime('%d-%m-%Y'),'services':[dct_data._asdict()['service']],'status':[dct_data._asdict()['vchr_enquiry_status']],'branch':dct_data._asdict()['vchr_name'],'amount':[dct_data._asdict()['dbl_amount']],'quantity':[dct_data._asdict()['int_quantity']],'items':[dct_data._asdict()['vchr_name']],'brands':[dct_data._asdict()['vchr_name']],'remarks':[dct_data._asdict()['vchr_remarks']]}
                 lst_enquiry_data.append(dct_enquiries)
                 lst_enquiry_data=paginate_data(lst_enquiry_data,5)
-                #             dct_enquiries = {'enquiry':dct_data._asdict()['vchr_enquiry_num'],'date':dct_data._asdict()['dat_created_at'],'services':[dct_data._asdict()['vchr_service']],'branch':dct_data._asdict()['vchr_name'],'amount':dct_data._asdict()['amount'],'item':dct_data._asdict()['vchr_item_name'],'remarks':dct_data._asdict()['remarks']}
+                #             dct_enquiries = {'enquiry':dct_data._asdict()['vchr_enquiry_num'],'date':dct_data._asdict()['dat_created_at'],'services':[dct_data._asdict()['vchr_service']],'branch':dct_data._asdict()['vchr_name'],'amount':dct_data._asdict()['amount'],'item':dct_data._asdict()['vchr_name'],'remarks':dct_data._asdict()['remarks']}
                 # lst_enquiry_data.append(dct_enquiries)
                 #             dct_enquiries = {'enquiry':dct_data._asdict()['vchr_enquiry_num'],'date':dct_data._asdict()['dat_created_at'],'customer_name':dct_data._asdict()['customer_first_name']+' '+dct_data._asdict()['customer_last_name'],'customer_contact':dct_data._asdict()['customer_mobile'],'staff_name':dct_data._asdict()['staff_first_name']+' '+dct_data._asdict()['staff_last_name'],'services':[dct_data._asdict()['vchr_service']]}
                 session.close()
@@ -1981,7 +1981,7 @@ class PendingEnquiryListUser(APIView):
             session = Session()
             lst_enquiry_data = []
 
-            rst_enquiry = session.query(EnquiryMasterSA.pk_bint_id.label("FK_Enquery"), EnquiryMasterSA.dat_created_at, EnquiryMasterSA.vchr_enquiry_num, CustomerSA.cust_fname.label('customer_first_name'), CustomerSA.cust_lname.label('customer_last_name'), CustomerSA.cust_mobile.label('customer_mobile'), AuthUserSA.first_name.label('staff_first_name'), AuthUserSA.last_name.label('staff_last_name'), ItemEnquirySA.fk_product_id,ItemEnquirySA.vchr_enquiry_status,ProductsSA.vchr_product_name.label("vchr_service")).join(ItemEnquirySA,ItemEnquirySA.fk_enquiry_master_id == EnquiryMasterSA.pk_bint_id).join(ProductsSA,ProductsSA.id == ItemEnquirySA.fk_product_id).join(CustomerSA,EnquiryMasterSA.fk_customer_id == CustomerSA.id).join(AuthUserSA, EnquiryMasterSA.fk_assigned_id == AuthUserSA.id).join(BranchSA,BranchSA.pk_bint_id == EnquiryMasterSA.fk_branch_id).filter(EnquiryMasterSA.fk_assigned_id == request.data.get('userid'),ItemEnquirySA.vchr_enquiry_status != 'CONVERTED',ItemEnquirySA.vchr_enquiry_status != 'LOST' ,ItemEnquirySA.vchr_enquiry_status != 'BOOKED' ,ItemEnquirySA.vchr_enquiry_status != 'INVOICED').group_by(EnquiryMasterSA.pk_bint_id,EnquiryMasterSA.vchr_enquiry_num, CustomerSA.cust_fname,CustomerSA.cust_fname,CustomerSA.cust_lname,CustomerSA.cust_mobile,AuthUserSA.first_name,AuthUserSA.last_name,ItemEnquirySA.fk_product_id,ItemEnquirySA.vchr_enquiry_status,ProductsSA.vchr_product_name)
+            rst_enquiry = session.query(EnquiryMasterSA.pk_bint_id.label("FK_Enquery"), EnquiryMasterSA.dat_created_at, EnquiryMasterSA.vchr_enquiry_num, CustomerSA.cust_fname.label('customer_first_name'), CustomerSA.cust_lname.label('customer_last_name'), CustomerSA.cust_mobile.label('customer_mobile'), AuthUserSA.first_name.label('staff_first_name'), AuthUserSA.last_name.label('staff_last_name'), ItemEnquirySA.fk_product_id,ItemEnquirySA.vchr_enquiry_status,ProductsSA.vchr_name.label("vchr_service")).join(ItemEnquirySA,ItemEnquirySA.fk_enquiry_master_id == EnquiryMasterSA.pk_bint_id).join(ProductsSA,ProductsSA.id == ItemEnquirySA.fk_product_id).join(CustomerSA,EnquiryMasterSA.fk_customer_id == CustomerSA.id).join(AuthUserSA, EnquiryMasterSA.fk_assigned_id == AuthUserSA.id).join(BranchSA,BranchSA.pk_bint_id == EnquiryMasterSA.fk_branch_id).filter(EnquiryMasterSA.fk_assigned_id == request.data.get('userid'),ItemEnquirySA.vchr_enquiry_status != 'CONVERTED',ItemEnquirySA.vchr_enquiry_status != 'LOST' ,ItemEnquirySA.vchr_enquiry_status != 'BOOKED' ,ItemEnquirySA.vchr_enquiry_status != 'INVOICED').group_by(EnquiryMasterSA.pk_bint_id,EnquiryMasterSA.vchr_enquiry_num, CustomerSA.cust_fname,CustomerSA.cust_fname,CustomerSA.cust_lname,CustomerSA.cust_mobile,AuthUserSA.first_name,AuthUserSA.last_name,ItemEnquirySA.fk_product_id,ItemEnquirySA.vchr_enquiry_status,ProductsSA.vchr_name)
 
 
             if dat_start:
@@ -2046,7 +2046,7 @@ class AddEnquiry(APIView):
     permission_classes=[IsAuthenticated]
     def post(self,request):
         try:
-            import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             with transaction.atomic():
                 dct_data = request.data.get('product')
                 dct_customer_data = request.data.get('customer_data')
@@ -2093,7 +2093,7 @@ class AddEnquiry(APIView):
                     
 
                     ins_gp_item=Items.objects.filter(vchr_name__in=['GDP','GDEW (EXTENDED WARRANTY)']).values()
-                    dct_gdp_data={data_gdp['vchr_item_name']:{'product_id':data_gdp['fk_product_id'],'brand_id':data_gdp['fk_brand_id'],'pk_bint_id':data_gdp['id'],'item_code':data_gdp['vchr_item_code']} for data_gdp in ins_gp_item}
+                    dct_gdp_data={data_gdp['vchr_name']:{'product_id':data_gdp['fk_product_id'],'brand_id':data_gdp['fk_brand_id'],'pk_bint_id':data_gdp['id'],'item_code':data_gdp['vchr_item_code']} for data_gdp in ins_gp_item}
 
                     # ---------------POS API--------------
                     # 
@@ -2202,7 +2202,7 @@ class AddEnquiry(APIView):
                                         dct_pos_data['dbl_total_amt'] += float(dct_enquiry['dbl_gdp'])
                                         dct_item = {}
                                         dct_item['item_enquiry_id'] = ins_item_gdp_enq.pk_bint_id
-                                        dct_item['vchr_item_name'] = 'GDP'
+                                        dct_item['vchr_name'] = 'GDP'
                                         dct_item['vchr_item_code'] = dct_gdp_data['GDP'].get('item_code')
                                         dct_item['json_imei'] = {"imei" : imei_list}
                                         dct_item['int_quantity'] = dct_enquiry['intQty']
@@ -2231,7 +2231,7 @@ class AddEnquiry(APIView):
                                         dct_pos_data['dbl_total_amt'] += float(dct_enquiry['dbl_gdp'])
                                         dct_item = {}
                                         dct_item['item_enquiry_id'] = ins_item_gdp_enq.pk_bint_id
-                                        dct_item['vchr_item_name'] = 'GDEW (EXTENDED WARRANTY)'
+                                        dct_item['vchr_name'] = 'GDEW (EXTENDED WARRANTY)'
                                         dct_item['vchr_item_code'] = dct_gdp_data['GDEW (EXTENDED WARRANTY)'].get('item_code')
                                         dct_item['json_imei'] = {"imei" : imei_list}
                                         dct_item['int_quantity'] = dct_enquiry['intQty']
@@ -2332,7 +2332,7 @@ class AddEnquiry(APIView):
                                     dct_pos_data['dbl_discount'] += float(dct_enquiry['dbl_discount_amount'])
                                     dct_item = {}
                                     dct_item['item_enquiry_id'] = ins_item_enq.pk_bint_id
-                                    dct_item['vchr_item_name'] = ins_item.vchr_name
+                                    dct_item['vchr_name'] = ins_item.vchr_name
                                     dct_item['vchr_item_code'] = ins_item.vchr_item_code
                                     dct_item['json_imei'] = {"imei" : imei_list}
                                     dct_item['int_quantity'] = int(dct_enquiry['intQty'])
@@ -2349,7 +2349,7 @@ class AddEnquiry(APIView):
                         try:
                             request['data'] = dct_pos_data
                             
-                            AddSalesAPI.post(dct_pos_data)
+                            # AddSalesAPI.post(dct_pos_data)
                             # res_data = requests.post(url,json=dct_pos_data)
                             if res_data.json().get('status')=='1':
                                 pass
@@ -2690,7 +2690,7 @@ class UpdateGdp(APIView):
                                 #
                                 # ############ GDEW
                                 # if request.data["int_type"] in [2,3]:
-                                #     int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                                #     int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
                                 #     item_data=RewardAssigned2.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=request.user.userdetails.fk_company_id,fk_reward_details__int_map_type=0,fk_reward_details__int_map_id=int_gdew,fk_reward_details__fk_rewards_master__dat_from__lte=datetime.now().date(),fk_reward_details__fk_rewards_master__dat_to__gte=datetime.now().date(),fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(request.user.userdetails.fk_branch_id)]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','fk_reward_details__int_quantity_from','fk_reward_details__int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','fk_reward_details__int_mop_sale','fk_reward_details').order_by('fk_reward_details__int_quantity_to').first()
                                 #
                                 #     total_reward=0
@@ -2749,7 +2749,7 @@ class UpdateGdp(APIView):
                                 #                     ins_item_reward.save()
                                             ############GDP
                                 if request.data['int_type'] in [1,3]:
-                                                int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                                                int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
                                                 item_data=RewardsDetails2.objects.filter(int_to__in=lst_available,fk_rewards_master__fk_created_by__fk_company_id=request.user.userdetails.fk_company_id,int_map_type=0,int_map_id=int_gdp,fk_rewards_master__dat_from__lte=datetime.now().date(),fk_rewards_master__dat_to__gte=datetime.now().date(),fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_rewards_master_id','int_quantity_from','int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','int_mop_sale').order_by('int_quantity_to').first()
                                                 total_reward=0
                                                 if item_data:
@@ -2813,7 +2813,7 @@ class UpdateGdp(APIView):
                                                             ins_item_reward.save()
                                             ############ GDEW
                                 if request.data['int_type'] in [2,3]:
-                                                int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                                                int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
                                                 item_data=RewardsDetails2.objects.filter(int_to__in=lst_available,fk_rewards_master__fk_created_by__fk_company_id=request.user.userdetails.fk_company_id,int_map_type=0,int_map_id=int_gdew,fk_rewards_master__dat_from__lte=datetime.now().date(),fk_rewards_master__dat_to__gte=datetime.now().date(),fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_rewards_master_id','int_quantity_from','int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','int_mop_sale').order_by('int_quantity_to').first()
                                                 total_reward=0
                                                 if item_data:
@@ -2916,7 +2916,7 @@ class UpdateGdp(APIView):
                             lst_available=[2,1]
 
                         if request.data["int_type"] in [1,3]:
-                            int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                            int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
                             item_data=RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0,  fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id =request.user.userdetails.fk_company_id,fk_reward_details__int_map_type=0,fk_reward_details__int_map_id=int_gdp,fk_reward_details__fk_rewards_master__dat_from__lte=datetime.now().date(),fk_reward_details__fk_rewards_master__dat_to__gte=datetime.now().date(),fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','fk_reward_details__int_quantity_from','fk_reward_details__int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','fk_reward_details__int_mop_sale','fk_reward_details').order_by('fk_reward_details__int_quantity_to','fk_reward_details').first()
                             total_reward=0
                             if item_data:
@@ -2975,7 +2975,7 @@ class UpdateGdp(APIView):
 
                         ############ GDEW
                         if request.data["int_type"] in [2,3]:
-                            int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                            int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
                             item_data=RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=request.user.userdetails.fk_company_id,fk_reward_details__int_map_type=0,fk_reward_details__int_map_id=int_gdew,fk_reward_details__fk_rewards_master__dat_from__lte=datetime.now().date(),fk_reward_details__fk_rewards_master__dat_to__gte=datetime.now().date(),fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(request.user.userdetails.fk_branch_id)]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','fk_reward_details__int_quantity_from','fk_reward_details__int_quantity_to','int_to','dbl_slab1_percentage','dbl_slab1_amount','fk_reward_details__int_mop_sale','fk_reward_details').order_by('fk_reward_details__int_quantity_to').first()
 
                             total_reward=0
@@ -3125,7 +3125,7 @@ class UpdateGdp(APIView):
 #                                 dct_pos_data['dbl_discount'] += float(ins_data.dbl_discount_amount)
 #                                 dct_item = {}
 #                                 dct_item['item_enquiry_id'] = int_item_id
-#                                 dct_item['vchr_item_name'] = ins_data.fk_item.vchr_item_name
+#                                 dct_item['vchr_name'] = ins_data.fk_item.vchr_name
 #                                 dct_item['vchr_item_code'] = ins_data.fk_item.vchr_item_code
 #                                 dct_item['json_imei'] = ins_data.dbl_imei_json
 #                                 dct_item['int_quantity'] = int(ins_data.int_quantity)
@@ -3442,7 +3442,7 @@ class EnquiryInvoiceUpdate(APIView):
                     apx_amount = None
                     if str_data.split('-')[0] == '0' and ItemEnquiry.objects.filter(pk_bint_id =  str_data.split('-')[1]).exclude(vchr_enquiry_status='INVOICED'):
                         ins_item_enq = ItemEnquiry.objects.filter(pk_bint_id =  str_data.split('-')[1])
-                        ins_product = ins_item_enq.values('fk_product__vchr_product_name')[0]['fk_product__vchr_product_name']
+                        ins_product = ins_item_enq.values('fk_product__vchr_name')[0]['fk_product__vchr_name']
                         if ins_product.upper() != 'SERVICE':
                             apx_amount = ins_item_enq.values('fk_item__dbl_apx_amount')[0]['fk_item__dbl_apx_amount']
                         else:
@@ -3486,7 +3486,7 @@ class EnquiryInvoiceUpdate(APIView):
 
                     else:
                         ins_item = Items.objects.filter(vchr_item_code= dct_item_data[str_data]['strItemCode'])
-                        ins_product = ins_item.values('fk_product__vchr_product_name')[0]['fk_product__vchr_product_name']
+                        ins_product = ins_item.values('fk_product__vchr_name')[0]['fk_product__vchr_name']
                         if ins_product.upper() != 'SERVICE':
                             # ins_item_enq.update(dbl_actual_est_amt = dct_old_item[int_id]['data']['apx_amount'])
                             apx_amount = ins_item.values('dbl_apx_amount')[0]['dbl_apx_amount']
@@ -3623,9 +3623,9 @@ class EnquiryInvoiceUpdate(APIView):
                     )
                 for str_data in lst_service_item:
                     if dct_item_data[str_data]['int_type']==1 or dct_item_data[str_data]['int_type']==2:
-                        ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei')),fk_enquiry_master_id=int_enq_master_id).values('fk_item__dbl_apx_amount','int_type','int_quantity').exclude(fk_product__vchr_product_name='SERVICE').first()
+                        ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei')),fk_enquiry_master_id=int_enq_master_id).values('fk_item__dbl_apx_amount','int_type','int_quantity').exclude(fk_product__vchr_name='SERVICE').first()
                         if not ins_up_item_enq:
-                            ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei'))).values('fk_item__dbl_apx_amount','int_type','int_quantity').exclude(fk_product__vchr_product_name='SERVICE').first()
+                            ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei'))).values('fk_item__dbl_apx_amount','int_type','int_quantity').exclude(fk_product__vchr_name='SERVICE').first()
                         ins_up_item_enq['fk_item__dbl_apx_amount'] = ins_up_item_enq['fk_item__dbl_apx_amount'] if ins_up_item_enq.get('fk_item__dbl_apx_amount') else 0
                         gdp_value=GDPRange.objects.filter(dbl_from__lte=(ins_up_item_enq['fk_item__dbl_apx_amount']),dbl_to__gte=(ins_up_item_enq['fk_item__dbl_apx_amount']),int_type=dct_item_data[str_data]['int_type']).values('dbl_amt').first()
                         if ins_up_item_enq['int_type']!=0:
@@ -3637,8 +3637,8 @@ class EnquiryInvoiceUpdate(APIView):
                         if dct_item_data[str_data]['int_type']==1:
                             ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei')),fk_item__vchr_item_code='GDC00001',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value)
                         if dct_item_data[str_data]['int_type']==2:
-                            ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei')),fk_item__vchr_item_name='GDC00002',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value)
-                special_rewards_script_sudheesh(int_enq_master_id)
+                            ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[str_data].get('jsonImei')})|Q(dbl_imei_json__contains=dct_item_data[str_data].get('jsonImei')),fk_item__vchr_name='GDC00002',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value)
+                special_rewards_script(int_enq_master_id)
                 # custome_enq(int_enq_master_id,request)
                 # Uncomment When using celery
                 send_feedback_sms.delay(int_enq_master_id)
@@ -3766,7 +3766,7 @@ class EnquiryInvoiceUpdate(APIView):
         #             ins_item_enq = ItemEnquiry.objects.filter(pk_bint_id =  dct_old_item[int_id]['data']['itemEnqId'])
         #
         #             # find product to update apx amount for non service products
-        #             ins_product = ins_item_enq.values('fk_product__vchr_product_name')[0]['fk_product__vchr_product_name']
+        #             ins_product = ins_item_enq.values('fk_product__vchr_name')[0]['fk_product__vchr_name']
         #             if ins_product.upper() != 'SERVICE':
         #                 ins_item_enq.update(dbl_actual_est_amt = dct_old_item[int_id]['data']['apx_amount'])
         #
@@ -3840,20 +3840,20 @@ class EnquiryInvoiceUpdate(APIView):
         #             # 
         #             if dct_new_item[int_id]['data']['status'] == 1:
         #
-        #                 rst_data = Items.objects.values('vchr_item_name').filter(id = dct_item_code_details[int_id]['id'],vchr_item_name__in = ['GDOT','GDEW']).first()
+        #                 rst_data = Items.objects.values('vchr_name').filter(id = dct_item_code_details[int_id]['id'],vchr_item_name__in = ['GDOT','GDEW']).first()
         #                 int_type_gdp = ""
         #                 dbl_actual_gdew = 0
         #                 if rst_data:
-        #                     if rst_data['vchr_item_name'] =="GDOT":
+        #                     if rst_data['vchr_name'] =="GDOT":
         #                         int_type_gdp = '1'
-        #                     elif rst_data['vchr_item_name'] == 'GDEW':
+        #                     elif rst_data['vchr_name'] == 'GDEW':
         #                         int_type_gdp = '2'
         #
         #                     if int_type_gdp:
         #                         obj_gdp_range = GDPRange.objects.filter(dbl_from__lte=dct_new_item[int_id]['data']['dblAmount'],dbl_to__gte=dct_new_item[int_id]['data']['dblAmount'],int_type=int_type_gdp).values('dbl_amt')
         #                         dbl_actual_gdew = obj_gdp_range[0]['dbl_amt']
         #                 else:
-        #                     rst_data = Items.objects.values('vchr_item_name').filter(id = dct_item_code_details[int_id]['id']).values('dbl_apx_amount')
+        #                     rst_data = Items.objects.values('vchr_name').filter(id = dct_item_code_details[int_id]['id']).values('dbl_apx_amount')
         #                     dbl_actual_gdew = rst_data[0]['dbl_apx_amount'] if rst_data else 0
         #
         #                 ins_item_enq = ItemEnquiry(fk_enquiry_master_id = int_enq_master_id,
@@ -3965,7 +3965,7 @@ class EnquiryInvoiceUpdate(APIView):
         #
         #         for ins_data in dct_item_data:
         #             if dct_item_data[ins_data]['int_type']==1 or dct_item_data[ins_data]['int_type']==2:
-        #                 ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_enquiry_master_id=int_enq_master_id).values('fk_item__dbl_apx_amount','int_type','int_quantity').exclude(fk_product__vchr_product_name='SERVICE').first()
+        #                 ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_enquiry_master_id=int_enq_master_id).values('fk_item__dbl_apx_amount','int_type','int_quantity').exclude(fk_product__vchr_name='SERVICE').first()
         #                 gdp_value=GDPRange.objects.filter(dbl_from__lte=(ins_up_item_enq['fk_item__dbl_apx_amount']*ins_up_item_enq['int_quantity']),dbl_to__gte=(ins_up_item_enq['fk_item__dbl_apx_amount']*ins_up_item_enq['int_quantity']),int_type=dct_item_data[ins_data]['int_type']).values('dbl_amt').first()
         #                 if ins_up_item_enq['int_type']!=0:
         #                     if ins_up_item_enq['int_type']!=dct_item_data[ins_data]['int_type']:
@@ -3973,9 +3973,9 @@ class EnquiryInvoiceUpdate(APIView):
         #                 else:
         #                     ins_up_item_enq.update(int_type=dct_item_data[ins_data]['int_type'])
         #                 if dct_item_data[ins_data]['int_type']==1:
-        #                     ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_item__vchr_item_name='GDP',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value['dbl_amt'])
+        #                     ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_item__vchr_name='GDP',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value['dbl_amt'])
         #                 if dct_item_data[ins_data]['int_type']==2:
-        #                     ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_item__vchr_item_name='GDEW (EXTENDED WARRANTY)',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value['dbl_amt'])
+        #                     ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_item__vchr_name='GDEW (EXTENDED WARRANTY)',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value['dbl_amt'])
         #
         #                     # ==============================================================New Block of Code with enquiry id ================================================================================================
         #
@@ -3993,7 +3993,7 @@ class EnquiryInvoiceUpdate(APIView):
         #         #         # if dct_item_data[ins_data]['strItemCode'] not in lst_dlt_item_code and dct_item_data[ins_data]['strItemCode'] not in  lst_new_item_code:
         #         #         #vchr_item_code which are already in database
         #         #         ins_item_enq = ItemEnquiry.objects.filter(fk_item__vchr_item_code =  dct_item_data[ins_data]['strItemCode'],fk_enquiry_master = int_enq_master_id)
-        #         #         ins_product = ins_item_enq.values('fk_product__vchr_product_name')[0]['fk_product__vchr_product_name']
+        #         #         ins_product = ins_item_enq.values('fk_product__vchr_name')[0]['fk_product__vchr_name']
         #         #         if ins_product.upper() != 'SERVICE':
         #         #             ins_item_enq.update(dbl_actual_est_amt = apx_amount)
         #         #
@@ -4127,7 +4127,7 @@ class EnquiryInvoiceUpdate(APIView):
         #
         #         # for ins_data in dct_item_data:
         #         #     if dct_item_data[ins_data]['int_type']==1 or dct_item_data[ins_data]['int_type']==2:
-        #         #         ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_enquiry_master_id=int_enq_master_id).values('fk_item__dbl_apx_amount','int_type','int_quantity').exclude(fk_product__vchr_product_name='SERVICE').first()
+        #         #         ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_enquiry_master_id=int_enq_master_id).values('fk_item__dbl_apx_amount','int_type','int_quantity').exclude(fk_product__vchr_name='SERVICE').first()
         #         #         gdp_value=GDPRange.objects.filter(dbl_from__lte=(ins_up_item_enq['fk_item__dbl_apx_amount']*ins_up_item_enq['int_quantity']),dbl_to__gte=(ins_up_item_enq['fk_item__dbl_apx_amount']*ins_up_item_enq['int_quantity']),int_type=dct_item_data[ins_data]['int_type']).values('dbl_amt').first()
         #         #         if ins_up_item_enq['int_type']!=0:
         #         #             if ins_up_item_enq['int_type']!=dct_item_data[ins_data]['int_type']:
@@ -4135,9 +4135,9 @@ class EnquiryInvoiceUpdate(APIView):
         #         #         else:
         #         #             ins_up_item_enq.update(int_type=dct_item_data[ins_data]['int_type'])
         #         #         if dct_item_data[ins_data]['int_type']==1:
-        #         #             ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_item__vchr_item_name='GDP',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value['dbl_amt'])
+        #         #             ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_item__vchr_name='GDP',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value['dbl_amt'])
         #         #         if dct_item_data[ins_data]['int_type']==2:
-        #         #             ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_item__vchr_item_name='GDEW (EXTENDED WARRANTY)',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value['dbl_amt'])
+        #         #             ins_up_item_enq=ItemEnquiry.objects.filter(Q(dbl_imei_json__contains={'imei':dct_item_data[ins_data]['jsonImei']})|Q(dbl_imei_json__contains=dct_item_data[ins_data]['jsonImei']),fk_item__vchr_name='GDEW (EXTENDED WARRANTY)',fk_enquiry_master_id=int_enq_master_id).update(dbl_actual_est_amt=gdp_value['dbl_amt'])
         #
         #         # ======================================================new code will substitute the above block of code =======================================
         #     special_rewards(int_enq_master_id)
@@ -4149,19 +4149,20 @@ class EnquiryInvoiceUpdate(APIView):
         #     return JsonResponse({'status':'failed','message':str(e)})
 
 
-def special_rewards_script_sudheesh(str_pk_id):
+def special_rewards_script(str_pk_id):
     try:
         # enquiry_num
         # 
+        # import pdb; pdb.set_trace()
         with transaction.atomic():
             int_eq_pk_bint_id=int(str_pk_id)
             user_id = EnquiryMaster.objects.get(pk_bint_id = int_eq_pk_bint_id).fk_assigned_id
             user_instance = UserModel.objects.get(user_ptr_id = user_id)
 
             lst_item_enquiry_all = ItemEnquiry.objects.filter(fk_enquiry_master__pk_bint_id = int_eq_pk_bint_id,vchr_enquiry_status='INVOICED').\
-            values('pk_bint_id','fk_item_id','dat_sale','fk_item__vchr_item_name','fk_item__fk_item_group_id','fk_item__vchr_item_code','fk_item__fk_product_id','fk_enquiry_master__dat_created_at','fk_item__fk_product__vchr_product_name','fk_item__fk_brand_id','int_sold','fk_enquiry_master__fk_assigned_id','dbl_amount','dbl_actual_est_amt','dbl_discount_amount',\
-            'dbl_buy_back_amount','int_type','dbl_gdp_amount','dbl_gdew_amount','dbl_actual_gdp','dbl_actual_gdew').exclude(Q(fk_brand__vchr_brand_name__iexact = 'apple',fk_product__vchr_product_name__in =['HVA','ACC BGN']) | Q(fk_brand__vchr_brand_name__iexact = 'xiaomi',fk_product__vchr_product_name__in =['HVA','ACC BGN']) |\
-             Q(fk_brand__vchr_brand_name__iexact = 'redmi',fk_product__vchr_product_name__in =['HVA','ACC BGN']) | Q(fk_brand__vchr_brand_name__iexact = 'sandisk',fk_product__vchr_product_name__in =['HVA','ACC BGN'])| Q(fk_item__vchr_item_name__iexact = 'F120B JIO DIGITAL LIFE') | Q(fk_product__vchr_product_name__iexact ='SMART CHOICE'))
+            values('pk_bint_id','fk_item_id','dat_sale','fk_item__vchr_name','fk_item__fk_item_group_id','fk_item__vchr_item_code','fk_item__fk_product_id','fk_enquiry_master__dat_created_at','fk_item__fk_product__vchr_name','fk_item__fk_brand_id','int_sold','fk_enquiry_master__fk_assigned_id','dbl_amount','dbl_actual_est_amt','dbl_discount_amount',\
+            'dbl_buy_back_amount','int_type','dbl_gdp_amount','dbl_gdew_amount','dbl_actual_gdp','dbl_actual_gdew').exclude(Q(fk_brand__vchr_brand_name__iexact = 'apple',fk_product__vchr_name__in =['HVA','ACC BGN']) | Q(fk_brand__vchr_brand_name__iexact = 'xiaomi',fk_product__vchr_name__in =['HVA','ACC BGN']) |\
+             Q(fk_brand__vchr_brand_name__iexact = 'redmi',fk_product__vchr_name__in =['HVA','ACC BGN']) | Q(fk_brand__vchr_brand_name__iexact = 'sandisk',fk_product__vchr_name__in =['HVA','ACC BGN'])| Q(fk_item__vchr_name__iexact = 'F120B JIO DIGITAL LIFE') | Q(fk_product__vchr_name__iexact ='SMART CHOICE'))
 
             if not lst_item_enquiry_all:
                 return JsonResponse({'status':'success'})
@@ -4247,9 +4248,9 @@ def special_rewards_script_sudheesh(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -4365,9 +4366,9 @@ def special_rewards_script_sudheesh(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -4481,9 +4482,9 @@ def special_rewards_script_sudheesh(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -4598,8 +4599,8 @@ def special_rewards_script_sudheesh(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -4662,7 +4663,7 @@ def special_rewards_script_sudheesh(str_pk_id):
                 # """GDP value"""
                 #
                 # if data['int_type'] in [1,3]:
-                #     int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                #     int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
                 #
                 #
                 #     total_reward=0
@@ -4719,9 +4720,9 @@ def special_rewards_script_sudheesh(str_pk_id):
                 #
                 #                     int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                 #                     str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                #                     str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                #                     str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
                 #
-                #                     if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                #                     if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                 #                         #non-promoter
                 #                         if (item_data['int_to'] == 3) and (3 in lst_available):
                 #                             json_staffs[int_assign_id] = total_reward
@@ -4782,7 +4783,7 @@ def special_rewards_script_sudheesh(str_pk_id):
                 #
                 # """GDEW value"""
                 # if data['int_type'] in [2,3]:
-                #     int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                #     int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
                 #
                 #     total_reward=0
                 #     # item_amount['dbl_apx_amount']=0
@@ -4838,9 +4839,9 @@ def special_rewards_script_sudheesh(str_pk_id):
                 #
                 #                     int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                 #                     str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                #                     str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                #                     str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
                 #
-                #                     if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                #                     if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                 #                         #non-promoter
                 #                         if (item_data['int_to'] == 3) and (3 in lst_available):
                 #                             json_staffs[int_assign_id] = total_reward
@@ -4938,9 +4939,9 @@ def special_rewards_script_sudheesh(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -5035,9 +5036,9 @@ def special_rewards_script_sudheesh(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -5098,7 +5099,7 @@ def special_rewards_script_sudheesh(str_pk_id):
                 # """GDP price"""
                 #
                 # if data['int_type'] in [1,3]:
-                #     int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                #     int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
                 #
                 #
                 #     total_reward=0
@@ -5136,9 +5137,9 @@ def special_rewards_script_sudheesh(str_pk_id):
                 #
                 #                     int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                 #                     str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                #                     str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                #                     str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
                 #
-                #                     if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                #                     if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                 #                         #non-promoter
                 #                         if (item_data['int_to'] == 3) and (3 in lst_available):
                 #                             json_staffs[int_assign_id] = total_reward
@@ -5199,7 +5200,7 @@ def special_rewards_script_sudheesh(str_pk_id):
                 #
                 # """GDEW price"""
                 # if data['int_type'] in [2,3]:
-                #     int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                #     int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
                 #
                 #     total_reward=0
                 #     # item_amount['dbl_apx_amount']=0
@@ -5237,9 +5238,9 @@ def special_rewards_script_sudheesh(str_pk_id):
                 #
                 #                     int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                 #                     str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                #                     str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                #                     str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
                 #
-                #                     if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                #                     if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                 #                         #non-promoter
                 #                         if (item_data['int_to'] == 3) and (3 in lst_available):
                 #                             json_staffs[int_assign_id] = total_reward
@@ -5326,7 +5327,7 @@ class BookCreditEnquiry(APIView):
                 int_customer_id=EnquiryMaster.objects.filter(pk_bint_id=int_item_enq_id).values_list('fk_customer_id',flat=True)[0]
                 # int_enquiry_master_id =ItemEnquiry.objects.filter(pk_bint_id=int_item_enq_id).values_list('fk_enquiry_master_id',flat=True)[0]
 
-                ins_item_enq =  ItemEnquiry.objects.filter(fk_enquiry_master_id=int_item_enq_id).values('dbl_amount','dbl_discount_amount','fk_item__vchr_item_name','fk_item__vchr_item_code','dbl_imei_json','int_quantity','dbl_amount','dbl_discount_amount','dbl_buy_back_amount','vchr_remarks')
+                ins_item_enq =  ItemEnquiry.objects.filter(fk_enquiry_master_id=int_item_enq_id).values('dbl_amount','dbl_discount_amount','fk_item__vchr_name','fk_item__vchr_item_code','dbl_imei_json','int_quantity','dbl_amount','dbl_discount_amount','dbl_buy_back_amount','vchr_remarks')
 
                 # ----------- POS ------------
                 ins_customer = CustomerModel.objects.filter(id = int_customer_id).first()
@@ -5361,7 +5362,7 @@ class BookCreditEnquiry(APIView):
                     dct_item = {}
                     dct_pos_data['dbl_total_amt'] += ins_item['dbl_amount']
                     dct_pos_data['dbl_discount'] += ins_item['dbl_discount_amount']
-                    dct_item['vchr_item_name'] = ins_item['fk_item__vchr_item_name']
+                    dct_item['vchr_name'] = ins_item['fk_item__vchr_name']
                     dct_item['vchr_item_code'] = ins_item['fk_item__vchr_item_code']
                     dct_item['json_imei'] = ins_item['dbl_imei_json']
                     dct_item['int_quantity'] = ins_item['int_quantity']
@@ -5393,14 +5394,13 @@ class BookCreditEnquiry(APIView):
 def special_rewards_script(str_pk_id):
     try:
         # enquiry_num
+        # import pdb; pdb.set_trace()
+        
         int_eq_pk_bint_id=int(str_pk_id)
         user_id = EnquiryMaster.objects.get(pk_bint_id = int_eq_pk_bint_id).fk_assigned_id
         user_instance = UserModel.objects.get(user_ptr_id = user_id)
 
-        lst_item_enquiry_all = ItemEnquiry.objects.filter(fk_enquiry_master__pk_bint_id = int_eq_pk_bint_id,vchr_enquiry_status='INVOICED').\
-        values('pk_bint_id','fk_item_id','fk_item__vchr_item_name','fk_item__vchr_item_code','fk_item__fk_product_id','fk_enquiry_master__dat_created_at','fk_item__fk_product__vchr_product_name','fk_item__fk_brand_id','int_sold','fk_enquiry_master__fk_assigned_id','dbl_amount','dbl_actual_est_amt','dbl_discount_amount',\
-        'dbl_buy_back_amount','int_type','dbl_gdp_amount','dbl_gdew_amount','dbl_actual_gdp','dbl_actual_gdew').exclude(Q(fk_brand__vchr_brand_name__iexact = 'apple',fk_product__vchr_product_name__in =['HVA','ACC BGN']) | Q(fk_brand__vchr_brand_name__iexact = 'xiaomi',fk_product__vchr_product_name__in =['HVA','ACC BGN']) |\
-         Q(fk_brand__vchr_brand_name__iexact = 'redmi',fk_product__vchr_product_name__in =['HVA','ACC BGN']) | Q(fk_brand__vchr_brand_name__iexact = 'sandisk',fk_product__vchr_product_name__in =['HVA','ACC BGN'])| Q(fk_item__vchr_item_name__iexact = 'F120B JIO DIGITAL LIFE') | Q(fk_product__vchr_product_name__iexact ='SMART CHOICE'))
+        lst_item_enquiry_all = ItemEnquiry.objects.filter(fk_enquiry_master__pk_bint_id = int_eq_pk_bint_id,vchr_enquiry_status='INVOICED').values('pk_bint_id','fk_item_id','fk_item__vchr_name','fk_item__vchr_item_code','fk_item__fk_product_id','fk_enquiry_master__dat_created_at','fk_item__fk_product__vchr_name','fk_item__fk_brand_id','int_sold','fk_enquiry_master__fk_assigned_id','dbl_amount','dbl_actual_est_amt','dbl_discount_amount','dbl_buy_back_amount','int_type','dbl_gdp_amount','dbl_gdew_amount','dbl_actual_gdp','dbl_actual_gdew')
 
         if not lst_item_enquiry_all:
             return JsonResponse({'status':'success'})
@@ -5433,10 +5433,7 @@ def special_rewards_script(str_pk_id):
 
             # item_amount['dbl_apx_amount']=0
 
-            item_data_all= RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),\
-            fk_reward_details__int_map_type = 5,fk_reward_details__int_map_id = data['fk_item__fk_product_id'],fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id',\
-            'fk_reward_details__fk_rewards_master__dbl_slab1_percentage','fk_reward_details__fk_rewards_master__dbl_slab2_percentage','fk_reward_details__fk_rewards_master__dbl_slab3_percentage',\
-            'int_to','dbl_slab1_percentage','dbl_slab1_amount','dbl_slab2_percentage','dbl_slab2_amount','dbl_slab3_percentage','dbl_slab3_amount','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name').order_by("-pk_bint_id")
+            item_data_all= RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__int_map_id = data['fk_item__fk_product_id'],fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','fk_reward_details__fk_rewards_master__dbl_slab1_percentage','fk_reward_details__fk_rewards_master__dbl_slab2_percentage','fk_reward_details__fk_rewards_master__dbl_slab3_percentage','int_to','dbl_slab1_percentage','dbl_slab1_amount','dbl_slab2_percentage','dbl_slab2_amount','dbl_slab3_percentage','dbl_slab3_amount','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name').order_by("-pk_bint_id")
 
             if item_data_all:
                 json_staffs = {}
@@ -5485,9 +5482,9 @@ def special_rewards_script(str_pk_id):
 
                             int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                             str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                 #non-promoter
                                 if (item_data['int_to'] == 3) and (3 in lst_available):
                                     json_staffs[int_assign_id] = total_reward
@@ -5550,10 +5547,7 @@ def special_rewards_script(str_pk_id):
             total_reward=0
             # item_amount['dbl_apx_amount']=0
 
-            item_data_all= RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),\
-            fk_reward_details__int_map_type = 6,fk_reward_details__int_map_id = data['fk_item__fk_brand_id'],fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id',\
-            'fk_reward_details__fk_rewards_master__dbl_slab1_percentage','fk_reward_details__fk_rewards_master__dbl_slab2_percentage','fk_reward_details__fk_rewards_master__dbl_slab3_percentage',\
-            'int_to','dbl_slab1_percentage','dbl_slab1_amount','dbl_slab2_percentage','dbl_slab2_amount','dbl_slab3_percentage','dbl_slab3_amount','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name').order_by("-pk_bint_id")
+            item_data_all= RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__int_map_type = 6,fk_reward_details__int_map_id = data['fk_item__fk_brand_id'],fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','fk_reward_details__fk_rewards_master__dbl_slab1_percentage','fk_reward_details__fk_rewards_master__dbl_slab2_percentage','fk_reward_details__fk_rewards_master__dbl_slab3_percentage','int_to','dbl_slab1_percentage','dbl_slab1_amount','dbl_slab2_percentage','dbl_slab2_amount','dbl_slab3_percentage','dbl_slab3_amount','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name').order_by("-pk_bint_id")
 
             if item_data_all:
                 json_staffs = {}
@@ -5602,9 +5596,9 @@ def special_rewards_script(str_pk_id):
 
                             int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                             str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                 #non-promoter
                                 if (item_data['int_to'] == 3) and (3 in lst_available):
                                     json_staffs[int_assign_id] = total_reward
@@ -5667,10 +5661,7 @@ def special_rewards_script(str_pk_id):
             total_reward=0
             # item_amount['dbl_apx_amount']=0
 
-            item_data_all= RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),\
-            fk_reward_details__int_map_type = 7,fk_reward_details__int_map_id = data['fk_item_id'],fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id',\
-            'fk_reward_details__fk_rewards_master__dbl_slab1_percentage','fk_reward_details__fk_rewards_master__dbl_slab2_percentage','fk_reward_details__fk_rewards_master__dbl_slab3_percentage',\
-            'int_to','dbl_slab1_percentage','dbl_slab1_amount','dbl_slab2_percentage','dbl_slab2_amount','dbl_slab3_percentage','dbl_slab3_amount','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name').order_by("-pk_bint_id")
+            item_data_all= RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__int_map_type = 7,fk_reward_details__int_map_id = data['fk_item_id'],fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','fk_reward_details__fk_rewards_master__dbl_slab1_percentage','fk_reward_details__fk_rewards_master__dbl_slab2_percentage','fk_reward_details__fk_rewards_master__dbl_slab3_percentage','int_to','dbl_slab1_percentage','dbl_slab1_amount','dbl_slab2_percentage','dbl_slab2_amount','dbl_slab3_percentage','dbl_slab3_amount','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name').order_by("-pk_bint_id")
 
             if item_data_all:
                 json_staffs = {}
@@ -5719,8 +5710,8 @@ def special_rewards_script(str_pk_id):
 
                             int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                             str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
-                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
+                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                 #non-promoter
                                 if (item_data['int_to'] == 3) and (3 in lst_available):
                                     json_staffs[int_assign_id] = total_reward
@@ -5783,16 +5774,13 @@ def special_rewards_script(str_pk_id):
             """GDP value"""
 
             if data['int_type'] in [1,3]:
-                int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
 
 
                 total_reward=0
                 # item_amount['dbl_apx_amount']=0
 
-                item_data_all= RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),\
-                fk_reward_details__int_map_type = 5,fk_reward_details__int_map_id = int_gdp,fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id',\
-                'fk_reward_details__fk_rewards_master__dbl_slab1_percentage','fk_reward_details__fk_rewards_master__dbl_slab2_percentage','fk_reward_details__fk_rewards_master__dbl_slab3_percentage',\
-                'int_to','dbl_slab1_percentage','dbl_slab1_amount','dbl_slab2_percentage','dbl_slab2_amount','dbl_slab3_percentage','dbl_slab3_amount','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name').order_by("-pk_bint_id")
+                item_data_all= RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__int_map_type = 5,fk_reward_details__int_map_id = int_gdp,fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','fk_reward_details__fk_rewards_master__dbl_slab1_percentage','fk_reward_details__fk_rewards_master__dbl_slab2_percentage','fk_reward_details__fk_rewards_master__dbl_slab3_percentage','int_to','dbl_slab1_percentage','dbl_slab1_amount','dbl_slab2_percentage','dbl_slab2_amount','dbl_slab3_percentage','dbl_slab3_amount','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name').order_by("-pk_bint_id")
 
                 if item_data_all:
                     json_staffs = {}
@@ -5840,9 +5828,9 @@ def special_rewards_script(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -5903,15 +5891,12 @@ def special_rewards_script(str_pk_id):
 
             """GDEW value"""
             if data['int_type'] in [2,3]:
-                int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
 
                 total_reward=0
                 # item_amount['dbl_apx_amount']=0
 
-                item_data_all= RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),\
-                fk_reward_details__int_map_type = 5,fk_reward_details__int_map_id = int_gdew,fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id',\
-                'fk_reward_details__fk_rewards_master__dbl_slab1_percentage','fk_reward_details__fk_rewards_master__dbl_slab2_percentage','fk_reward_details__fk_rewards_master__dbl_slab3_percentage',\
-                'int_to','dbl_slab1_percentage','dbl_slab1_amount','dbl_slab2_percentage','dbl_slab2_amount','dbl_slab3_percentage','dbl_slab3_amount','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name').order_by("-pk_bint_id")
+                item_data_all= RewardAssigned.objects.filter(fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__int_map_type = 5,fk_reward_details__int_map_id = int_gdew,fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','fk_reward_details__fk_rewards_master__dbl_slab1_percentage','fk_reward_details__fk_rewards_master__dbl_slab2_percentage','fk_reward_details__fk_rewards_master__dbl_slab3_percentage','int_to','dbl_slab1_percentage','dbl_slab1_amount','dbl_slab2_percentage','dbl_slab2_amount','dbl_slab3_percentage','dbl_slab3_amount','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name').order_by("-pk_bint_id")
 
                 if item_data_all:
                     json_staffs = {}
@@ -5959,9 +5944,9 @@ def special_rewards_script(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -6027,11 +6012,7 @@ def special_rewards_script(str_pk_id):
             total_reward=0
             # item_amount['dbl_apx_amount']=0
 
-            item_data_all= RewardAssigned.objects.filter(fk_reward_details__dbl_value_from__lte = ((data['dbl_amount'] - data['dbl_discount_amount']) / data['int_sold']),\
-            fk_reward_details__dbl_value_to__gte = ((data['dbl_amount'] - data['dbl_discount_amount']) / data['int_sold']),\
-            fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),\
-            fk_reward_details__int_map_type = 8,fk_reward_details__int_map_id = data['fk_item__fk_product_id'],fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id',\
-            'int_to','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name','fk_reward_details__dbl_value_from','fk_reward_details__dbl_value_to','dbl_slab1_percentage','dbl_slab1_amount').order_by("-pk_bint_id")
+            item_data_all= RewardAssigned.objects.filter(fk_reward_details__dbl_value_from__lte = ((data['dbl_amount'] - data['dbl_discount_amount']) / data['int_sold']),fk_reward_details__dbl_value_to__gte = ((data['dbl_amount'] - data['dbl_discount_amount']) / data['int_sold']),fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__int_map_type = 8,fk_reward_details__int_map_id = data['fk_item__fk_product_id'],fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','int_to','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name','fk_reward_details__dbl_value_from','fk_reward_details__dbl_value_to','dbl_slab1_percentage','dbl_slab1_amount').order_by("-pk_bint_id")
 
             if item_data_all:
                 json_staffs = {}
@@ -6059,9 +6040,9 @@ def special_rewards_script(str_pk_id):
 
                             int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                             str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                 #non-promoter
                                 if (item_data['int_to'] == 3) and (3 in lst_available):
                                     json_staffs[int_assign_id] = total_reward
@@ -6100,11 +6081,7 @@ def special_rewards_script(str_pk_id):
             total_reward=0
             # item_amount['dbl_apx_amount']=0
 
-            item_data_all= RewardAssigned.objects.filter(fk_reward_details__dbl_value_from__lte = ((data['dbl_amount'] - data['dbl_discount_amount']) / data['int_sold']),\
-            fk_reward_details__dbl_value_to__gte = ((data['dbl_amount'] - data['dbl_discount_amount']) / data['int_sold']),\
-            fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),\
-            fk_reward_details__int_map_type = 9,fk_reward_details__int_map_id = data['fk_item__fk_brand_id'],fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id',\
-            'int_to','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name','fk_reward_details__dbl_value_from','fk_reward_details__dbl_value_to','dbl_slab1_percentage','dbl_slab1_amount').order_by("-pk_bint_id")
+            item_data_all= RewardAssigned.objects.filter(fk_reward_details__dbl_value_from__lte = ((data['dbl_amount'] - data['dbl_discount_amount']) / data['int_sold']),fk_reward_details__dbl_value_to__gte = ((data['dbl_amount'] - data['dbl_discount_amount']) / data['int_sold']),fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__int_map_type = 9,fk_reward_details__int_map_id = data['fk_item__fk_brand_id'],fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','int_to','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name','fk_reward_details__dbl_value_from','fk_reward_details__dbl_value_to','dbl_slab1_percentage','dbl_slab1_amount').order_by("-pk_bint_id")
 
             if item_data_all:
                 json_staffs = {}
@@ -6132,9 +6109,9 @@ def special_rewards_script(str_pk_id):
 
                             int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                             str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                 #non-promoter
                                 if (item_data['int_to'] == 3) and (3 in lst_available):
                                     json_staffs[int_assign_id] = total_reward
@@ -6195,17 +6172,13 @@ def special_rewards_script(str_pk_id):
             """GDP price"""
 
             if data['int_type'] in [1,3]:
-                int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
 
 
                 total_reward=0
                 # item_amount['dbl_apx_amount']=0
 
-                item_data_all= RewardAssigned.objects.filter(fk_reward_details__dbl_value_from__lte = ((data['dbl_gdp_amount']) / data['int_sold']),\
-                fk_reward_details__dbl_value_to__gte = ((data['dbl_gdp_amount']) / data['int_sold']),\
-                fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),\
-                fk_reward_details__int_map_type = 8,fk_reward_details__int_map_id = int_gdp,fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id',\
-                'int_to','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name','fk_reward_details__dbl_value_from','fk_reward_details__dbl_value_to','dbl_slab1_percentage','dbl_slab1_amount').order_by("-pk_bint_id")
+                item_data_all= RewardAssigned.objects.filter(fk_reward_details__dbl_value_from__lte = ((data['dbl_gdp_amount']) / data['int_sold']),fk_reward_details__dbl_value_to__gte = ((data['dbl_gdp_amount']) / data['int_sold']),fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__int_map_type = 8,fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','int_to','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name','fk_reward_details__dbl_value_from','fk_reward_details__dbl_value_to','dbl_slab1_percentage','dbl_slab1_amount').order_by("-pk_bint_id")
 
                 if item_data_all:
                     json_staffs = {}
@@ -6233,9 +6206,9 @@ def special_rewards_script(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -6296,16 +6269,12 @@ def special_rewards_script(str_pk_id):
 
             """GDEW price"""
             if data['int_type'] in [2,3]:
-                int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
 
                 total_reward=0
                 # item_amount['dbl_apx_amount']=0
 
-                item_data_all= RewardAssigned.objects.filter(fk_reward_details__dbl_value_from__lte = ((data['dbl_gdew_amount']) / data['int_sold']),\
-                fk_reward_details__dbl_value_to__gte = ((data['dbl_gdew_amount']) / data['int_sold']),\
-                fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),\
-                fk_reward_details__int_map_type = 8,fk_reward_details__int_map_id = int_gdew,fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id',\
-                'int_to','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name','fk_reward_details__dbl_value_from','fk_reward_details__dbl_value_to','dbl_slab1_percentage','dbl_slab1_amount').order_by("-pk_bint_id")
+                item_data_all= RewardAssigned.objects.filter(fk_reward_details__dbl_value_from__lte = ((data['dbl_gdew_amount']) / data['int_sold']),fk_reward_details__dbl_value_to__gte = ((data['dbl_gdew_amount']) / data['int_sold']),fk_reward_details__int_status__gte = 0,int_status__gte = 0, fk_reward_details__fk_rewards_master__fk_created_by__fk_company_id=user_instance.fk_company_id,fk_reward_details__fk_rewards_master__dat_from__lte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__fk_rewards_master__dat_to__gte=data['fk_enquiry_master__dat_created_at'].date(),fk_reward_details__int_map_type = 8,fk_reward_details__int_map_id = int_gdew,fk_reward_details__fk_rewards_master__json_branch__contains={'branch_id':[str(int_promoter['fk_branch_id'])]}).values('pk_bint_id','fk_reward_details__fk_rewards_master_id','int_to','fk_reward_details__int_mop_sale','fk_reward_details','fk_group__vchr_name','fk_reward_details__dbl_value_from','fk_reward_details__dbl_value_to','dbl_slab1_percentage','dbl_slab1_amount').order_by("-pk_bint_id")
 
                 if item_data_all:
                     json_staffs = {}
@@ -6334,9 +6303,9 @@ def special_rewards_script(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -6412,9 +6381,9 @@ def special_rewards(str_pk_id):
         user_instance = UserModel.objects.get(user_ptr_id = user_id)
 
         lst_item_enquiry_all = ItemEnquiry.objects.filter(fk_enquiry_master__pk_bint_id = int_eq_pk_bint_id,vchr_enquiry_status='INVOICED').\
-        values('pk_bint_id','fk_item_id','fk_item__fk_product_id','fk_enquiry_master__dat_created_at','fk_item__fk_product__vchr_product_name','fk_item__fk_brand_id','int_sold','fk_enquiry_master__fk_assigned_id','dbl_amount','dbl_actual_est_amt','dbl_discount_amount',\
-        'dbl_buy_back_amount','int_type','dbl_gdp_amount','dbl_gdew_amount','dbl_actual_gdp','dbl_actual_gdew').exclude(Q(fk_brand__vchr_brand_name__iexact = 'apple',fk_product__vchr_product_name__in =['HVA','ACC BGN']) | Q(fk_brand__vchr_brand_name__iexact = 'xiaomi',fk_product__vchr_product_name__in =['HVA','ACC BGN']) |\
-         Q(fk_brand__vchr_brand_name__iexact = 'redmi',fk_product__vchr_product_name__in =['HVA','ACC BGN']) | Q(fk_brand__vchr_brand_name__iexact = 'sandisk',fk_product__vchr_product_name__in =['HVA','ACC BGN'])| Q(fk_product__vchr_product_name__iexact ='SMART CHOICE'))
+        values('pk_bint_id','fk_item_id','fk_item__fk_product_id','fk_enquiry_master__dat_created_at','fk_item__fk_product__vchr_name','fk_item__fk_brand_id','int_sold','fk_enquiry_master__fk_assigned_id','dbl_amount','dbl_actual_est_amt','dbl_discount_amount',\
+        'dbl_buy_back_amount','int_type','dbl_gdp_amount','dbl_gdew_amount','dbl_actual_gdp','dbl_actual_gdew').exclude(Q(fk_brand__vchr_brand_name__iexact = 'apple',fk_product__vchr_name__in =['HVA','ACC BGN']) | Q(fk_brand__vchr_brand_name__iexact = 'xiaomi',fk_product__vchr_name__in =['HVA','ACC BGN']) |\
+         Q(fk_brand__vchr_brand_name__iexact = 'redmi',fk_product__vchr_name__in =['HVA','ACC BGN']) | Q(fk_brand__vchr_brand_name__iexact = 'sandisk',fk_product__vchr_name__in =['HVA','ACC BGN'])| Q(fk_product__vchr_name__iexact ='SMART CHOICE'))
 
         if not lst_item_enquiry_all:
             return JsonResponse({'status':'success'})
@@ -6497,9 +6466,9 @@ def special_rewards(str_pk_id):
 
                             int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                             str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                 #non-promoter
                                 if (item_data['int_to'] == 3) and (3 in lst_available):
                                     json_staffs[int_assign_id] = total_reward
@@ -6674,9 +6643,9 @@ def special_rewards(str_pk_id):
 
                             int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                             str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                 #non-promoter
                                 if (item_data['int_to'] == 3) and (3 in lst_available):
                                     json_staffs[int_assign_id] = total_reward
@@ -6852,8 +6821,8 @@ def special_rewards(str_pk_id):
 
                             int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                             str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
-                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
+                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                 #non-promoter
                                 if (item_data['int_to'] == 3) and (3 in lst_available):
                                     json_staffs[int_assign_id] = total_reward
@@ -6976,7 +6945,7 @@ def special_rewards(str_pk_id):
             """GDP value"""
 
             if data['int_type'] in [1,3]:
-                int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
 
 
                 total_reward=0
@@ -7033,9 +7002,9 @@ def special_rewards(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -7156,7 +7125,7 @@ def special_rewards(str_pk_id):
 
             """GDEW value"""
             if data['int_type'] in [2,3]:
-                int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
 
                 total_reward=0
                 # item_amount['dbl_apx_amount']=0
@@ -7212,9 +7181,9 @@ def special_rewards(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -7374,9 +7343,9 @@ def special_rewards(str_pk_id):
 
                             int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                             str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                 #non-promoter
                                 if (item_data['int_to'] == 3) and (3 in lst_available):
                                     json_staffs[int_assign_id] = total_reward
@@ -7531,9 +7500,9 @@ def special_rewards(str_pk_id):
 
                             int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                             str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                            str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                            if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                 #non-promoter
                                 if (item_data['int_to'] == 3) and (3 in lst_available):
                                     json_staffs[int_assign_id] = total_reward
@@ -7654,7 +7623,7 @@ def special_rewards(str_pk_id):
             """GDP price"""
 
             if data['int_type'] in [1,3]:
-                int_gdp=Products.objects.filter(vchr_product_name='GDP').values('id').first()['id']
+                int_gdp=Products.objects.filter(vchr_name='GDP').values('id').first()['id']
 
 
                 total_reward=0
@@ -7692,9 +7661,9 @@ def special_rewards(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -7815,7 +7784,7 @@ def special_rewards(str_pk_id):
 
             """GDEW price"""
             if data['int_type'] in [2,3]:
-                int_gdew=Products.objects.filter(vchr_product_name='GDEW').values('id').first()['id']
+                int_gdew=Products.objects.filter(vchr_name='GDEW').values('id').first()['id']
 
                 total_reward=0
                 # item_amount['dbl_apx_amount']=0
@@ -7853,9 +7822,9 @@ def special_rewards(str_pk_id):
 
                                 int_assign_id = EnquiryMaster.objects.filter(pk_bint_id = int_eq_pk_bint_id).values('fk_assigned_id').first()['fk_assigned_id']
                                 str_assign_group = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_group__vchr_name').first()['fk_group__vchr_name']
-                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_brand_name').first()['fk_brand__vchr_brand_name']
+                                str_assign_brand = UserModel.objects.filter(user_ptr_id = int_assign_id).values('fk_brand__vchr_name').first()['fk_brand__vchr_name']
 
-                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_product_name'] != "LAPTOPS")):
+                                if (item_data['fk_group__vchr_name'] == 'STAFF' and str_assign_group == 'STAFF') and ((str_assign_brand != "NPS") or (str_assign_brand == "NPS" and data['fk_item__fk_product__vchr_name'] != "LAPTOPS")):
                                     #non-promoter
                                     if (item_data['int_to'] == 3) and (3 in lst_available):
                                         json_staffs[int_assign_id] = total_reward
@@ -7990,7 +7959,7 @@ def special_rewards(str_pk_id):
 def enquiry_for_pos(int_enq_id):
     try:
         session = Session
-        rst_enquiry=ItemEnquiry.objects.filter(fk_enquiry_master_id=int_enq_id,vchr_enquiry_status='BOOKED').values('fk_enquiry_master__fk_customer__cust_fname','fk_enquiry_master__fk_customer__cust_lname','fk_enquiry_master__fk_customer__cust_email','fk_enquiry_master__fk_customer__cust_mobile','fk_enquiry_master__fk_customer__vchr_gst_no','fk_enquiry_master_id','fk_enquiry_master__fk_customer__fk_location__vchr_name','fk_enquiry_master__fk_customer__fk_location__vchr_district','fk_enquiry_master__fk_customer__fk_location__vchr_pin_code','fk_enquiry_master__fk_customer__fk_state__vchr_code','fk_enquiry_master__fk_assigned__username','fk_enquiry_master__fk_branch__vchr_code','vchr_remarks','fk_enquiry_master__dat_created_at','fk_item__vchr_item_name','fk_item__vchr_item_code','dbl_imei_json','int_quantity','dbl_amount','dbl_discount_amount','dbl_buy_back_amount','bln_smart_choice','fk_product__vchr_product_name','pk_bint_id','fk_enquiry_master_id','fk_enquiry_master__vchr_enquiry_num','fk_enquiry_master__vchr_remarks')
+        rst_enquiry=ItemEnquiry.objects.filter(fk_enquiry_master_id=int_enq_id,vchr_enquiry_status='BOOKED').values('fk_enquiry_master__fk_customer__cust_fname','fk_enquiry_master__fk_customer__cust_lname','fk_enquiry_master__fk_customer__cust_email','fk_enquiry_master__fk_customer__cust_mobile','fk_enquiry_master__fk_customer__vchr_gst_no','fk_enquiry_master_id','fk_enquiry_master__fk_customer__fk_location__vchr_name','fk_enquiry_master__fk_customer__fk_location__vchr_district','fk_enquiry_master__fk_customer__fk_location__vchr_pin_code','fk_enquiry_master__fk_customer__fk_state__vchr_code','fk_enquiry_master__fk_assigned__username','fk_enquiry_master__fk_branch__vchr_code','vchr_remarks','fk_enquiry_master__dat_created_at','fk_item__vchr_name','fk_item__vchr_item_code','dbl_imei_json','int_quantity','dbl_amount','dbl_discount_amount','dbl_buy_back_amount','bln_smart_choice','fk_product__vchr_name','pk_bint_id','fk_enquiry_master_id','fk_enquiry_master__vchr_enquiry_num','fk_enquiry_master__vchr_remarks')
         rst_exchange = ItemExchange.objects.filter(fk_item_enquiry__fk_enquiry_master_id = int_enq_id,fk_item_enquiry__vchr_enquiry_status='BOOKED').values('fk_item__vchr_item_code','vchr_filename_json','dbl_exchange_amt')
         dct_pos_data = {}
         dct_pos_data['lst_item'] = []
@@ -8002,7 +7971,7 @@ def enquiry_for_pos(int_enq_id):
             for ins_enquiry in rst_enquiry:
                 dct_item = {}
                 dct_item['item_enquiry_id'] = ins_enquiry['pk_bint_id']
-                dct_item['vchr_item_name'] = ins_enquiry['fk_item__vchr_item_name']
+                dct_item['vchr_name'] = ins_enquiry['fk_item__vchr_name']
                 dct_item['vchr_item_code'] = ins_enquiry['fk_item__vchr_item_code']
                 dct_item['json_imei'] = ins_enquiry['dbl_imei_json']
                 dct_item['int_quantity']= ins_enquiry['int_quantity']
@@ -8013,10 +7982,10 @@ def enquiry_for_pos(int_enq_id):
                 dct_pos_data['dbl_total_amt'] += float(ins_enquiry['dbl_amount'])
                 dct_pos_data['dbl_discount'] += float(ins_enquiry['dbl_discount_amount'])
                 dct_item['int_status'] = 1
-                if dct_item['vchr_item_name'].upper()=='F120B JIO DIGITAL LIFE':
+                if dct_item['vchr_name'].upper()=='F120B JIO DIGITAL LIFE':
                     dct_item['int_status'] = 4
                     dct_pos_data['int_status']=4
-                elif ins_enquiry['fk_product__vchr_product_name'].upper()=='SMART CHOICE':
+                elif ins_enquiry['fk_product__vchr_name'].upper()=='SMART CHOICE':
                     dct_item['int_status'] = 2
                     if rst_exchange:
                         for ins_exc in rst_exchange:
