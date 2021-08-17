@@ -238,9 +238,9 @@ if DEBUG:
             'default': {
                 'ENGINE': 'django.db.backends.postgresql',
                 'NAME': 'oxygen',
-                'USER': 'admin',
-                'PASSWORD':'tms@123',
-                'HOST': '127.0.0.1',
+                'USER': 'postgres',
+                'PASSWORD':'pacewisdom',
+                'HOST': 'localhost',
                 # 'HOST':'192.168.0.114',
                 'PORT': '5432',
             }
